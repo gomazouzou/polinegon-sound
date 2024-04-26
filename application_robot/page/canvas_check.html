@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>canvas_check</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="BackGround">
+        <div class="label-bg">
+            <div class="label label-text">
+                これでOK?
+            </div>
+        </div>
+        
+        
+        <div class="canvas-container">
+            <canvas id="myCanvas" width="999" height="661"></canvas>
+        </div>
+        <div id="label-container"></div>
+
+        <div class="buttons"> 
+            
+            <button class="finish" onclick="redirectToPage()" style="width: 200px; height: 80px; background: none; border: none;">
+                <img src="../image/名称未設定-1 (6)-13 1.png" alt="">
+            </button>
+            <button class="return" onclick="" style="width: 200px; height: 80px; background: none; border: none;">
+                <img src="../image/return.png" alt="">
+            </button>
+
+            
+        </div>
+        
+        
+        
+</div>
+    <style>
+        .BackGround {
+            position: relative;
+            width: 1448px;
+            height: 934px;
+            padding: 24px 64px 24px 0px;
+            flex-shrink: 0;
+            background: url("../image/BackGroundImage.png"), lightgray 50% / cover no-repeat;
+        }
+        .label-text {
+            color: var(--white, #FFF);
+            font-family: "Dela Gothic One";
+            font-size: 56px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+        .label-bg {
+            width: 778px;
+            height: 128px;
+            flex-shrink: 0;
+            position: absolute;
+            background: url("../image/Label.png"),  -129px -46.332px / 128.792% 180.987% no-repeat;
+        }
+        .label {
+            position: absolute;
+            left: 200px;
+            top: 22px;
+        }
+
+        .canvas-container{
+            width: 999px;
+            height: 661px;
+            border-radius: 16px;
+            border: 8px solid var(--brack, #2D2D2D);
+            background: var(--white, #FFF);
+
+            position: absolute;
+            left: 260px;
+            top: 172px;
+        }
+        .buttons {
+            position: absolute;
+            top: 294.91px;
+            right: 88px;
+            display: flex;
+            flex-direction: column; 
+            gap: 21px;
+        }
+        .buttons button {
+            width: 100px;
+            height: 50px;
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    
+        .buttons button svg {
+            width: 100%; /* SVGをボタンに合わせる */
+            height: 100%;
+        }
+        
+
+        .finish{
+            width: 226px;
+            height: 94px;
+            position: absolute;
+            top: 580px;
+            right: 300px;
+
+        }
+        button.finish img {
+            width: 100%; 
+            height: auto; 
+        }
+        .return{
+            width: 226px;
+            height: 94px;
+            position: absolute;
+            top: 580px;
+            right: 800px;
+
+        }
+          
+          
+
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+
+<script>
+    // 取得
+    const imageData = sessionStorage.getItem('imageData');
+    //console.log(imageData);
+
+    // canvas 要素を取得
+    const canvas = document.getElementById('myCanvas');
+    const context = canvas.getContext('2d');
+
+    // 新しい Image オブジェクトを作成
+    const img = new Image();
+    img.src = imageData;
+
+    // 画像が読み込まれたら canvas に描画
+    img.onload = function() {
+        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    //console.log(urlParams);
+    const subject_num = parseInt(urlParams.get('subject_num'));
+    const subject_prob = urlParams.get('subject_prob');
+
+    const top1 = parseInt(urlParams.get('top1'));
+    const top2 = parseInt(urlParams.get('top2'));
+    const top3 = parseInt(urlParams.get('top3'));
+    const top4 = parseInt(urlParams.get('top4'));
+
+
+    const class_array = ["ピカチュウ","ミッフィー","ハローキティ","プーさん","リラックマ","くまモン","ミッキーマウス","ふなっしー","ちいかわ","チーバくん","イーブイ","ヨッシー","ガチャピン","ドラえもん","ハンギョドン"]
+
+    
+    function redirectToPage() {
+        window.location.href = `answer_select.html?subject_num=${subject_num}&subject_prob=${subject_prob}&top1=${top1}&top2=${top2}&top3=${top3}&top4=${top4}`;
+    }
+
+    
+
+</script>
+
+</body>
+</html>
+

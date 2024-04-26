@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>answer_select</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="BackGround">
+        <div class="label-bg">
+            <div class="label label-text">
+                このキャラクターは何？
+            </div>
+        </div>
+
+        <div class="svg-container">
+            <svg xmlns="http://www.w3.org/2000/svg" width="151" height="151" viewBox="0 0 151 151" fill="none">
+                <circle cx="75.5" cy="75.5" r="71.5" fill="white" stroke="#2D2D2D" stroke-width="8"/>
+              </svg>
+              <div class="time time-text">
+                <span id="timeValue"></span>
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="myCanvas" width="908" height="601"></canvas>
+        </div>
+
+        <div class="frame1 frame1-text">
+            <span id="Value1"> </span>
+        </div>
+        <div class="frame2 frame2-text">
+            <span id="Value2"> </span>
+        </div>
+        <div class="frame3 frame3-text">
+            <span id="Value3"> </span>
+        </div>
+        <div class="frame4 frame4-text">
+            <span id="Value4"> </span>
+        </div>
+        <div class="frame5 frame5-text">
+            <span id="Value5"> </span>
+        </div>
+
+        <div class="buttons">        
+            <button class="hint" onclick="hint()" style="width: 200px; height: 80px; background: none; border: none;">
+                <img src="../image/hint.png" alt="">
+            </button>
+            <button class="answer" onclick="redirectToPage()" style="width: 200px; height: 80px; background: none; border: none;">
+                <img src="../image/answer.png" alt="">
+            </button>  
+        </div>
+        
+    </div>
+    <style>
+        .BackGround {
+            display: flex;
+            width: 1448px;
+            height: 934px;
+            padding: 24px 64px 24px 0px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 67px;
+            background: var(--purple, #9D75EE);
+        }
+        .label-text {
+            color: var(--white, #FFF);
+            font-family: "Dela Gothic One";
+            font-size: 56px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+        .label-bg {
+            width: 778px;
+            height: 128px;
+            flex-shrink: 0;
+            position: absolute;
+            left: 10px;
+            top: 35px;
+            background: url("../image/Label.png"),  -129px -46.332px / 128.792% 180.987% no-repeat;
+        }
+        .label {
+            width: 617px;
+            height: 81px;
+            position: absolute;
+            left: 80px;
+            top: 24px;
+        }
+        .svg-container {
+            position: absolute;
+            width: 151px;
+            height: 151px; 
+            left: 1320px;
+            top: 24px;
+        }
+        .time{
+            width: 100px;
+            height: 81px;
+            position: absolute;
+            left: 26px;
+            top: 35px;
+        }
+        .time-text{
+            color: var(--brack, #2D2D2D);
+            font-family: "Dela Gothic One";
+            font-size: 56px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+        .canvas-container{
+            width: 908px;
+            height: 601px;
+            border-radius: 16px;
+            border: 8px solid var(--brack, #2D2D2D);
+            background: var(--white, #FFF);
+
+            position: absolute;
+            left: 302px;
+            top: 219px;
+            
+        }
+        .frame1{
+            width: 394px;
+            height: 70px;
+            position: absolute;
+            left: 1036px;
+            top: 266px;
+            display: none;
+        }
+        .frame1-text{
+            color: var(--white, #FFF);
+            font-family: "Dela Gothic One";
+            font-size: 48px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+        .frame2{
+            width: 394px;
+            height: 70px;
+            position: absolute;
+            left: 1036px;
+            top: 384px;
+            display: none;
+        }
+        .frame2-text{
+            color: var(--white, #FFF);
+            font-family: "Dela Gothic One";
+            font-size: 48px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+        .frame3{
+            width: 394px;
+            height: 70px;
+            position: absolute;
+            left: 1036px;
+            top: 502px;
+            display: none;
+        }
+        .frame3-text{
+            color: var(--white, #FFF);
+            font-family: "Dela Gothic One";
+            font-size: 48px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+        .frame4{
+            width: 394px;
+            height: 70px;
+            position: absolute;
+            left: 1036px;
+            top: 620px;
+            display: none;
+        }
+        .frame4-text{
+            color: var(--white, #FFF);
+            font-family: "Dela Gothic One";
+            font-size: 48px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+        .frame5{
+            width: 394px;
+            height: 70px;
+            position: absolute;
+            left: 1036px;
+            top: 738px;
+            display: none;
+        }
+        .frame5-text{
+            color: var(--white, #FFF);
+            font-family: "Dela Gothic One";
+            font-size: 48px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+        .hint {
+            width: 252.529px;
+            height: 81px;
+            background: url(<path-to-image>) lightgray 50% / cover no-repeat;
+            position: absolute;
+            left: 443.59px;
+            top: 865px;
+        }
+        .answer {
+            width: 241.298px;
+            height: 81px;
+            background: url(<path-to-image>), lightgray 50% / cover no-repeat;
+            position: absolute;
+            left: 800px;
+            top: 865px;
+        }
+
+    </style>
+
+<script>
+    // 取得
+    const imageData = sessionStorage.getItem('imageData');
+    //console.log(imageData);
+
+    // canvas 要素を取得
+    const canvas = document.getElementById('myCanvas');
+    const context = canvas.getContext('2d');
+
+    // 新しい Image オブジェクトを作成
+    const img = new Image();
+    img.src = imageData;
+
+    // 画像が読み込まれたら canvas に描画
+    img.onload = function() {
+        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+    };
+
+    async function countdown() {
+        let seconds = 62;
+        //let seconds = 10;
+        let timeTextElement, timeValueElement;
+    
+        const countdownInterval = setInterval(function() {
+            console.log(seconds); // あと何秒かコンソールに表示
+    
+            if (seconds === 1) {
+                clearInterval(countdownInterval); // カウントダウンが終了したらインターバルをクリア
+                console.log('カウントダウン終了');
+                //finish();
+                //redirectToPage();
+            }
+    
+            seconds--;
+            timeTextElement = document.querySelector('.time-text');
+            timeValueElement = document.getElementById('timeValue');
+
+        // テキストの更新
+            if (seconds > 60) {
+                timeValueElement.innerText = 60;
+            }else if (seconds < 10){
+                timeValueElement.innerText = "0" + seconds;
+            }
+            else {
+                timeValueElement.innerText = seconds;
+            }
+        }, 1000); // 1000ミリ秒（1秒）ごとにカウントダウン
+        }
+
+    
+
+    const urlParams = new URLSearchParams(window.location.search);
+    //console.log(urlParams);
+    const subject_num = parseInt(urlParams.get('subject_num'));
+    const subject_prob = urlParams.get('subject_prob');
+
+    const top1 = parseInt(urlParams.get('top1'));
+    const top2 = parseInt(urlParams.get('top2'));
+    const top3 = parseInt(urlParams.get('top3'));
+    const top4 = parseInt(urlParams.get('top4'));
+
+    //console.log(top4);
+
+    //ver1
+    //const class_array = ["ピカチュウ","ミッフィー","ハローキティ","プーさん","リラックマ","くまモン","ミッキーマウス","ふなっしー","ちいかわ","チーバくん","イーブイ"]
+
+    //ver2
+    //const class_array = ["イーブイ","ハローキティ","ピカチュウ","ミッキーマウス","ミッフィー","リラックマ"]
+
+    //ver3
+    //const class_array = ["ピカチュウ","ミッフィー","ハローキティ","プーさん","リラックマ","くまモン","ミッキーマウス","ふなっしー","ちいかわ","チーバくん","イーブイ"]
+
+    //ver4
+    const class_array = ["ピカチュウ","ミッフィー","ハローキティ","プーさん","リラックマ","くまモン","ミッキーマウス","ふなっしー","ちいかわ","チーバくん","イーブイ","ヨッシー","ガチャピン","ドラえもん","ハンギョドン"]
+
+    let ans_array = [subject_num, top1, top2, top3, top4];
+    //console.log(ans_array);
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]]; // 要素を入れ替える
+        }
+        return array;
+    }
+
+    function setValues() {
+        console.log(ans_array);
+        const shuffledAns = shuffleArray(ans_array);
+        console.log(shuffledAns);
+
+        const TextElement1 = document.querySelector('.frame1-text');
+        const ValueElement1 = document.getElementById('Value1');
+        const TextElement2 = document.querySelector('.frame2-text');
+        const ValueElement2 = document.getElementById('Value2');
+        const TextElement3 = document.querySelector('.frame3-text');
+        const ValueElement3 = document.getElementById('Value3');
+        const TextElement4 = document.querySelector('.frame4-text');
+        const ValueElement4 = document.getElementById('Value4');
+        const TextElement5 = document.querySelector('.frame5-text');
+        const ValueElement5 = document.getElementById('Value5');
+
+        ValueElement1.innerText = '1.' + class_array[shuffledAns[0]];
+        ValueElement2.innerText = '2.' + class_array[shuffledAns[1]];
+        ValueElement3.innerText = '3.' + class_array[shuffledAns[2]];
+        ValueElement4.innerText = '4.' + class_array[shuffledAns[3]];
+        ValueElement5.innerText = '5.' + class_array[shuffledAns[4]];
+    }
+
+    setValues();
+
+    let labelValue = class_array[subject_num];
+
+
+    countdown();
+
+    function hint(){
+        const frame1 = document.querySelector('.frame1');
+        const frame2 = document.querySelector('.frame2');
+        const frame3 = document.querySelector('.frame3');
+        const frame4 = document.querySelector('.frame4');
+        const frame5 = document.querySelector('.frame5');
+
+        // 要素を取得
+        const canvasContainer = document.querySelector('.canvas-container');
+
+        const hint = document.querySelector('.hint');
+        const answer = document.querySelector('.answer');
+
+        // leftやtopも必要に応じて変更
+        canvasContainer.style.left = '64px'; 
+        canvasContainer.style.top = '219px';
+
+        frame1.style.display = 'block';
+        frame2.style.display = 'block';
+        frame3.style.display = 'block';
+        frame4.style.display = 'block';
+        frame5.style.display = 'block';
+
+        hint.style.display = 'none';
+        answer.style.left = '600px'; 
+    }
+
+    function redirectToPage() {
+        window.location.href = `answer_check.html?subject_num=${subject_num}&subject_prob=${subject_prob}`;
+    }
+
+</script>
+
+</body>
+</html>

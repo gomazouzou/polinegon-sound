@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>answer_check</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="BackGround">
+        <div class="answer-rect">
+            <div class="answer1 answer1-text">
+                答え
+            </div>
+            <div class="answer2 answer2-text">
+                <span id="answerValue"> </span>
+            </div>
+        </div>
+
+        <div class="frame1">
+            <div class="image-sample1">
+            </div>
+        </div>
+        <div class="frame2">
+            <div class="image-sample2">
+            </div>
+        </div>
+        <div class="frame3">
+            <div class="image-sample3">
+            </div>
+        </div>
+
+        <div class="percent percent-text">
+            <span id="percentValue"> </span>
+        </div>
+
+        <button class="finish" onclick="finish()" style="width: 200px; height: 80px; background: none; border: none;">
+            <img src="../image/名称未設定-1 (6)-12 1.png" alt="">
+        </button>
+
+        <button class="next" onclick="next()" style="width: 200px; height: 80px; background: none; border: none;">
+            <img src="../image/名称未設定-1 (6)-13 1.png" alt="">
+        </button>
+
+
+        
+        
+    </div>
+    <style>
+        .BackGround {
+            display: flex;
+            width: 1176px;
+            height: 904px;
+            padding: 39px 168px;
+            flex-direction: column;
+            align-items: center;
+            gap: 48px;
+            background: var(--green, #74D23C);
+            position: relative;
+        }
+        
+        .answer-rect{
+            width: 732px;
+            height: 222px;
+            flex-shrink: 0;
+            border-radius: 64px;
+            border: 8px solid var(--brack, #2D2D2D);
+            background: var(--white, #FFF);
+        }
+        .answer1{
+            width: 96px;
+            height: 70px;
+            position: absolute;
+            left: 708px;
+            top: 80px;
+        }
+        .answer1-text {
+            color: var(--brack, #2D2D2D);
+            font-family: "Dela Gothic One";
+            font-size: 48px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+        .answer2{
+            width: 350px;
+            height: 70px;
+            position: relative;
+            left: 50%;
+            top: 60%;
+            transform: translate(-50%, -50%);
+        }
+        .answer2-text {
+            color: var(--brack, #2D2D2D);
+            font-family: "Dela Gothic One";
+            font-size: 48px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+            text-align: center;
+        }
+        .frame1{
+            
+            width: 381px;
+            height: 365px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+
+            border-radius: 16px;
+            border: 8px solid var(--brack, #2D2D2D);
+            background: var(--white, #FFF);
+
+            position: absolute;
+            left: 152px;
+            top: 309px;
+        }
+        .image-sample1 {
+            width: 381px;
+            height: 365px;
+            flex-shrink: 0;
+            position: absolute;
+            background: url("../image/robo.png") 50%/cover no-repeat;
+            border-radius: 16px;
+        }
+        .frame2{
+            
+            width: 381px;
+            height: 365px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+
+            border-radius: 16px;
+            border: 8px solid var(--brack, #2D2D2D);
+            background: var(--white, #FFF);
+
+            position: absolute;
+            left: 565px;
+            top: 309px;
+        }
+        .image-sample2 {
+            width: 381px;
+            height: 365px;
+            flex-shrink: 0;
+            position: absolute;
+            background: url("../image/robo.png") 50%/cover no-repeat;
+            border-radius: 16px;
+        }
+        .frame3{
+            
+            width: 381px;
+            height: 365px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+
+            border-radius: 16px;
+            border: 8px solid var(--brack, #2D2D2D);
+            background: var(--white, #FFF);
+
+            position: absolute;
+            left: 978px;
+            top: 309px;
+        }
+        .image-sample3 {
+            width: 381px;
+            height: 365px;
+            flex-shrink: 0;
+            position: absolute;
+            background: url("../image/robo.png") 50%/cover no-repeat;
+            border-radius: 16px;
+        }
+        .percent{
+            width: 800px;
+            height: 70px;
+            position: absolute;
+            left: 50%;
+            top: 80%;
+            transform: translate(-50%, -50%);
+        }
+        .percent-text{
+            color: var(--brack, #2D2D2D);
+            font-family: "Dela Gothic One";
+            font-size: 48px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+            text-align: center;
+        }
+
+        .finish{
+            width: 195px;
+            height: 84px;
+            position: absolute;
+            top: 840px;
+            right: 799px;
+
+        }
+        button.finish img {
+            width: 100%; /* もしくは具体的な値を指定（例: 50px） */
+            height: auto; /* 高さを自動調整するために追加 */
+        }
+
+        .next{
+            width: 195px;
+            height: 84px;
+            position: absolute;
+            top: 840px;
+            left: 799px;
+
+        }
+        button.next img {
+            width: 100%; /* もしくは具体的な値を指定（例: 50px） */
+            height: auto; /* 高さを自動調整するために追加 */
+        }
+
+
+
+
+
+        
+    
+
+    </style>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const subject_num = parseInt(urlParams.get('subject_num'));
+    let subject_prob = urlParams.get('subject_prob');
+
+    //ver1
+    //const class_array = ["ピカチュウ","ミッフィー","ハローキティ","プーさん","リラックマ","くまモン","ミッキーマウス","ふなっしー","ちいかわ","チーバくん","イーブイ"];
+
+    //ver2
+    //const class_array = ["イーブイ","ハローキティ","ピカチュウ","ミッキーマウス","ミッフィー","リラックマ"]
+
+    //ver3
+    //const class_array = ["ピカチュウ","ミッフィー","ハローキティ","プーさん","リラックマ","くまモン","ミッキーマウス","ふなっしー","ちいかわ","チーバくん","イーブイ"]
+
+    //ver4
+    const class_array = ["ピカチュウ","ミッフィー","ハローキティ","プーさん","リラックマ","くまモン","ミッキーマウス","ふなっしー","ちいかわ","チーバくん","イーブイ","ヨッシー","ガチャピン","ドラえもん","ハンギョドン"]
+
+    function setValues() {
+
+        const answerTextElement = document.querySelector('.answer2-text');
+        const answerValueElement = document.getElementById('answerValue');
+
+        const percentTextElement = document.querySelector('.percent-text');
+        const percentValueElement = document.getElementById('percentValue');
+
+
+        answerValueElement.innerText = class_array[subject_num];
+
+        percentValueElement.innerText = class_array[subject_num] + "度" + subject_prob + "%";
+
+    }
+
+    setValues();
+
+    if (subject_num < class_array.length){
+        const imagepath1 = "../image/train/" + class_array[subject_num] + "/" + class_array[subject_num] + "1.jpeg";
+        const imagepath2 = "../image/train/" + class_array[subject_num] + "/" + class_array[subject_num] + "2.jpeg";
+        const imagepath3 = "../image/train/" + class_array[subject_num] + "/" + class_array[subject_num] + "3.jpeg";
+
+        const imageSampleElement1 = document.querySelector('.image-sample1');
+        const imageSampleElement2 = document.querySelector('.image-sample2');
+        const imageSampleElement3 = document.querySelector('.image-sample3');
+
+        // 背景画像のパスを動的に変更
+        imageSampleElement1.style.background = `url(${imagepath1}) 50%/cover no-repeat`;
+        imageSampleElement2.style.background = `url(${imagepath2}) 50%/cover no-repeat`;
+        imageSampleElement3.style.background = `url(${imagepath3}) 50%/cover no-repeat`;
+    }
+
+    function finish() {
+        window.location.href = "result.html";
+    }
+
+    function getRandomInt(n) {
+        return Math.floor(Math.random() * (n+1));
+    }
+    
+    let subject_rand = getRandomInt(class_array.length);
+    if (subject_rand == class_array.length){
+        subject_rand = class_array.length-1;
+    }
+
+
+    function next() {
+        window.location.href = `canvas.html?subject_num=${subject_rand}`;
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>canvas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="BackGround">
+        <div class="label-bg">
+            <div class="label label-text">
+                <span id="labelValue"> </span>
+            </div>
+        </div>
+        <div class="percent percent-text">
+            <span id="percentValue"> </span>
+        </div>
+        <div class="svg-container">
+            <svg xmlns="http://www.w3.org/2000/svg" width="151" height="151" viewBox="0 0 151 151" fill="none">
+                <circle cx="75.5" cy="75.5" r="71.5" fill="white" stroke="#2D2D2D" stroke-width="8"/>
+              </svg>
+              <div class="time time-text">
+                <span id="timeValue"> </span>
+            </div>
+        </div>
+        
+
+        <div class="frame1">
+            <div class="image-sample1">
+            </div>
+        </div>
+        <div class="frame2">
+            <div class="image-sample2">
+            </div>
+        </div>
+        <div class="frame3">
+            <div class="image-sample3">
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="myCanvas" width="999" height="661"></canvas>
+        </div>
+        <div id="label-container"></div>
+
+        <div class="buttons">
+            <button class="pen-mode" onclick="setPenMode()" style="width: 72px; height: 72.173px; background: none; border: none;">
+                <img src="../image/名称未設定-1 (6)-08 1.png" alt="">
+            </button>
+            <button class="eraser-mode" onclick="setEraserMode()" style="width: 72px; height: 72px; background: none; border: none;">
+                <img src="../image/名称未設定-1 (6)-09 1.png" alt="">
+            </button>
+            <button class="pen-red" onclick="setPenColor('#FF517A')" style="width: 57px; height: 57px; background: none; border: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="57" height="57" viewBox="0 0 57 57" fill="none">
+                    <path d="M52.5 28.0863C52.5 41.3412 41.7548 52.0863 28.5 52.0863C15.2452 52.0863 4.5 41.3412 4.5 28.0863C4.5 14.8315 15.2452 4.08633 28.5 4.08633C41.7548 4.08633 52.5 14.8315 52.5 28.0863Z" fill="#FF517A" stroke="#2D2D2D" stroke-width="8"/>
+                  </svg>
+            </button>
+            <button class="pen-yellow" onclick="setPenColor('#FFCA28')" style="width: 57px; height: 57px; background: none; border: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="57" height="57" viewBox="0 0 57 57" fill="none">
+                    <path d="M52.5 28.0863C52.5 41.3412 41.7548 52.0863 28.5 52.0863C15.2452 52.0863 4.5 41.3412 4.5 28.0863C4.5 14.8315 15.2452 4.08633 28.5 4.08633C41.7548 4.08633 52.5 14.8315 52.5 28.0863Z" fill="#FFCA28" stroke="#2D2D2D" stroke-width="8"/>
+                  </svg>
+            </button>
+            <button class="pen-blue" onclick="setPenColor('#2E8AE8')" style="width: 57px; height: 57px; background: none; border: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="57" height="57" viewBox="0 0 57 57" fill="none">
+                    <path d="M52.5 28.0863C52.5 41.3412 41.7548 52.0863 28.5 52.0863C15.2452 52.0863 4.5 41.3412 4.5 28.0863C4.5 14.8315 15.2452 4.08633 28.5 4.08633C41.7548 4.08633 52.5 14.8315 52.5 28.0863Z" fill="#2E8AE8" stroke="#2D2D2D" stroke-width="8"/>
+                  </svg>
+            </button>
+            <button class="pen-purple" onclick="setPenColor('#9D75EE')" style="width: 57px; height: 57px; background: none; border: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="57" height="57" viewBox="0 0 57 57" fill="none">
+                    <path d="M52.5 28.0863C52.5 41.3412 41.7548 52.0863 28.5 52.0863C15.2452 52.0863 4.5 41.3412 4.5 28.0863C4.5 14.8315 15.2452 4.08633 28.5 4.08633C41.7548 4.08633 52.5 14.8315 52.5 28.0863Z" fill="#9D75EE" stroke="#2D2D2D" stroke-width="8"/>
+                  </svg>
+            </button>
+            <button class="pen-orange" onclick="setPenColor('#FFA338')" style="width: 57px; height: 57px; background: none; border: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="57" height="57" viewBox="0 0 57 57" fill="none">
+                    <path d="M52.5 28.0863C52.5 41.3412 41.7548 52.0863 28.5 52.0863C15.2452 52.0863 4.5 41.3412 4.5 28.0863C4.5 14.8315 15.2452 4.08633 28.5 4.08633C41.7548 4.08633 52.5 14.8315 52.5 28.0863Z" fill="#FFA338" stroke="#2D2D2D" stroke-width="8"/>
+                  </svg>
+            </button>
+            <button class="pen-lightgreen" onclick="setPenColor('#74D23C')" style="width: 57px; height: 57px; background: none; border: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="57" height="57" viewBox="0 0 57 57" fill="none">
+                    <path d="M52.5 28.0863C52.5 41.3412 41.7548 52.0863 28.5 52.0863C15.2452 52.0863 4.5 41.3412 4.5 28.0863C4.5 14.8315 15.2452 4.08633 28.5 4.08633C41.7548 4.08633 52.5 14.8315 52.5 28.0863Z" fill="#74D23C" stroke="#2D2D2D" stroke-width="8"/>
+                  </svg>
+            </button>
+            <button class="pen-brown" onclick="setPenColor('#E66F00')" style="width: 57px; height: 57px; background: none; border: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="57" height="57" viewBox="0 0 57 57" fill="none">
+                    <path d="M52.5 28.0863C52.5 41.3412 41.7548 52.0863 28.5 52.0863C15.2452 52.0863 4.5 41.3412 4.5 28.0863C4.5 14.8315 15.2452 4.08633 28.5 4.08633C41.7548 4.08633 52.5 14.8315 52.5 28.0863Z" fill="#E66F00" stroke="#2D2D2D" stroke-width="8"/>
+                  </svg>
+            </button>
+            
+            <button class="pen-green" onclick="setPenColor('#74D23C')" style="width: 57px; height: 57px; background: none; border: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="57" height="57" viewBox="0 0 57 57" fill="none">
+                    <path d="M52.0593 28.4287C52.0593 41.6835 41.3142 52.4287 28.0593 52.4287C14.8045 52.4287 4.05933 41.6835 4.05933 28.4287C4.05933 15.1738 14.8045 4.42868 28.0593 4.42868C41.3142 4.42868 52.0593 15.1738 52.0593 28.4287Z" fill="#00AA06" stroke="#2D2D2D" stroke-width="8"/>
+                  </svg>
+            </button>
+            <button class="pen-black" onclick="setPenColor('#2d2d2d')" style="width: 57px; height: 57px; background: none; border: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="57" height="57" viewBox="0 0 57 57" fill="none">
+                    <path d="M52.0593 28.1897C52.0593 41.4445 41.3142 52.1897 28.0593 52.1897C14.8045 52.1897 4.05933 41.4445 4.05933 28.1897C4.05933 14.9348 14.8045 4.18967 28.0593 4.18967C41.3142 4.18967 52.0593 14.9348 52.0593 28.1897Z" fill="#2D2D2D" stroke="#2D2D2D" stroke-width="8"/>
+                  </svg>
+            </button>
+            <button class="pen-gray" onclick="setPenColor('#A5A5A5')" style="width: 57px; height: 57px; background: none; border: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="57" height="57" viewBox="0 0 57 57" fill="none">
+                    <path d="M52.5 28.0863C52.5 41.3412 41.7548 52.0863 28.5 52.0863C15.2452 52.0863 4.5 41.3412 4.5 28.0863C4.5 14.8315 15.2452 4.08633 28.5 4.08633C41.7548 4.08633 52.5 14.8315 52.5 28.0863Z" fill="#A5A5A5" stroke="#2D2D2D" stroke-width="8"/>
+                  </svg>
+            </button>
+            <button class="finish" onclick="finish()" style="width: 200px; height: 80px; background: none; border: none;">
+                <img src="../image/CanvasFinishButton.png" alt="">
+            </button>
+
+            <button class="pen-5px" onclick="setPenpx('5')" style="width: 38px; height: 38px; background: none; border: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="57" height="57" viewBox="0 0 57 57" fill="none">
+                    <path d="M52.0593 28.1897C52.0593 41.4445 41.3142 52.1897 28.0593 52.1897C14.8045 52.1897 4.05933 41.4445 4.05933 28.1897C4.05933 14.9348 14.8045 4.18967 28.0593 4.18967C41.3142 4.18967 52.0593 14.9348 52.0593 28.1897Z" fill="#2D2D2D" stroke="#2D2D2D" stroke-width="8"/>
+                  </svg>
+            </button>
+            <button class="pen-15px" onclick="setPenpx('15')" style="width: 48px; height: 48px; background: none; border: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="57" height="57" viewBox="0 0 57 57" fill="none">
+                    <path d="M52.0593 28.1897C52.0593 41.4445 41.3142 52.1897 28.0593 52.1897C14.8045 52.1897 4.05933 41.4445 4.05933 28.1897C4.05933 14.9348 14.8045 4.18967 28.0593 4.18967C41.3142 4.18967 52.0593 14.9348 52.0593 28.1897Z" fill="#2D2D2D" stroke="#2D2D2D" stroke-width="8"/>
+                  </svg>
+            </button>
+            <button class="pen-30px" onclick="setPenpx('30')" style="width: 57px; height: 57px; background: none; border: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="57" height="57" viewBox="0 0 57 57" fill="none">
+                    <path d="M52.0593 28.1897C52.0593 41.4445 41.3142 52.1897 28.0593 52.1897C14.8045 52.1897 4.05933 41.4445 4.05933 28.1897C4.05933 14.9348 14.8045 4.18967 28.0593 4.18967C41.3142 4.18967 52.0593 14.9348 52.0593 28.1897Z" fill="#2D2D2D" stroke="#2D2D2D" stroke-width="8"/>
+                  </svg>
+            </button>
+        </div>
+        
+        
+        
+</div>
+    <style>
+        .BackGround {
+            position: relative;
+            width: 1448px;
+            height: 934px;
+            padding: 24px 64px 24px 0px;
+            flex-shrink: 0;
+            background: url("../image/BackGroundImage.png"), lightgray 50% / cover no-repeat;
+        }
+        .label-text {
+            color: var(--white, #FFF);
+            font-family: "Dela Gothic One";
+            font-size: 56px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+        .label-bg {
+            width: 778px;
+            height: 128px;
+            flex-shrink: 0;
+            position: absolute;
+            background: url("../image/Label.png"),  -129px -46.332px / 128.792% 180.987% no-repeat;
+        }
+        .label {
+            position: absolute;
+            left: 168px;
+            top: 22px;
+        }
+        .percent{
+            width: 600px;
+            height: 70px;
+            position: absolute;
+            left: 868px;
+            top: 53px;
+        }
+        .percent-text{
+            color: var(--white, #FFF);
+            font-family: "Dela Gothic One";
+            font-size: 48px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+            position: absolute;
+        }
+        .svg-container {
+            position: absolute;
+            width: 151px;
+            height: 151px; 
+            left: 1336px;
+            top: 24px;
+        }
+        .time{
+            width: 100px;
+            height: 81px;
+            position: absolute;
+            left: 26px;
+            top: 35px;
+        }
+        .time-text{
+            color: var(--brack, #2D2D2D);
+            font-family: "Dela Gothic One";
+            font-size: 56px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+        .frame1{
+            display: flex;
+            width: 209px;
+            height: 199px;
+            justify-content: center;
+            align-items: center;
+
+            border-radius: 16px;
+            border: 8px solid var(--brack, #2D2D2D);
+            background: var(--white, #FFF);
+
+            position: absolute;
+            left: 48px;
+            top: 172px;
+        }
+        .image-sample1 {
+            width: 209px;
+            height: 199px;
+            flex-shrink: 0;
+            position: absolute;
+            background: url("../image/robo.png") 50%/cover no-repeat;
+            border-radius: 16px;
+        }
+        .frame2{
+            display: flex;
+            width: 209px;
+            height: 199px;
+            justify-content: center;
+            align-items: center;
+
+            border-radius: 16px;
+            border: 8px solid var(--brack, #2D2D2D);
+            background: var(--white, #FFF);
+
+            position: absolute;
+            left: 48px;
+            top: 403px;
+        }
+        .image-sample2 {
+            width: 209px;
+            height: 199px;
+            flex-shrink: 0;
+            position: absolute;
+            background: url("../image/robo.png") 50%/cover no-repeat;
+            border-radius: 16px;
+        }
+        .frame3{
+            display: flex;
+            width: 209px;
+            height: 199px;
+            justify-content: center;
+            align-items: center;
+
+            border-radius: 16px;
+            border: 8px solid var(--brack, #2D2D2D);
+            background: var(--white, #FFF);
+
+            position: absolute;
+            left: 48px;
+            top: 634px;
+        }
+        .image-sample3 {
+            width: 209px;
+            height: 199px;
+            flex-shrink: 0;
+            position: absolute;
+            background: url("../image/robo.png") 50%/cover no-repeat;
+            border-radius: 16px;
+        }
+
+        .canvas-container{
+            width: 999px;
+            height: 661px;
+            border-radius: 16px;
+            border: 8px solid var(--brack, #2D2D2D);
+            background: var(--white, #FFF);
+
+            position: absolute;
+            left: 337px;
+            top: 172px;
+        }
+        .buttons {
+            position: absolute;
+            top: 294.91px;
+            right: 88px;
+            display: flex;
+            flex-direction: column; 
+            gap: 21px;
+        }
+        .buttons button {
+            width: 100px;
+            height: 50px;
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    
+        .buttons button svg {
+            width: 100%; /* SVGをボタンに合わせる */
+            height: 100%;
+        }
+
+        .pen-mode{
+            position: absolute;
+            right: -5px;
+            top: -80px;
+            
+        }
+        .eraser-mode{
+            position: absolute;
+            top: -80px;
+        }
+        .pen-red{
+            position: absolute;
+            top: 93px;
+            right: 5px;
+        } 
+        .pen-yellow{
+            position: absolute;
+            top: 165px;
+            right: 5px;
+        } 
+        .pen-blue{
+            position: absolute;
+            top: 93px;
+            left: 5px;
+        } 
+        .pen-purple{
+            position: absolute;
+            top: 165px;
+            left: 5px;
+        } 
+        .pen-orange{
+            position: absolute;
+            top: 237px;
+            right: 5px;
+        } 
+        .pen-lightgreen{
+            position: absolute;
+            top: 237px;
+            left: 5px;
+        } 
+        .pen-brown{
+            position: absolute;
+            top: 309px;
+            right: 5px;
+        } 
+        .pen-green{
+            position: absolute;
+            top: 309px;
+            left: 5px;
+        } 
+        .pen-black {
+            position: absolute;
+            top: 384px;
+            right: 5px;
+        }
+        .pen-gray {
+            position: absolute;
+            top: 384px;
+            left: 5px;
+        }
+
+        .pen-5px {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+        }
+        .pen-15px {
+            position: absolute;
+            top: 15px;
+            right: -20px;
+        }
+        .pen-30px {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+        }
+
+        .finish{
+            width: 226px;
+            height: 94px;
+            position: absolute;
+            top: 566.91px;
+            right: -80px;
+
+        }
+        button.finish img {
+            width: 100%; 
+            height: auto; 
+        }
+
+
+        @keyframes loader {
+            0% {
+              transform: rotate(0deg) scale(0.8);
+              opacity: 0.5;
+            }
+            50% {
+              transform: rotate(180deg) scale(1);
+              opacity: 1;
+            }
+            100% {
+              transform: rotate(360deg) scale(0.8);
+              opacity: 0.5;
+            }
+          }
+          
+          .loader-container {
+            position: relative;
+            width: 40px;
+            height: 40px;
+          }
+          
+          .loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 8px solid #3498db;
+            border-top: 8px solid #ffffff;
+            animation: loader 1.5s linear infinite;
+          }
+          
+          .countdown-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            color: #ffffff;
+          }
+          
+          
+          
+          
+
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+
+<script>
+
+    const urlParams = new URLSearchParams(window.location.search);
+    //console.log(urlParams);
+    const subject_num = urlParams.get('subject_num');
+    //console.log(subject_num);
+
+    // ver1
+    //const class_array = ["ピカチュウ","ミッフィー","ハローキティ","プーさん","リラックマ","くまモン","ミッキーマウス","ふなっしー","ちいかわ","チーバくん","イーブイ"]
+    //const url = "https://teachablemachine.withgoogle.com/models/mbhqEr4hz/" //webから適当に拾ってきたやつそのまんま
+
+    // ver2
+    //const class_array = ["イーブイ","ハローキティ","ピカチュウ","ミッキーマウス","ミッフィー","リラックマ"]
+    //const url = "https://teachablemachine.withgoogle.com/models/x-6d2U4_t/" //イラスト6クラス
+
+    //ver3
+    //const class_array = ["ピカチュウ","ミッフィー","ハローキティ","プーさん","リラックマ","くまモン","ミッキーマウス","ふなっしー","ちいかわ","チーバくん","イーブイ"]
+    //const url = "https://teachablemachine.withgoogle.com/models/w56cf-ia9/"
+
+    //ver4
+    const class_array = ["ピカチュウ","ミッフィー","ハローキティ","プーさん","リラックマ","くまモン","ミッキーマウス","ふなっしー","ちいかわ","チーバくん","イーブイ","ヨッシー","ガチャピン","ドラえもん","ハンギョドン"]
+    const url = "https://teachablemachine.withgoogle.com/models/w56cf-ia9/"
+    
+
+    let labelValue = class_array[subject_num];
+
+    setlabelValue();
+
+    if (subject_num < class_array.length){
+        const imagepath1 = "../image/train/" + class_array[subject_num] + "/" + class_array[subject_num] + "1.jpeg";
+        const imagepath2 = "../image/train/" + class_array[subject_num] + "/" + class_array[subject_num] + "2.jpeg";
+        const imagepath3 = "../image/train/" + class_array[subject_num] + "/" + class_array[subject_num] + "3.jpeg";
+
+        const imageSampleElement1 = document.querySelector('.image-sample1');
+        const imageSampleElement2 = document.querySelector('.image-sample2');
+        const imageSampleElement3 = document.querySelector('.image-sample3');
+
+        // 背景画像のパスを動的に変更
+        imageSampleElement1.style.background = `url(${imagepath1}) 50%/cover no-repeat`;
+        imageSampleElement2.style.background = `url(${imagepath2}) 50%/cover no-repeat`;
+        imageSampleElement3.style.background = `url(${imagepath3}) 50%/cover no-repeat`;
+    }
+
+    
+
+
+    async function showCountdown() {
+        const parentElement = document.querySelector('.BackGround');
+        const countdownContainer = document.createElement('div');
+        countdownContainer.classList.add('loader-container');
+        parentElement.appendChild(countdownContainer);
+    
+        const countdownDiv = document.createElement('div');
+        countdownDiv.classList.add('loader');
+        countdownContainer.appendChild(countdownDiv);
+    
+        const countdownText = document.createElement('div');
+        countdownText.classList.add('countdown-text');
+        countdownText.innerText = '5'; // 初期値
+        countdownContainer.appendChild(countdownText);
+
+        countdownContainer.style.position = 'absolute';
+        countdownContainer.style.top = 'calc(50% + 35px)';
+        countdownContainer.style.left = 'calc(50% + 80px)';
+        countdownContainer.style.transform = 'translate(-50%, -50%)';
+    
+        let count = 5;
+        const countdownInterval = setInterval(function() {
+            countdownText.innerText = count;
+            count--;
+    
+            if (count < 0) {
+                clearInterval(countdownInterval);
+                parentElement.removeChild(countdownContainer);
+            }
+        }, 1000);
+    }
+    
+    
+
+    let isDrawing = false;
+    let isErasing = false;
+    let penColor = '#2d2d2d';
+
+    let canvas = document.getElementById('myCanvas');
+    let context = canvas.getContext('2d');
+    let model, labelContainer, maxPredictions;
+    let img, imageData;
+    let isRecognitionScheduled = false;
+
+    let newPercentValue = 85;
+
+    let prediction;
+
+    let whiteCanvas,whiteCtx;
+
+    
+    const classDict = {};
+    class_array.forEach((className, index) => {
+        classDict[className] = index;
+    });
+    //console.log(classDict);
+
+    // 上位5位のクラスと確率を保存する配列
+    let top5Classes = [];
+
+    async function init() {
+        const modelURL = url + "model.json";
+        const metadataURL = url + "metadata.json";
+
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+
+        labelContainer = document.getElementById("label-container");
+        for (let i = 0; i < maxPredictions; i++) {
+            labelContainer.appendChild(document.createElement("div"));
+        }
+
+        // マウスイベントの追加
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+
+        console.log("あいうえお");
+
+        scheduleRecognition();
+
+    }
+    //window.onload = init;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        // 2つの非同期関数を同時に実行
+        await Promise.all([init(), showCountdown()]);
+    
+        // ここで両方の非同期処理が完了した後の後続の処理を行います
+        console.log('Both async functions completed');
+    });
+
+
+    async function countdown() {
+        let seconds = 185;
+        //let seconds = 10;
+        let timeTextElement, timeValueElement;
+    
+        const countdownInterval = setInterval(function() {
+            console.log(seconds); // あと何秒かコンソールに表示
+    
+            if (seconds === 1) {
+                clearInterval(countdownInterval); // カウントダウンが終了したらインターバルをクリア
+                console.log('カウントダウン終了');
+                //finish();
+            }
+    
+            seconds--;
+            timeTextElement = document.querySelector('.time-text');
+            timeValueElement = document.getElementById('timeValue');
+
+        // テキストの更新
+            if (seconds > 180) {
+                timeValueElement.innerText = 180;
+            }else if (seconds < 10){
+                timeValueElement.innerText = "0" + seconds;
+            }
+            else {
+                timeValueElement.innerText = seconds;
+            }
+            if (seconds > 99) {
+                timeTextElement.style.fontSize = '48px';
+            }else{
+                timeTextElement.style.fontSize = '56px';
+            }
+        }, 1000); // 1000ミリ秒（1秒）ごとにカウントダウン
+    }
+
+    countdown();
+
+    async function recognizeImage() {
+        // 白い背景を持つCanvasを作成
+        whiteCanvas = document.createElement('canvas');
+        whiteCtx = whiteCanvas.getContext('2d');
+        whiteCanvas.width = canvas.width;
+        whiteCanvas.height = canvas.height;
+        whiteCtx.fillStyle = 'white';
+        whiteCtx.fillRect(0, 0, whiteCanvas.width, whiteCanvas.height);
+
+        // 描画内容をコピー
+        whiteCtx.drawImage(canvas, 0, 0);
+
+        imageData = whiteCanvas.toDataURL('image/jpeg', 1);
+        img = new Image();
+
+        img.src = imageData;
+
+        img.onload = async function() {
+            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+            await predict(img);
+
+            // 画像認識が完了したのでフラグをリセット
+            isRecognitionScheduled = false;
+        };
+    }
+
+    async function predict() {
+        prediction = await model.predict(img);
+        for (let i = 0; i < maxPredictions; i++) {
+            const classPrediction =
+                prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+            //labelContainer.childNodes[i].innerHTML = classPrediction;
+    
+            // 予測結果をコンソールに表示
+            console.log(classPrediction);
+
+            newPercentValue = prediction[subject_num].className + prediction[subject_num].probability.toFixed(2)*100;
+            //number = parseFloat(str);
+            updatePercentValue();
+        }
+        //finish();
+    }
+
+    function startDrawing(event) {
+        isDrawing = true;
+        draw(event); // 最初のクリックで点を描画
+    }
+
+    function stopDrawing() {
+        isDrawing = false;
+        context.beginPath(); // 新しい線を開始する
+
+        // 描画が終了したら画像認識をスケジュール
+        scheduleRecognition();
+    }
+
+    let linewidth = 5;
+
+    function draw(event) {
+        if (!isDrawing) return;
+
+        // ペンのスタイルを設定
+        context.lineWidth = linewidth;
+        context.lineCap = 'round';
+
+        if (isErasing) {
+            context.strokeStyle = 'white'; // 消しゴムモード
+            //context.lineWidth = 30;
+        } else {
+            context.strokeStyle = penColor; // ペンの色
+        }
+
+        // マウスの位置に線を描画
+        context.lineTo(event.offsetX, event.offsetY);
+        context.stroke();
+        context.beginPath();
+        context.moveTo(event.offsetX, event.offsetY);
+    }
+
+    function scheduleRecognition() {
+        // 画像認識がスケジュールされていなければスケジュールする
+        if (!isRecognitionScheduled) {
+            isRecognitionScheduled = true;
+            requestAnimationFrame(recognizeImage);
+        }
+    }
+    
+
+    document.addEventListener('DOMContentLoaded', function() {
+        //const canvas = document.getElementById('myCanvas');
+        //const context = canvas.getContext('2d');     
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mousemove', draw);
+
+    });
+
+    function setPenMode() {
+        isErasing = false;
+    }
+
+    function setEraserMode() {
+        isErasing = true;
+    }
+
+    function setPenColor(color) {
+        penColor = color;
+    }
+
+    async function updatePercentValue() {
+        const percentTextElement = document.querySelector('.percent-text');
+        const percentValueElement = document.getElementById('percentValue');
+
+        // テキストの更新
+        percentValueElement.innerText = newPercentValue + '%';
+    }
+
+    function setPenpx(px) {
+        linewidth = parseInt(px);
+    }
+
+    async function setlabelValue() {
+        const labelTextElement = document.querySelector('.label-text');
+        const labelValueElement = document.getElementById('labelValue');
+
+        // テキストの更新
+        labelValueElement.innerText = 'お題:' + labelValue;
+    }
+
+    async function finish() {
+        //const prediction = await model.predict(img);
+        top5Classes = [];
+        top5Classes.push({
+            classNum: subject_num,
+            probability: prediction[subject_num].probability.toFixed(2)*100
+        });
+        prediction.sort((a, b) => b.probability - a.probability); // 確率の降順にソート
+        for (let i = 0; i < 5; i++) {
+            if (classDict[prediction[i].className] == subject_num) {
+                continue;
+                console.log("skip");
+            }
+            if (top5Classes.length === 5){
+                break;
+            }
+            top5Classes.push({
+                classNum: classDict[prediction[i].className],
+                probability: prediction[i].probability.toFixed(2)
+            }); 
+        }
+        console.log(top5Classes);
+        console.log(subject_num);
+
+        // 保存
+        sessionStorage.setItem('imageData', whiteCanvas.toDataURL('image/jpeg', 1));
+
+        window.location.href = `canvas_check.html?subject_num=${subject_num}&subject_prob=${top5Classes[0].probability}&top1=${top5Classes[1].classNum}&top2=${top5Classes[2].classNum}&top3=${top5Classes[3].classNum}&top4=${top5Classes[4].classNum}`;
+        //window.location.href = `answer_select.html?subject_num=${subject_num}&subject_prob=${top5Classes[0].probability}&top1=${top5Classes[1].classNum}&top2=${top5Classes[2].classNum}&top3=${top5Classes[3].classNum}&top4=${top5Classes[4].classNum}`;
+    }
+
+</script>
+
+</body>
+</html>
+

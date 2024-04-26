@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>toppage</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="BackGround">
+        <div class="start-rect">
+        </div>
+
+        <div class="titlelogo">
+        </div>
+        
+        <button onclick="redirectToPage1('canvas.html')" style="width: 200px; height: 80px; background: none; border: none;">
+            <img src="../image/名称未設定-1 (6) 1.png" alt="">
+        </button>
+    </div>
+    <style>
+        .BackGround {
+            width: 1689px;
+            height: 1017px;
+            flex-shrink: 0;
+            background: url("../image/BackGround.png") lightgray 50% / cover no-repeat;
+            position: absolute;
+        }
+        .titlelogo {
+            width: 1093px;
+            height: 676px;
+            position: absolute;
+            left: 298.5px;
+            top: 64px;
+            background: url("../image/tronpialogo.png")  100% 100.065% no-repeat;
+        }
+        button{
+            width: 320px;
+            height: 92px;
+            position: absolute;
+            left: 685px;
+            bottom: 102px;
+          }
+    </style>
+
+<script>
+
+//ver1
+//const class_array = ["ピカチュウ","ミッフィー","ハローキティ","プーさん","リラックマ","くまモン","ミッキーマウス","ふなっしー","ちいかわ","チーバくん","イーブイ"];
+
+//ver2
+//const class_array = ["イーブイ","ハローキティ","ピカチュウ","ミッキーマウス","ミッフィー","リラックマ"]
+
+//ver3
+//const class_array = ["ピカチュウ","ミッフィー","ハローキティ","プーさん","リラックマ","くまモン","ミッキーマウス","ふなっしー","ちいかわ","チーバくん","イーブイ"]
+
+//ver4
+const class_array = ["ピカチュウ","ミッフィー","ハローキティ","プーさん","リラックマ","くまモン","ミッキーマウス","ふなっしー","ちいかわ","チーバくん","イーブイ","ヨッシー","ガチャピン","ドラえもん","ハンギョドン"]
+
+
+function getRandomInt(n) {
+    return Math.floor(Math.random() * (n+1));
+}
+
+//let subject_rand = getRandomInt(class_array.length);
+subject_rand = 8;
+
+if (subject_rand == class_array.length){
+    subject_rand = class_array.length-1;
+}
+
+function redirectToPage1(page) {
+    /*if (subject_rand == 11){
+        window.location.href = `${page}?subject_num=${subject_rand}`;
+    }else{
+        subject_rand = getRandomInt(class_array.length-1);
+        console.log(subject_rand);
+    }*/
+    window.location.href = `${page}?subject_num=${subject_rand}`;
+    
+}
+
+
+</script>
+
+</body>
+</html>
