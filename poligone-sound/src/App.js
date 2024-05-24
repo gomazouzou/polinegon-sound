@@ -1,4 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { PlusButton } from './components/buttons/plusButton.tsx';
+import { Stack,Button } from '@mui/material';
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 
 function App() {
   const canvasRef = useRef(null);
@@ -65,6 +68,19 @@ function App() {
         transform: 'translate(-50%, -50%)',
       }}
     >
+      <Button
+      color="primary"
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: 0.5,
+        cursor: "pointer",
+      }}
+      startIcon={<AddOutlinedIcon />}
+    >
+    </Button>
+
+      <Stack>
       <canvas
         ref={canvasRef}
         width={800}
@@ -107,6 +123,7 @@ function App() {
           onClick={() => setPenColor('green')}
         ></button>
       </div>
+      </Stack>
     </div>
   );
 }
