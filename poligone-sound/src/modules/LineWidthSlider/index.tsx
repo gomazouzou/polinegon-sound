@@ -10,13 +10,14 @@ type Props = {
   minValue: number;
   maxValue: number;
   setValue: React.Dispatch<React.SetStateAction<number>>;
+  color: string;
 }
 
 const Input = styled(MuiInput)`
   width: 42px;
 `;
 
-export const LineWidthSlider = ({value, defaultValue, minValue, maxValue, setValue}:Props) => {
+export const LineWidthSlider = ({value, defaultValue, minValue, maxValue, setValue, color}:Props) => {
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
     setValue(newValue as number);
   };
@@ -33,15 +34,13 @@ export const LineWidthSlider = ({value, defaultValue, minValue, maxValue, setVal
 
   return (
     <Box sx={{ width: 250 }}>
-      <Typography id="input-slider" gutterBottom>
-        太さ
-      </Typography>
       <Grid container spacing={2} alignItems="center">
         <Grid item>
           <DriveFileRenameOutlineIcon />
         </Grid>
         <Grid item xs>
           <Slider
+            style={{color:color}}
             defaultValue={defaultValue}
             min={minValue}
             max={maxValue}

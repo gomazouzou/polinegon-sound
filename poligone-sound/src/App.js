@@ -1,12 +1,12 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Stack, Typography} from '@mui/material';
+import { Stack} from '@mui/material';
 import { BpmChanger } from './modules/BpmChanger/index.tsx';
 import {EraserButton} from './components/buttons/EraserButton.tsx'
 import { DrawButton } from './components/buttons/DrawButton.tsx';
 import { AddButton } from './components/buttons/AddButton.tsx';
 import { DeleteButton } from './components/buttons/DeleteButton.tsx';
 import { LineWidthSlider } from './modules/LineWidthSlider/index.tsx';
-import { ColorButton } from './components/buttons/ColorButton.tsx';
+import { ChangeColorDialog } from './modules/ChangeColorDialog/index.tsx';
 
 function App() {
   const canvasRef = useRef(null);
@@ -27,8 +27,8 @@ function App() {
       if (!isDrawing) return;
 
       // ペンのスタイルを設定
-      context.lineWidth = linewidth;
-      context.lineCap = 'round';
+      context.lineWidth = linewidth; //ペンの太さ
+      context.lineCap = 'round'; //ペンのブラシ
 
       if (isErasing) {
         context.strokeStyle = canvasColor; // キャンバスの背景色で消しゴム
@@ -155,6 +155,7 @@ function App() {
                 defaultValue={defaultLineWidth} 
                 minValue={minLineWidth} 
                 maxValue={maxLineWidth}
+                color={penColor}
               />
             </Stack>
           </div>
@@ -165,38 +166,14 @@ function App() {
             backgroundColor: canvasColor,
             position: 'absolute',
             top: 0,
-            left: 450
+            left: 510
           }}
           >
             <Stack alignItems="center" justifyContent="center" style={{ height: '100%' }}>
-              <Typography>色</Typography>
-              <ColorButton/>
+              <ChangeColorDialog setPenColor={setPenColor}/>
             </Stack>
           </div>
         </div>
-      </div>
-
-      <div style={{ position: 'absolute', top: '650px', left: '810px' }}>
-      <button
-          style={{ backgroundColor: 'black', marginRight: '5px', width: '20px', height: '20px' }}
-          onClick={() => setPenColor('black')}
-        ></button>
-        <button
-          style={{ backgroundColor: 'red', marginRight: '5px', width: '20px', height: '20px' }}
-          onClick={() => setPenColor('red')}
-        ></button>
-        <button
-          style={{ backgroundColor: 'blue', marginRight: '5px', width: '20px', height: '20px' }}
-          onClick={() => setPenColor('blue')}
-        ></button>
-        <button
-          style={{ backgroundColor: 'yellow', marginRight: '5px', width: '20px', height: '20px' }}
-          onClick={() => setPenColor('yellow')}
-        ></button>
-        <button
-          style={{ backgroundColor: 'green', width: '20px', height: '20px' }}
-          onClick={() => setPenColor('green')}
-        ></button>
       </div>
     </>
   );

@@ -1,18 +1,22 @@
 import React from "react";
-import ColorLensIcon from '@mui/icons-material/ColorLens';
+import CircleIcon from '@mui/icons-material/Circle';
 import { IconButton} from "@mui/material";
 
 type Props = {
-  onClick?: () => void;
+  color: string;
+  setPenColor: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export const ColorButton = ({onClick}: Props) => {
+export const ColorButton = ({color, setPenColor}: Props) => {
+  const onClick = () => {
+    setPenColor(color);
+  }
   return (
     <IconButton
-      aria-label="color"
+      aria-label="add"
       onClick={onClick}
     >
-      <ColorLensIcon style={{ fontSize: '45px' }}/>
+      <CircleIcon style={{ fontSize: '30px', color: color }}/>
     </IconButton>
   );
 };
