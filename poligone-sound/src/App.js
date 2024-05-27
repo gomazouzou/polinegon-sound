@@ -2,10 +2,10 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Stack, Typography} from '@mui/material';
 import { BpmChanger } from './modules/BpmChanger/index.tsx';
 import {EraserButton} from './components/buttons/EraserButton.tsx'
-import { DrawButton } from './components/buttons/drawButton.tsx';
-import { AddButton } from './components/buttons/addButton.tsx';
-import { DeleteButton } from './components/buttons/deleteButton.tsx';
-import { Spacer } from './components/spacers/spacer.tsx';
+import { DrawButton } from './components/buttons/DrawButton.tsx';
+import { AddButton } from './components/buttons/AddButton.tsx';
+import { DeleteButton } from './components/buttons/DeleteButton.tsx';
+import { Spacer } from './components/spacers/Spacer.tsx';
 
 function App() {
   const canvasRef = useRef(null);
@@ -146,6 +146,9 @@ function App() {
           >
             <Stack alignItems="center"  justifyContent="center" style={{ height: '100%' }}>
               <Typography>線の太さ</Typography>
+
+              <Spacer px={16}/>
+              
               <input
                 type="range"
                 min="1"
