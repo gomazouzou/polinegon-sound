@@ -1,18 +1,18 @@
 import React from "react";
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import { IconButton} from "@mui/material";
 
 type Props = {
   onClick: () => void;
 }
 
-export const MinusButton = ({onClick}: Props) => {
+export const DrawButton = ({onClick}: Props) => {
   return (
     <IconButton
-      aria-label="minus"
+      aria-label="draw"
       onClick={onClick}
     >
-      <ArrowBackIosNewIcon />
+      <ModeEditIcon style={{ fontSize: '30px' }}/>
     </IconButton>
   );
 };

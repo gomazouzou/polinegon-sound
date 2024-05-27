@@ -1,18 +1,18 @@
 import React from "react";
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import { RiEraserFill } from "react-icons/ri";
 import { IconButton} from "@mui/material";
 
 type Props = {
   onClick: () => void;
 }
 
-export const MinusButton = ({onClick}: Props) => {
+export const EraserButton = ({onClick}: Props) => {
   return (
     <IconButton
-      aria-label="minus"
+      aria-label="eraser"
       onClick={onClick}
     >
-      <ArrowBackIosNewIcon />
+      <RiEraserFill style={{ fontSize: '30px' }}/>
     </IconButton>
   );
 };

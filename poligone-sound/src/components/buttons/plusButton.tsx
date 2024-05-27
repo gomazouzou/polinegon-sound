@@ -1,35 +1,18 @@
 import React from "react";
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-import { Button, CircularProgress} from "@mui/material";
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { IconButton} from "@mui/material";
 
 type Props = {
-  text?: string;
-  onClick?: () => void;
-  variant?: "text" | "contained" | "outlined";
-  disabled?: boolean;
-  loading?: boolean;
-};
+  onClick: () => void;
+}
 
-export const PlusButton = ({
-  onClick,
-  variant = "contained",
-  disabled = false,
-  loading = false,
-}: Props) => {
+export const PlusButton = ({onClick}: Props) => {
   return (
-    <Button
-      variant={variant}
-      disabled={disabled || loading}
-      color="primary"
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        gap: 0.5,
-        cursor: "pointer",
-      }}
-      onClick={onClick}
-      startIcon={loading ? <CircularProgress size="14px" /> : <AddOutlinedIcon />}
+    <IconButton
+      onClick = {onClick}
+      aria-label="plus"
     >
-    </Button>
+      <ArrowForwardIosIcon />
+    </IconButton>
   );
 };

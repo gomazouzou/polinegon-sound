@@ -1,4 +1,0 @@
-
-type Props = {
-  onClick: () => void;
-};

@@ -1,7 +1,11 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { PlusButton } from './components/buttons/plusButton.tsx';
-import { Stack,Button } from '@mui/material';
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import { Stack, Typography} from '@mui/material';
+import { BpmChanger } from './modules/BpmChanger/index.tsx';
+import {EraserButton} from './components/buttons/EraserButton.tsx'
+import { DrawButton } from './components/buttons/drawButton.tsx';
+import { AddButton } from './components/buttons/addButton.tsx';
+import { DeleteButton } from './components/buttons/deleteButton.tsx';
+import { Spacer } from './components/spacers/spacer.tsx';
 
 function App() {
   const canvasRef = useRef(null);
@@ -59,49 +63,102 @@ function App() {
   }, [isDrawing, isErasing, linewidth, penColor, canvasColor]);
 
   return (
-    <div
-      className="App"
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        transform: 'translate(-50%, -50%)',
-      }}
-    >
-      <Button
-      color="primary"
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        gap: 0.5,
-        cursor: "pointer",
-      }}
-      startIcon={<AddOutlinedIcon />}
-    >
-    </Button>
-
-      <Stack>
-      <canvas
-        ref={canvasRef}
-        width={800}
-        height={600}
-        style={{ border: '1px solid black', backgroundColor: canvasColor, position: 'absolute', top: 0, left: 0 }}
-      />
-      <div style={{ position: 'absolute', top: '10px', left: '810px' }}>
-        <button onClick={() => setIsErasing(!isErasing)}>
-          {isErasing ? 'Disable Eraser' : 'Enable Eraser'}
-        </button>
+    <>
+      <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)' }} align="center">
+        <BpmChanger/>
       </div>
-      <div style={{ position: 'absolute', top: '60px', left: '810px' }}>
-        <input
-          type="range"
-          min="1"
-          max="20"
-          value={linewidth}
-          onChange={(e) => setLinewidth(parseInt(e.target.value))}
+
+      <div style={{ position: 'absolute', top: '105px', left: '30px' }}>
+        <canvas
+          ref={canvasRef}
+          width={960}
+          height={480}
+          style={{ border: '1px solid black', backgroundColor: canvasColor, position: 'absolute', top: 0, left: 0 }}
         />
       </div>
-      <div style={{ position: 'absolute', top: '90px', left: '810px' }}>
+
+      <div style={{ position: 'absolute', top: '105px', left: '1020px' }}>
+        <div
+          style={{
+            width: '400px',
+            height: '480px',
+            border: '1px solid black',
+            backgroundColor: canvasColor,
+            position: 'absolute',
+            top: 0,
+            left: 0
+          }}
+        >
+          <div
+          style={{
+            width: '400px',
+            height: '40px',
+            border: '1px solid black',
+            backgroundColor: canvasColor,
+            position: 'absolute',
+            top: 0,
+            left: 0
+          }}
+          >
+            <AddButton/>
+            <DeleteButton/>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ position: 'absolute', top: '615px', left: '30px'}}>
+        <div
+          style={{
+            width: '1390px',
+            height: '120px',
+            border: '1px solid black',
+            backgroundColor: canvasColor,
+            position: 'absolute',
+            top: 0,
+            left: 0
+          }}
+        >
+          <div
+          style={{
+            width: '90px',
+            height: '120px',
+            backgroundColor: canvasColor,
+            position: 'absolute',
+            top: 0,
+            left: 0
+          }}
+          >
+            <Stack alignItems="center" justifyContent="center" style={{ height: '100%' }}>
+              <DrawButton onClick={() => setIsErasing(false)} />
+              <EraserButton onClick={() => setIsErasing(true)} />
+            </Stack>
+          </div>
+
+          <div
+          style={{
+            width: '360px',
+            height: '120px',
+            backgroundColor: canvasColor,
+            position: 'absolute',
+            top: 0,
+            left: 90
+          }}
+          >
+            <Stack alignItems="center"  justifyContent="center" style={{ height: '100%' }}>
+              <Typography>線の太さ</Typography>
+              <input
+                type="range"
+                min="1"
+                max="20"
+                value={linewidth}
+                onChange={(e) => setLinewidth(parseInt(e.target.value))}
+              />
+            </Stack>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ position: 'absolute', top: '650px', left: '810px' }}>
       <button
           style={{ backgroundColor: 'black', marginRight: '5px', width: '20px', height: '20px' }}
           onClick={() => setPenColor('black')}
@@ -115,7 +172,7 @@ function App() {
           onClick={() => setPenColor('blue')}
         ></button>
         <button
-          style={{ backgroundColor: 'yellow', width: '20px', height: '20px' }}
+          style={{ backgroundColor: 'yellow', marginRight: '5px', width: '20px', height: '20px' }}
           onClick={() => setPenColor('yellow')}
         ></button>
         <button
@@ -123,8 +180,7 @@ function App() {
           onClick={() => setPenColor('green')}
         ></button>
       </div>
-      </Stack>
-    </div>
+    </>
   );
 }
 
