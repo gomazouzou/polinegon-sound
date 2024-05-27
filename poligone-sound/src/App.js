@@ -5,13 +5,17 @@ import {EraserButton} from './components/buttons/EraserButton.tsx'
 import { DrawButton } from './components/buttons/DrawButton.tsx';
 import { AddButton } from './components/buttons/AddButton.tsx';
 import { DeleteButton } from './components/buttons/DeleteButton.tsx';
-import { Spacer } from './components/spacers/Spacer.tsx';
+import { LineWidthSlider } from './modules/LineWidthSlider/index.tsx';
+import { ColorButton } from './components/buttons/ColorButton.tsx';
 
 function App() {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [isErasing, setIsErasing] = useState(false);
-  const [linewidth, setLinewidth] = useState(1);
+  const [linewidth, setLineWidth] = useState(1);
+  const defaultLineWidth = 1;
+  const minLineWidth = 1;
+  const maxLineWidth = 20;
   const [penColor, setPenColor] = useState('black');
   const [canvasColor, setCanvasColor] = useState('white');
 
@@ -145,17 +149,28 @@ function App() {
           }}
           >
             <Stack alignItems="center"  justifyContent="center" style={{ height: '100%' }}>
-              <Typography>線の太さ</Typography>
-
-              <Spacer px={16}/>
-              
-              <input
-                type="range"
-                min="1"
-                max="20"
-                value={linewidth}
-                onChange={(e) => setLinewidth(parseInt(e.target.value))}
+              <LineWidthSlider 
+                value={linewidth} 
+                setValue={setLineWidth} 
+                defaultValue={defaultLineWidth} 
+                minValue={minLineWidth} 
+                maxValue={maxLineWidth}
               />
+            </Stack>
+          </div>
+          <div
+          style={{
+            width: '120px',
+            height: '120px',
+            backgroundColor: canvasColor,
+            position: 'absolute',
+            top: 0,
+            left: 450
+          }}
+          >
+            <Stack alignItems="center" justifyContent="center" style={{ height: '100%' }}>
+              <Typography>色</Typography>
+              <ColorButton/>
             </Stack>
           </div>
         </div>
