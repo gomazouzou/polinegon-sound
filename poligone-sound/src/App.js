@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import * as Tone from 'tone';
 
 function App() {
   const canvasRef = useRef(null);
@@ -7,6 +8,27 @@ function App() {
   const [linewidth, setLinewidth] = useState(1);
   const [penColor, setPenColor] = useState('black');
   const [canvasColor, setCanvasColor] = useState('white');
+  const synthRef = useRef(null);
+  const colorNotes = {
+    black: "C4",
+    red: "D4",
+    blue: "E4",
+    yellow: "F4",
+    green: "G4"
+  };
+
+  const startSound = (note) => {
+    synthRef.current = new Tone.Synth().toDestination();
+    synthRef.current.triggerAttack(note);
+  };
+
+  const stopSound = () => {
+    if (synthRef.current) {
+      synthRef.current.triggerRelease();
+      synthRef.current.dispose();
+      synthRef.current = null;
+    }
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -15,17 +37,15 @@ function App() {
     function draw(event) {
       if (!isDrawing) return;
 
-      // ペンのスタイルを設定
       context.lineWidth = linewidth;
       context.lineCap = 'round';
 
       if (isErasing) {
-        context.strokeStyle = canvasColor; // キャンバスの背景色で消しゴム
+        context.strokeStyle = canvasColor;
       } else {
-        context.strokeStyle = penColor; // ペンの色
+        context.strokeStyle = penColor;
       }
 
-      // マウスの位置に線を描画
       context.lineTo(event.offsetX, event.offsetY);
       context.stroke();
       context.beginPath();
@@ -35,11 +55,18 @@ function App() {
     function startDrawing(event) {
       setIsDrawing(true);
       draw(event);
+
+      // 色に対応する音を鳴らす
+      if (!isErasing) {
+        const note = colorNotes[penColor];
+        startSound(note);
+      }
     }
 
     function stopDrawing() {
       setIsDrawing(false);
       context.beginPath();
+      stopSound();
     }
 
     canvas.addEventListener('mousedown', startDrawing);
@@ -56,27 +83,29 @@ function App() {
   }, [isDrawing, isErasing, linewidth, penColor, canvasColor]);
 
   return (
-    <div
-      className="App"
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        transform: 'translate(-50%, -50%)',
-      }}
-    >
+    <div className="App" style={{ padding: '20px' }}>
+      <header className="App-header" style={{ marginBottom: '20px' }}>
+        <h1>Tone.js with React</h1>
+        <button
+          onMouseDown={() => startSound("C4")}
+          onMouseUp={stopSound}
+          onMouseLeave={stopSound}
+        >
+          Play Sound
+        </button>
+      </header>
       <canvas
         ref={canvasRef}
         width={800}
         height={600}
-        style={{ border: '1px solid black', backgroundColor: canvasColor, position: 'absolute', top: 0, left: 0 }}
+        style={{ border: '1px solid black', backgroundColor: canvasColor }}
       />
-      <div style={{ position: 'absolute', top: '10px', left: '810px' }}>
+      <div style={{ marginTop: '10px' }}>
         <button onClick={() => setIsErasing(!isErasing)}>
           {isErasing ? 'Disable Eraser' : 'Enable Eraser'}
         </button>
       </div>
-      <div style={{ position: 'absolute', top: '60px', left: '810px' }}>
+      <div style={{ marginTop: '10px' }}>
         <input
           type="range"
           min="1"
@@ -85,8 +114,8 @@ function App() {
           onChange={(e) => setLinewidth(parseInt(e.target.value))}
         />
       </div>
-      <div style={{ position: 'absolute', top: '90px', left: '810px' }}>
-      <button
+      <div style={{ marginTop: '10px' }}>
+        <button
           style={{ backgroundColor: 'black', marginRight: '5px', width: '20px', height: '20px' }}
           onClick={() => setPenColor('black')}
         ></button>
@@ -99,7 +128,7 @@ function App() {
           onClick={() => setPenColor('blue')}
         ></button>
         <button
-          style={{ backgroundColor: 'yellow', width: '20px', height: '20px' }}
+          style={{ backgroundColor: 'yellow', marginRight: '5px', width: '20px', height: '20px' }}
           onClick={() => setPenColor('yellow')}
         ></button>
         <button
