@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, Typography, Stack } from "@mui/material";
 import MultilineChartIcon from '@mui/icons-material/MultilineChart';
-import PentagonIcon from '@mui/icons-material/Pentagon';
+import ChangeHistoryIcon from '@mui/icons-material/ChangeHistory';
 
 import { VisibleButton } from "../../../components/buttons/VisibleButton.tsx";
 import { Layer, Type } from "../../../types/layer.tsx";
@@ -26,11 +26,12 @@ export const LayerCard = ({layer, id, setCurrentLayer, isHilighted, onClickVisib
       <Stack direction="row" alignItems={"center"} justifyContent="space-between" p={2}>
         <Typography fontSize={18}>{id+1}. {layer.color}</Typography>
         <Stack direction="row" alignItems={"center"}>
+        <Typography fontSize={18} marginRight={2}> width: {layer.lineWidth} </Typography>
           {
             layer.type === Type.Line ? (
               <MultilineChartIcon  style={{ fontSize: '24px', color: layer.color}}/>
             ): (
-              <PentagonIcon />
+              <ChangeHistoryIcon style={{ fontSize: '24px', color: layer.color}}/>
             )
           }
           <VisibleButton color={layer.color} isVisible={layer.isVisible} onClick={onClickVisibleButton}/>

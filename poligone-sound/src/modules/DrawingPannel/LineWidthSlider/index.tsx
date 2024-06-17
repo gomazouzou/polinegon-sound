@@ -4,15 +4,13 @@ import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutli
 import MuiInput from '@mui/material/Input';
 import { Box, Grid, Slider } from "@mui/material";
 
-import { Layer } from "../../../types/layer";
+import { MAX_LINE_WIDTH, MIN_LINE_WIDTH, DEFAULT_LINE_WIDTH } from "../../../config/constants.tsx";
+import { Layer } from "../../../types/layer.tsx";
 
 type Props = {
   layers: Layer[];
   setLayers: React.Dispatch<React.SetStateAction<Layer[]>>;
   currentLayer: number;
-  defaultValue: number;
-  minValue: number;
-  maxValue: number;
   redrawLayer: (layer: Layer) => void;
 }
 
@@ -20,7 +18,7 @@ const Input = styled(MuiInput)`
   width: 42px;
 `;
 
-export const LineWidthSlider = ({layers, setLayers, currentLayer, defaultValue, minValue, maxValue, redrawLayer}:Props) => {
+export const LineWidthSlider = ({layers, setLayers, currentLayer, redrawLayer}:Props) => {
   
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
     const updatedLayers = [...layers];
@@ -31,7 +29,7 @@ export const LineWidthSlider = ({layers, setLayers, currentLayer, defaultValue, 
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = event.target.value === '' ? 1 : Number(event.target.value);
+    const newValue = event.target.value === '' ? MIN_LINE_WIDTH : Number(event.target.value);
     const updatedLayers = [...layers];
     const targetLayerIndex =  updatedLayers.findIndex(layer => layer.id === currentLayer);
     updatedLayers[targetLayerIndex].lineWidth = newValue;
@@ -42,10 +40,10 @@ export const LineWidthSlider = ({layers, setLayers, currentLayer, defaultValue, 
   const handleBlur = () => {
     const updatedLayers = [...layers];
     const targetLayerIndex =  updatedLayers.findIndex(layer => layer.id === currentLayer);
-    if (updatedLayers[targetLayerIndex].lineWidth < minValue) {
-      updatedLayers[targetLayerIndex].lineWidth = minValue;
-    } else if (updatedLayers[targetLayerIndex].lineWidth > maxValue) {
-      updatedLayers[currentLayer].lineWidth = maxValue;
+    if (updatedLayers[targetLayerIndex].lineWidth < MIN_LINE_WIDTH) {
+      updatedLayers[targetLayerIndex].lineWidth = MIN_LINE_WIDTH;
+    } else if (updatedLayers[targetLayerIndex].lineWidth > MAX_LINE_WIDTH) {
+      updatedLayers[currentLayer].lineWidth = MAX_LINE_WIDTH;
     }
     setLayers(updatedLayers);
     redrawLayer(layers[targetLayerIndex]);
@@ -62,9 +60,9 @@ export const LineWidthSlider = ({layers, setLayers, currentLayer, defaultValue, 
           {targetLayer && (
               <Slider
                 style={{color:  targetLayer.color}}
-                defaultValue={defaultValue}
-                min={minValue}
-                max={maxValue}
+                defaultValue={DEFAULT_LINE_WIDTH}
+                min={MIN_LINE_WIDTH}
+                max={MIN_LINE_WIDTH}
                 step={1}
                 value={targetLayer.lineWidth}
                 onChange={handleSliderChange}
@@ -82,8 +80,8 @@ export const LineWidthSlider = ({layers, setLayers, currentLayer, defaultValue, 
                   onBlur={handleBlur}
                   inputProps={{
                     step: 1,
-                    min: minValue,
-                    max: maxValue,
+                    min: MIN_LINE_WIDTH,
+                    max: MAX_LINE_WIDTH,
                     type: 'number',
                     'aria-labelledby': 'input-slider',
                   }}

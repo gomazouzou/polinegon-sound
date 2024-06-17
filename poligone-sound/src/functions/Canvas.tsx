@@ -1,4 +1,4 @@
-import { Layer } from "../types/layer";
+import { Layer } from "../types/layer.tsx";
 
 
 //色、太さの変更があった時にそのレイヤー内のすべての描画を再構成する関数

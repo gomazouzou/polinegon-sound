@@ -17,13 +17,7 @@ type Props = {
   setIsErasing: (value: boolean | ((prevState:  boolean) => boolean)) => void;
 }
 
-export const DrawingPannel = ({ layers, setLayers, currentLayer, canvasColor, setIsErasing}: Props) => {
-  const defaultLineWidth = 3;
-  const minLineWidth = 3;
-  const maxLineWidth = 20;
-
-  
-
+export const DrawingPannel = ({ layers, setLayers, currentLayer, canvasColor, setIsErasing}: Props) => {  
   return(
    <div
           style={{
@@ -67,9 +61,6 @@ export const DrawingPannel = ({ layers, setLayers, currentLayer, canvasColor, se
                 layers={layers}
                 setLayers={setLayers}
                 currentLayer={currentLayer}
-                defaultValue={defaultLineWidth} 
-                minValue={minLineWidth} 
-                maxValue={maxLineWidth}
                 redrawLayer={(layer:Layer) => RedrawLayer(layer, canvasColor)}
               />
             </Stack>

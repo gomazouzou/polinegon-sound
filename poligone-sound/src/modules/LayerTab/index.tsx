@@ -4,7 +4,8 @@ import { Layer, Type } from "../../types/layer.tsx";
 import { AddButton } from "../../components/buttons/AddButton.tsx";
 import { DeleteButton } from "../../components/buttons/DeleteButton.tsx";
 import { LayerCard } from "./LayerCard/index.tsx";
-import { RedrawLayer } from "../../functions/Canvas.tsx";
+import { useDisclosure } from "../../hooks/useDiscloser.tsx";
+import { AddLayerDialog } from "./AddLayerDialog/index.tsx";
 
 type Props = {
   canvasColor: string;
@@ -17,17 +18,24 @@ type Props = {
 }
 
 export const LayerTab = ({canvasColor, layers, setLayers, currentLayer, setCurrentLayer, totalLayer, setTotalLayer}: Props) => {
-  const addLayer = () => {
+
+  const {
+    isOpen: isCOpenAddLayerDialog,
+    open: openAddLayerDialog,
+    close: closeAddLayerDialog,
+  } = useDisclosure({});
+
+  const addLayer = (color: string, lineWidth: number, type: Type) => {
     setLayers(prevLayers => {
       const newLayers = [
         ...prevLayers,
         {
           id: totalLayer + 1,
           ref: React.createRef<HTMLCanvasElement>(),
-          color: "black",
-          lineWidth: 3,
+          color: color,
+          lineWidth: lineWidth,
           drawings: [],
-          type: Type.Line,
+          type: type,
           isVisible: true,
         }
       ]
@@ -90,7 +98,7 @@ export const LayerTab = ({canvasColor, layers, setLayers, currentLayer, setCurre
         left: 0
       }}
       >
-        <AddButton onClick={addLayer}/>
+        <AddButton onClick={openAddLayerDialog}/>
         <DeleteButton onClick={() => deleteLayer(currentLayer)}/>
       </div>
       <div
@@ -116,6 +124,11 @@ export const LayerTab = ({canvasColor, layers, setLayers, currentLayer, setCurre
           ))}
         </Stack>
       </div>
+      <AddLayerDialog
+        open={isCOpenAddLayerDialog}
+        onClose={closeAddLayerDialog}
+        addLayer={addLayer}
+      />
     </div>
   );
 };
