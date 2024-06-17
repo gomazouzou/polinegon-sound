@@ -3,7 +3,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { IconButton} from "@mui/material";
 
 type Props = {
-  onClick?: () => void;
+  onClick: () => void;
 }
 
 export const AddButton = ({onClick}: Props) => {

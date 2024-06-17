@@ -4,7 +4,7 @@ import { IconButton} from "@mui/material";
 
 type Props = {
   color: string;
-  setPenColor: React.Dispatch<React.SetStateAction<string>>;
+  setPenColor: (color:string) => void;
 }
 
 export const ColorButton = ({color, setPenColor}: Props) => {
