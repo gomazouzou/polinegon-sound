@@ -2,14 +2,19 @@ import React from "react"
 
 import { DrawButton } from "../../components/buttons/DrawButton.tsx";
 import { EraserButton } from "../../components/buttons/EraserButton.tsx";
+import { Figure00Button } from "../../components/buttons/Figure00Button.tsx";
+import { Figure01Button } from "../../components/buttons/Figure01Button.tsx";
+import { Figure02Button } from "../../components/buttons/Figure02Button.tsx";
+import { Figure03Button } from "../../components/buttons/Figure03Button.tsx";
 import { LineWidthSlider } from "./LineWidthSlider/index.tsx";
 import { ChangeColorPalette } from "./ChangeColorPalette/index.tsx";
 import { Layer } from "../../types/layer.tsx";
 import { RedrawLayer } from "../../functions/Canvas.tsx";
 
-import { Stack } from "@mui/material";
+import { Stack, } from "@mui/material";
 
 type Props = {
+  setCurrentFigure: React.Dispatch<React.SetStateAction<number>>;
   layers: Layer[];
   setLayers: React.Dispatch<React.SetStateAction<Layer[]>>;
   currentLayer: number;
@@ -17,7 +22,7 @@ type Props = {
   setIsErasing: (value: boolean | ((prevState:  boolean) => boolean)) => void;
 }
 
-export const DrawingPannel = ({ layers, setLayers, currentLayer, canvasColor, setIsErasing}: Props) => {  
+export const DrawingPannel = ({ setCurrentFigure, layers, setLayers, currentLayer, canvasColor, setIsErasing}: Props) => {  
   return(
    <div
           style={{
@@ -83,6 +88,65 @@ export const DrawingPannel = ({ layers, setLayers, currentLayer, canvasColor, se
                 redrawLayer={(layer:Layer) => RedrawLayer(layer, canvasColor)}
               />
             </Stack>
+          </div>
+          <div
+          style={{
+            width: '120px',
+            height: '120px',
+            backgroundColor: canvasColor,
+            position: 'absolute',
+            top: 0,
+            left: 980
+          }}
+          >
+            <div
+              style={{
+                width: '80px',
+                height: '80px',
+                backgroundColor: canvasColor,
+                position: 'absolute',
+                top: 20,
+                left: -220,
+              }}
+            >
+              <Figure00Button onClick={() => setCurrentFigure(0)}/>
+            </div>
+            <div
+              style={{
+                width: '80px',
+                height: '80px',
+                backgroundColor: canvasColor,
+                position: 'absolute',
+                top: 20,
+                left: -80,
+              }}
+            >
+              <Figure01Button onClick={() => setCurrentFigure(1)}/>
+            </div>
+            <div
+              style={{
+                width: '80px',
+                height: '80px',
+                backgroundColor: canvasColor,
+                position: 'absolute',
+                top: 20,
+                left: 80,
+              }}
+            >
+              <Figure02Button onClick={() => setCurrentFigure(2)}/>
+            </div>
+            <div
+              style={{
+                width: '80px',
+                height: '80px',
+                backgroundColor: canvasColor,
+                position: 'absolute',
+                top: 20,
+                left: 240,
+              }}
+            >
+              <Figure03Button onClick={() => setCurrentFigure(3)}/>
+            </div>
           </div>
         </div>
   );

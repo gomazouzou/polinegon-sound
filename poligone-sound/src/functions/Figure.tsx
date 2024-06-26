@@ -1,0 +1,1 @@
+const ratio = 400;

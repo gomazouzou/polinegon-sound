@@ -13,6 +13,7 @@ function App() {
   const [totalLayer, setTotalLayer] = useState(0); //削除したものも含めたレイヤーの通し番号
   const [currentLayer, setCurrentLayer] = useState(0); //現在描画を行うレイヤーの番号
   const [drawCount, setDrawCount] = useState(0); //現在描画してるレイヤーの分かれたブロックの数
+  const [currentFigure, setCurrentFigure] = useState(0);
 
   useEffect(() => {
     console.log(layers);
@@ -138,6 +139,7 @@ function App() {
 
       <div style={{ position: 'absolute', top: '615px', left: '30px'}}>
         <DrawingPannel
+          setCurrentFigure={setCurrentFigure}
           layers={layers}
           setLayers={setLayers}
           currentLayer={currentLayer}
