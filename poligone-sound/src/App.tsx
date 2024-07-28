@@ -16,85 +16,200 @@ function App() {
   const [currentFigure, setCurrentFigure] = useState(0);
 
   useEffect(() => {
-    console.log(layers);
     if (layers.length === 0) return;
     const layer = layers.find(layer => layer.id === currentLayer);
     if(layer){
-      const canvas =layer.ref.current;
-      if (!canvas) return;
-      const context = canvas.getContext('2d');
+      //線レイヤーの場合の描画処理
+      if(layer.type === Type.Line){
+        const canvas =layer.ref.current;
+        if (!canvas) return;
+        const context = canvas.getContext('2d');
 
-      let prevX: number | null = null;
-      let prevY: number | null = null;
+        let prevX: number | null = null;
+        let prevY: number | null = null;
 
-      const draw = (event: MouseEvent) => {
-        if (!isDrawing || !context || !layer) return;
+        const draw = (event: MouseEvent) => {
+          if (!isDrawing || !context || !layer) return;
 
-        // ペンのスタイルを設定
-        context.lineWidth = layer.lineWidth; 
-        context.lineCap = 'round'; 
+          // ペンのスタイルを設定
+          context.lineWidth = layer.lineWidth; 
+          context.lineCap = 'round'; 
 
-        if (isErasing) {
-          context.strokeStyle = canvasColor; // キャンバスの背景色で消しゴム
-        } else {
-          context.strokeStyle = layer.color; // ペンの色
+          if (isErasing) {
+            context.strokeStyle = canvasColor; // キャンバスの背景色で消しゴム
+          } else {
+            context.strokeStyle = layer.color; // ペンの色
+          }
+          const currentX: number = event.offsetX;
+          const currentY: number = event.offsetY;
+          
+          // マウスの位置に線を描画
+          context.lineTo(currentX, currentY);
+          context.stroke();
+          context.beginPath();
+          context.moveTo(currentX, currentY);
+
+          // 描画内容を保存
+          setLayers(prevLayers => prevLayers.map(layer => {
+            if (layer.id === currentLayer && prevX && prevY) {
+              return {
+                ...layer,
+                drawings: [...layer.drawings, { startX: prevX, startY: prevY, endX: currentX, endY: currentY, isErasing: isErasing, count: drawCount }]
+              };
+            }
+            else{
+              return layer;
+            }
+          }));
+          
+          prevX = currentX;
+          prevY = currentY;
         }
-        const currentX: number = event.offsetX;
-        const currentY: number = event.offsetY;
-        
-        // マウスの位置に線を描画
-        context.lineTo(currentX, currentY);
-        context.stroke();
-        context.beginPath();
-        context.moveTo(currentX, currentY);
 
-        // 描画内容を保存
-        setLayers(prevLayers => prevLayers.map(layer => {
-          if (layer.id === currentLayer && prevX && prevY) {
-            return {
-              ...layer,
-              drawings: [...layer.drawings, { startX: prevX, startY: prevY, endX: currentX, endY: currentY, isErasing: isErasing, count: drawCount }]
-            };
-          }
-          else{
-            return layer;
-          }
-        }));
-        
-        prevX = currentX;
-        prevY = currentY;
-      }
+        const startDrawing = (event : MouseEvent) => {
+          setIsDrawing(true);
+          prevX = event.offsetX;
+          prevY = event.offsetY;
+          draw(event);
+        }
 
-      const startDrawing = (event : MouseEvent) => {
-        setIsDrawing(true);
-        prevX = event.offsetX;
-        prevY = event.offsetY;
-        draw(event);
-      }
+        const  stopDrawing = () => {
+          if (!context) return;
+          setIsDrawing(false);
+          context.beginPath();
+          prevX = null;
+          prevY = null;
+          setDrawCount(drawCount + 1); 
+        }
 
-      const  stopDrawing = () => {
-        if (!context) return;
-        setIsDrawing(false);
-        context.beginPath();
-        prevX = null;
-        prevY = null;
-        setDrawCount(drawCount + 1); 
-      }
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
 
-      canvas.addEventListener('mousedown', startDrawing);
-      canvas.addEventListener('mousemove', draw);
-      canvas.addEventListener('mouseup', stopDrawing);
-      canvas.addEventListener('mouseout', stopDrawing);
-
-      return () => {
-        canvas.removeEventListener('mousedown', startDrawing);
-        canvas.removeEventListener('mousemove', draw);
-        canvas.removeEventListener('mouseup', stopDrawing);
-        canvas.removeEventListener('mouseout', stopDrawing);
+        return () => {
+          canvas.removeEventListener('mousedown', startDrawing);
+          canvas.removeEventListener('mousemove', draw);
+          canvas.removeEventListener('mouseup', stopDrawing);
+          canvas.removeEventListener('mouseout', stopDrawing);
+        };
       };
-    }
-    
-  }, [isDrawing, isErasing, canvasColor, currentLayer, layers, drawCount]);
+
+      //図形レイヤーの場合の描画処理
+      if(layer.type === Type.Poligone){
+        const canvas = layer.ref.current;
+        if (!canvas) return;
+        const context = canvas.getContext('2d');
+
+        const drawFigure00 = (event: MouseEvent) => {
+          if (!context || !layer) return;
+
+          const size = 100; // 正方形のサイズ
+          const halfSize = size / 2;
+          const centerX = event.offsetX;
+          const centerY = event.offsetY;
+
+          context.strokeStyle = layer.color;
+          context.lineWidth = layer.lineWidth;
+          context.beginPath();
+          context.moveTo(centerX + halfSize, centerY);
+          context.lineTo(centerX - halfSize, centerY);
+          context.lineTo(centerX - halfSize, centerY - halfSize);
+          context.lineTo(centerX, centerY - halfSize);
+          context.lineTo(centerX, centerY + halfSize);
+          context.lineTo(centerX + halfSize, centerY + halfSize);
+          context.lineTo(centerX + halfSize, centerY);
+          context.stroke();
+        }
+
+        const drawFigure01 = (event: MouseEvent) => {
+          if (!context || !layer) return;
+
+          const size = 100; // 正方形のサイズ
+          const halfSize = size / 2;
+          const centerX = event.offsetX;
+          const centerY = event.offsetY;
+
+          context.strokeStyle = layer.color;
+          context.lineWidth = layer.lineWidth;
+          context.beginPath();
+          context.moveTo(centerX, centerY);
+          context.lineTo(centerX - halfSize, centerY);
+          context.lineTo(centerX - halfSize, centerY + halfSize);
+          context.lineTo(centerX + halfSize, centerY + halfSize);
+          context.lineTo(centerX + halfSize, centerY - halfSize);
+          context.lineTo(centerX, centerY - halfSize);
+          context.lineTo(centerX, centerY);
+          context.stroke();
+        }
+
+        const drawFigure02 = (event: MouseEvent) => {
+          if (!context || !layer) return;
+
+          const size = 100; // 正方形のサイズ
+          const halfSize = size / 2;
+          const centerX = event.offsetX;
+          const centerY = event.offsetY;
+
+          context.strokeStyle = layer.color;
+          context.lineWidth = layer.lineWidth;
+          context.beginPath();
+          context.moveTo(centerX - halfSize, centerY - halfSize);
+          context.lineTo(centerX + halfSize, centerY - halfSize);
+          context.lineTo(centerX + halfSize, centerY + halfSize);
+          context.lineTo(centerX - halfSize, centerY + halfSize);
+          context.lineTo(centerX - halfSize, centerY - halfSize);
+          context.stroke();
+        }
+
+        const drawFigure03 = (event: MouseEvent) => {
+          if (!context || !layer) return;
+
+          const size = 100; // 正方形のサイズ
+          const halfSize = size / 2;
+          const centerX = event.offsetX;
+          const centerY = event.offsetY;
+
+          context.strokeStyle = layer.color;
+          context.lineWidth = layer.lineWidth;
+          context.beginPath();
+          context.moveTo(centerX + halfSize, centerY - halfSize);
+          context.lineTo(centerX + halfSize/2, centerY - halfSize);
+          context.lineTo(centerX + halfSize/2, centerY + halfSize);
+          context.lineTo(centerX - halfSize, centerY + halfSize);
+          context.lineTo(centerX - halfSize, centerY + halfSize / 2);
+          context.lineTo(centerX + halfSize, centerY + halfSize / 2);
+          context.lineTo(centerX + halfSize, centerY - halfSize);
+          context.stroke();
+        }
+
+        const drawFigure = (event: MouseEvent) => {
+          switch (currentFigure) {
+            case 0:
+              drawFigure00(event);
+              break;
+            case 1:
+              drawFigure01(event);
+              break;
+            case 2:
+              drawFigure02(event);
+              break;
+            case 3:
+              drawFigure03(event);
+              break;
+            default:
+              break;
+          }
+        }
+        
+        canvas.addEventListener('click', drawFigure);
+
+        return () => {
+          canvas.removeEventListener('click', drawFigure);
+        };
+      };
+    };  
+  }, [isDrawing, isErasing, canvasColor, currentLayer, layers, drawCount, currentFigure]);
 
   return (
     <>

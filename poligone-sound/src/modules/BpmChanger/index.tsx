@@ -1,8 +1,10 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 
+import { Stack, Typography } from "@mui/material";
 import { MinusButton } from "../../components/buttons/MinusButton.tsx";
 import { PlusButton } from "../../components/buttons/PlusButton.tsx";
-import { Stack, Typography } from "@mui/material";
+import { StartButton } from "../../components/buttons/StartButton.tsx";
+import { StopButton } from "../../components/buttons/StopButton.tsx";
 
 export const BpmChanger = () => {
   const [bpm, setBpm] = useState(120);
@@ -15,6 +17,8 @@ export const BpmChanger = () => {
   return (
     <>
       <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <StartButton onClick={()=> {}}/>
+        <StopButton onClick={()=> {}}/>
         <MinusButton onClick={onClickMinusButton}/>
 
         <Typography>BPM : {bpm}</Typography>
