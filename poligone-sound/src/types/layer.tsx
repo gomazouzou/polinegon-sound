@@ -1,11 +1,10 @@
-import React from 'react'
+import React from 'react';
 
 type Drawing = {
   startX: number;
   startY: number;
   endX: number;
   endY: number;
-  isErasing: boolean;
   count: number;
 }
 

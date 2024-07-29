@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { BpmChanger } from './modules/BpmChanger/index.tsx';
 import { DrawingPannel } from './modules/DrawingPannel/index.tsx';
 import { LayerTab } from './modules/LayerTab/index.tsx';
+import { Player } from './modules/Player/index.tsx';
 import { Layer, Type } from "./types/layer.tsx";
+import { context } from 'tone';
 
 function App() {
   const [isDrawing, setIsDrawing] = useState(false);
@@ -35,11 +36,7 @@ function App() {
           context.lineWidth = layer.lineWidth; 
           context.lineCap = 'round'; 
 
-          if (isErasing) {
-            context.strokeStyle = canvasColor; // キャンバスの背景色で消しゴム
-          } else {
-            context.strokeStyle = layer.color; // ペンの色
-          }
+          context.strokeStyle = layer.color; 
           const currentX: number = event.offsetX;
           const currentY: number = event.offsetY;
           
@@ -54,7 +51,7 @@ function App() {
             if (layer.id === currentLayer && prevX && prevY) {
               return {
                 ...layer,
-                drawings: [...layer.drawings, { startX: prevX, startY: prevY, endX: currentX, endY: currentY, isErasing: isErasing, count: drawCount }]
+                drawings: [...layer.drawings, { startX: prevX, startY: prevY, endX: currentX, endY: currentY, count: drawCount }]
               };
             }
             else{
@@ -214,7 +211,7 @@ function App() {
   return (
     <>
       <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', width:'60%'}}>
-        <BpmChanger/>
+        <Player/>
       </div>
 
       <div style={{ position: 'absolute', top: '105px', left: '30px' }}>
@@ -259,7 +256,6 @@ function App() {
           setLayers={setLayers}
           currentLayer={currentLayer}
           canvasColor={canvasColor}
-          setIsErasing={setIsErasing}
         />
       </div>
     </>

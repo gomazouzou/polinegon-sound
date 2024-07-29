@@ -1,15 +1,13 @@
-import React from "react"
+import React from "react";
 
-import { DrawButton } from "../../components/buttons/DrawButton.tsx";
-import { EraserButton } from "../../components/buttons/EraserButton.tsx";
 import { Figure00Button } from "../../components/buttons/Figure00Button.tsx";
 import { Figure01Button } from "../../components/buttons/Figure01Button.tsx";
 import { Figure02Button } from "../../components/buttons/Figure02Button.tsx";
 import { Figure03Button } from "../../components/buttons/Figure03Button.tsx";
-import { LineWidthSlider } from "./LineWidthSlider/index.tsx";
-import { ChangeColorPalette } from "./ChangeColorPalette/index.tsx";
-import { Layer } from "../../types/layer.tsx";
 import { RedrawLayer } from "../../functions/Canvas.tsx";
+import { Layer } from "../../types/layer.tsx";
+import { ChangeColorPalette } from "./ChangeColorPalette/index.tsx";
+import { LineWidthSlider } from "./LineWidthSlider/index.tsx";
 
 import { Stack, } from "@mui/material";
 
@@ -19,10 +17,9 @@ type Props = {
   setLayers: React.Dispatch<React.SetStateAction<Layer[]>>;
   currentLayer: number;
   canvasColor: string;
-  setIsErasing: (value: boolean | ((prevState:  boolean) => boolean)) => void;
 }
 
-export const DrawingPannel = ({ setCurrentFigure, layers, setLayers, currentLayer, canvasColor, setIsErasing}: Props) => {  
+export const DrawingPannel = ({ setCurrentFigure, layers, setLayers, currentLayer, canvasColor}: Props) => {  
   return(
    <div
           style={{
@@ -35,22 +32,6 @@ export const DrawingPannel = ({ setCurrentFigure, layers, setLayers, currentLaye
             left: 0
           }}
         >
-          <div
-          style={{
-            width: '90px',
-            height: '120px',
-            backgroundColor: canvasColor,
-            position: 'absolute',
-            top: 0,
-            left: 0
-          }}
-          >
-            <Stack alignItems="center" justifyContent="center" style={{ height: '100%' }}>
-              <DrawButton onClick={() => setIsErasing(false)} />
-              <EraserButton onClick={() => setIsErasing(true)} />
-            </Stack>
-          </div>
-
           <div
           style={{
             width: '360px',
@@ -66,7 +47,7 @@ export const DrawingPannel = ({ setCurrentFigure, layers, setLayers, currentLaye
                 layers={layers}
                 setLayers={setLayers}
                 currentLayer={currentLayer}
-                redrawLayer={(layer:Layer) => RedrawLayer(layer, canvasColor)}
+                redrawLayer={(layer:Layer) => RedrawLayer(layer)}
               />
             </Stack>
           </div>
@@ -85,7 +66,7 @@ export const DrawingPannel = ({ setCurrentFigure, layers, setLayers, currentLaye
                 layers={layers}
                 setLayers={setLayers}
                 currentLayer={currentLayer}
-                redrawLayer={(layer:Layer) => RedrawLayer(layer, canvasColor)}
+                redrawLayer={(layer:Layer) => RedrawLayer(layer)}
               />
             </Stack>
           </div>
