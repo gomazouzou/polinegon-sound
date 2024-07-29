@@ -7,6 +7,11 @@ type Drawing = {
   endY: number;
   count: number;
 }
+type Figure = {
+  id: number;
+  x_pos: number;
+  y_pos: number;
+}
 
 export enum Type {
   Poligone =  "poligone",
@@ -15,10 +20,11 @@ export enum Type {
 
 export type Layer = {
   id: number;
+  type: Type,
   ref: React.RefObject<HTMLCanvasElement>;
   color: string;
   lineWidth: number;
   drawings: Drawing[];
-  type: Type,
+  figures: Figure[];
   isVisible: boolean;
 };

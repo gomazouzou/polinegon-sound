@@ -1,10 +1,10 @@
-import React from "react";
-import { styled } from '@mui/material/styles';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
-import MuiInput from '@mui/material/Input';
 import { Box, Grid, Slider } from "@mui/material";
+import MuiInput from '@mui/material/Input';
+import { styled } from '@mui/material/styles';
+import React from "react";
 
-import { MAX_LINE_WIDTH, MIN_LINE_WIDTH, DEFAULT_LINE_WIDTH } from "../../../config/constants.tsx";
+import { DEFAULT_LINE_WIDTH, MAX_LINE_WIDTH, MIN_LINE_WIDTH } from "../../../config/constants.tsx";
 import { Layer } from "../../../types/layer.tsx";
 
 type Props = {
@@ -62,7 +62,7 @@ export const LineWidthSlider = ({layers, setLayers, currentLayer, redrawLayer}:P
                 style={{color:  targetLayer.color}}
                 defaultValue={DEFAULT_LINE_WIDTH}
                 min={MIN_LINE_WIDTH}
-                max={MIN_LINE_WIDTH}
+                max={MAX_LINE_WIDTH}
                 step={1}
                 value={targetLayer.lineWidth}
                 onChange={handleSliderChange}

@@ -1,6 +1,7 @@
 export const DEFAULT_LINE_WIDTH = 3;
 export const MIN_LINE_WIDTH = 3;
 export const MAX_LINE_WIDTH = 20;
+export const SIZE = 150; //図形のサイズ
 
 export const RHYTHM_PATTERN_1 = [
   { time: "0:0:0" },

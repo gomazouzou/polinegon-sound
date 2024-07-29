@@ -1,25 +1,29 @@
 import React, { useEffect, useState } from 'react';
+import { drawFigure00, drawFigure01, drawFigure02, drawFigure03 } from './hooks/useDrawFigure.tsx';
 import { DrawingPannel } from './modules/DrawingPannel/index.tsx';
 import { LayerTab } from './modules/LayerTab/index.tsx';
 import { Player } from './modules/Player/index.tsx';
 import { Layer, Type } from "./types/layer.tsx";
-import { context } from 'tone';
 
 function App() {
   const [isDrawing, setIsDrawing] = useState(false);
-  const [isErasing, setIsErasing] = useState(false);
   const canvasColor = 'white';
-
-  const [layers, setLayers] = useState<Layer[]>([{id: 0, ref: React.createRef(), color:"black", lineWidth: 3, drawings: [], type: Type.Line, isVisible:true}]); //キャンバスに反映されるすべてのレイヤー
-  const [totalLayer, setTotalLayer] = useState(0); //削除したものも含めたレイヤーの通し番号
-  const [currentLayer, setCurrentLayer] = useState(0); //現在描画を行うレイヤーの番号
-  const [drawCount, setDrawCount] = useState(0); //現在描画してるレイヤーの分かれたブロックの数
+  //キャンバスに反映されるすべてのレイヤー
+  const [layers, setLayers] = useState<Layer[]>([{id: 0, ref: React.createRef(), color:"black", lineWidth: 3, drawings: [], figures: [], type: Type.Line, isVisible:true}]); 
+  //削除したものも含めたレイヤーの通し番号
+  const [totalLayer, setTotalLayer] = useState(0); 
+  //現在描画を行うレイヤーの番号
+  const [currentLayer, setCurrentLayer] = useState(0); 
+  //現在描画してるレイヤーの分かれたブロックの数
+  const [drawCount, setDrawCount] = useState(0);
+  //現在描画する図形の番号 
   const [currentFigure, setCurrentFigure] = useState(0);
 
   useEffect(() => {
     if (layers.length === 0) return;
     const layer = layers.find(layer => layer.id === currentLayer);
     if(layer){
+
       //線レイヤーの場合の描画処理
       if(layer.type === Type.Line){
         const canvas =layer.ref.current;
@@ -98,105 +102,36 @@ function App() {
         if (!canvas) return;
         const context = canvas.getContext('2d');
 
-        const drawFigure00 = (event: MouseEvent) => {
-          if (!context || !layer) return;
-
-          const size = 100; // 正方形のサイズ
-          const halfSize = size / 2;
-          const centerX = event.offsetX;
-          const centerY = event.offsetY;
-
-          context.strokeStyle = layer.color;
-          context.lineWidth = layer.lineWidth;
-          context.beginPath();
-          context.moveTo(centerX + halfSize, centerY);
-          context.lineTo(centerX - halfSize, centerY);
-          context.lineTo(centerX - halfSize, centerY - halfSize);
-          context.lineTo(centerX, centerY - halfSize);
-          context.lineTo(centerX, centerY + halfSize);
-          context.lineTo(centerX + halfSize, centerY + halfSize);
-          context.lineTo(centerX + halfSize, centerY);
-          context.stroke();
-        }
-
-        const drawFigure01 = (event: MouseEvent) => {
-          if (!context || !layer) return;
-
-          const size = 100; // 正方形のサイズ
-          const halfSize = size / 2;
-          const centerX = event.offsetX;
-          const centerY = event.offsetY;
-
-          context.strokeStyle = layer.color;
-          context.lineWidth = layer.lineWidth;
-          context.beginPath();
-          context.moveTo(centerX, centerY);
-          context.lineTo(centerX - halfSize, centerY);
-          context.lineTo(centerX - halfSize, centerY + halfSize);
-          context.lineTo(centerX + halfSize, centerY + halfSize);
-          context.lineTo(centerX + halfSize, centerY - halfSize);
-          context.lineTo(centerX, centerY - halfSize);
-          context.lineTo(centerX, centerY);
-          context.stroke();
-        }
-
-        const drawFigure02 = (event: MouseEvent) => {
-          if (!context || !layer) return;
-
-          const size = 100; // 正方形のサイズ
-          const halfSize = size / 2;
-          const centerX = event.offsetX;
-          const centerY = event.offsetY;
-
-          context.strokeStyle = layer.color;
-          context.lineWidth = layer.lineWidth;
-          context.beginPath();
-          context.moveTo(centerX - halfSize, centerY - halfSize);
-          context.lineTo(centerX + halfSize, centerY - halfSize);
-          context.lineTo(centerX + halfSize, centerY + halfSize);
-          context.lineTo(centerX - halfSize, centerY + halfSize);
-          context.lineTo(centerX - halfSize, centerY - halfSize);
-          context.stroke();
-        }
-
-        const drawFigure03 = (event: MouseEvent) => {
-          if (!context || !layer) return;
-
-          const size = 100; // 正方形のサイズ
-          const halfSize = size / 2;
-          const centerX = event.offsetX;
-          const centerY = event.offsetY;
-
-          context.strokeStyle = layer.color;
-          context.lineWidth = layer.lineWidth;
-          context.beginPath();
-          context.moveTo(centerX + halfSize, centerY - halfSize);
-          context.lineTo(centerX + halfSize/2, centerY - halfSize);
-          context.lineTo(centerX + halfSize/2, centerY + halfSize);
-          context.lineTo(centerX - halfSize, centerY + halfSize);
-          context.lineTo(centerX - halfSize, centerY + halfSize / 2);
-          context.lineTo(centerX + halfSize, centerY + halfSize / 2);
-          context.lineTo(centerX + halfSize, centerY - halfSize);
-          context.stroke();
-        }
-
         const drawFigure = (event: MouseEvent) => {
           switch (currentFigure) {
             case 0:
-              drawFigure00(event);
+              drawFigure00(context, layer, event.offsetX, event.offsetY);
               break;
             case 1:
-              drawFigure01(event);
+              drawFigure01(context, layer, event.offsetX, event.offsetY);
               break;
             case 2:
-              drawFigure02(event);
+              drawFigure02(context, layer, event.offsetX, event.offsetY);
               break;
             case 3:
-              drawFigure03(event);
+              drawFigure03(context, layer, event.offsetX, event.offsetY);
               break;
             default:
               break;
           }
+          
+          // 描画内容を保存
+          setLayers(prevLayers => prevLayers.map(layer => {
+            if (layer.id === currentLayer) {
+              return {
+                ...layer,
+                figures: [...layer.figures, { id: currentFigure, x_pos: event.offsetX, y_pos: event.offsetY }]
+              };
+            }
+            else{
+              return layer;
+            }
+          }));
         }
         
         canvas.addEventListener('click', drawFigure);
@@ -206,7 +141,7 @@ function App() {
         };
       };
     };  
-  }, [isDrawing, isErasing, canvasColor, currentLayer, layers, drawCount, currentFigure]);
+  }, [isDrawing, canvasColor, currentLayer, layers, drawCount, currentFigure]);
 
   return (
     <>

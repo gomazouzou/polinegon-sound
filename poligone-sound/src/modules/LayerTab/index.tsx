@@ -1,11 +1,11 @@
-import React from "react";
 import { Stack } from "@mui/material";
-import { Layer, Type } from "../../types/layer.tsx";
+import React from "react";
 import { AddButton } from "../../components/buttons/AddButton.tsx";
 import { DeleteButton } from "../../components/buttons/DeleteButton.tsx";
-import { LayerCard } from "./LayerCard/index.tsx";
 import { useDisclosure } from "../../hooks/useDiscloser.tsx";
+import { Layer, Type } from "../../types/layer.tsx";
 import { AddLayerDialog } from "./AddLayerDialog/index.tsx";
+import { LayerCard } from "./LayerCard/index.tsx";
 
 type Props = {
   canvasColor: string;
@@ -35,6 +35,7 @@ export const LayerTab = ({canvasColor, layers, setLayers, currentLayer, setCurre
           color: color,
           lineWidth: lineWidth,
           drawings: [],
+          figures: [],
           type: type,
           isVisible: true,
         }
