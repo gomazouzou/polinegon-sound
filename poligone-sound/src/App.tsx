@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { DEFAULT_LINE_WIDTH, DEFAULT_VOLUME, MAX_LINE_WIDTH, MAX_VOLUME } from './config/constants.tsx';
 import { ChangeColorToInstrumentId } from './hooks/useColorToInstrumentId.tsx';
 import { drawFigure00, drawFigure01, drawFigure02, drawFigure03 } from './hooks/useDrawFigure.tsx';
@@ -23,6 +23,16 @@ function App() {
   const [currentFigure, setCurrentFigure] = useState(0);
   //現在鳴るループ再生の情報
   const [loops, setLoops] = useState<LoopInfo[]>([]);
+  const beatCountRef = useRef<number>(0);
+  //マウスのX,Y座座標
+  const mousePositionRef = useRef({ x: 0, y: 0 });
+
+  const UpdateBeatCount = () => {
+    console.log(beatCountRef.current);
+    console.log(mousePositionRef.current);
+
+    beatCountRef.current = (beatCountRef.current + 1) % 16;
+  }
 
   useEffect(() => {
     if (layers.length === 0) return;
@@ -48,6 +58,8 @@ function App() {
           context.strokeStyle = layer.color; 
           const currentX: number = event.offsetX;
           const currentY: number = event.offsetY;
+
+          mousePositionRef.current = { x: currentX, y: currentY };
           
           // マウスの位置に線を描画
           context.lineTo(currentX, currentY);
@@ -164,7 +176,11 @@ function App() {
   return (
     <>
       <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', width:'60%'}}>
-        <Player loops={loops}/>
+        <Player 
+          loops={loops}
+          UpdateBeatCount={UpdateBeatCount}
+          beatCountRef={beatCountRef}
+        />
       </div>
 
       <div style={{ position: 'absolute', top: '105px', left: '30px' }}>

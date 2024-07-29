@@ -12,8 +12,11 @@ import { BeatDisplay } from "./BeatDisplay/index.tsx";
 
 type Props = {
   loops: LoopInfo[];
+  UpdateBeatCount: () => void;
+  beatCountRef: React.MutableRefObject<number>;
 }
-export const Player = ({loops}: Props) => {
+
+export const Player = ({loops, UpdateBeatCount, beatCountRef}: Props) => {
   const [bpm, setBpm] = useState(120);
   const [beat, setBeat] = useState(3);
 
@@ -30,7 +33,6 @@ export const Player = ({loops}: Props) => {
   const [lineAudioSamplers, setLineAudioSamplers] = useState <Tone.Sampler[] | null>(null);
   const [figureLoops, setFigureLoops] = useState <Tone.Part[] | null>(null);
   const [metronome, setMetronome] = useState<Tone.Part | null>(null);
-  
 
   useEffect(() => {
     const loadAudio = async () => {
@@ -121,7 +123,7 @@ export const Player = ({loops}: Props) => {
       setFigureLoops(newFigureLoops);
       newFigureLoops?.forEach(loop => loop.start(0));
     }
-    
+    Tone.Transport.scheduleRepeat(UpdateBeatCount, "8n");
     Tone.Transport.start();
   };
 
@@ -132,6 +134,7 @@ export const Player = ({loops}: Props) => {
     setBeat(3);
     setMetronome(null);
     setFigureLoops(null);
+    beatCountRef.current = 0;
   };
   
   return (
