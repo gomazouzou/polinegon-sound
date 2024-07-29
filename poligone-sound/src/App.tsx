@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { BpmChanger } from './modules/BpmChanger/index.tsx';
-import { LayerTab } from './modules/LayerTab/index.tsx';
 import { DrawingPannel } from './modules/DrawingPannel/index.tsx';
-import { Layer, Type } from "./types/layer.tsx"
+import { LayerTab } from './modules/LayerTab/index.tsx';
+import { Layer, Type } from "./types/layer.tsx";
 
 function App() {
   const [isDrawing, setIsDrawing] = useState(false);
@@ -213,7 +213,7 @@ function App() {
 
   return (
     <>
-      <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)' }}>
+      <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', width:'60%'}}>
         <BpmChanger/>
       </div>
 
