@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import { DEFAULT_LINE_WIDTH, DEFAULT_VOLUME, MAX_LINE_WIDTH, MAX_VOLUME } from './config/constants.tsx';
+import { ChangeColorToInstrumentId } from './hooks/useColorToInstrumentId.tsx';
 import { drawFigure00, drawFigure01, drawFigure02, drawFigure03 } from './hooks/useDrawFigure.tsx';
 import { DrawingPannel } from './modules/DrawingPannel/index.tsx';
 import { LayerTab } from './modules/LayerTab/index.tsx';
 import { Player } from './modules/Player/index.tsx';
 import { Layer, Type } from "./types/layer.tsx";
+import { LoopInfo } from './types/loop.tsx';
 
 function App() {
   const [isDrawing, setIsDrawing] = useState(false);
   const canvasColor = 'white';
   //キャンバスに反映されるすべてのレイヤー
-  const [layers, setLayers] = useState<Layer[]>([{id: 0, ref: React.createRef(), color:"black", lineWidth: 3, drawings: [], figures: [], type: Type.Line, isVisible:true}]); 
+  const [layers, setLayers] = useState<Layer[]>([{id: 0, ref: React.createRef(), color:"black", lineWidth: DEFAULT_LINE_WIDTH, drawings: [], figures: [], type: Type.Line, isVisible:true}]); 
   //削除したものも含めたレイヤーの通し番号
   const [totalLayer, setTotalLayer] = useState(0); 
   //現在描画を行うレイヤーの番号
@@ -18,6 +21,8 @@ function App() {
   const [drawCount, setDrawCount] = useState(0);
   //現在描画する図形の番号 
   const [currentFigure, setCurrentFigure] = useState(0);
+  //現在鳴るループ再生の情報
+  const [loops, setLoops] = useState<LoopInfo[]>([]);
 
   useEffect(() => {
     if (layers.length === 0) return;
@@ -132,6 +137,19 @@ function App() {
               return layer;
             }
           }));
+
+          //ループ情報の設定
+          setLoops(prevLoop => {
+            const newLoop = [...prevLoop, 
+              { type: Type.Poligone, 
+                layer_id: currentLayer, 
+                instrument: ChangeColorToInstrumentId(layer.color), 
+                figure_id: currentFigure, 
+                volume:  DEFAULT_VOLUME + MAX_VOLUME / (MAX_LINE_WIDTH - DEFAULT_LINE_WIDTH)* (layer.lineWidth - DEFAULT_LINE_WIDTH),
+              }
+            ];
+            return newLoop;
+          });
         }
         
         canvas.addEventListener('click', drawFigure);
@@ -181,6 +199,7 @@ function App() {
           setCurrentLayer={setCurrentLayer}
           totalLayer={totalLayer}
           setTotalLayer={setTotalLayer}
+          setLoops={setLoops}
         />
       </div>
 
@@ -191,6 +210,7 @@ function App() {
           setLayers={setLayers}
           currentLayer={currentLayer}
           canvasColor={canvasColor}
+          setLoops={setLoops}
         />
       </div>
     </>

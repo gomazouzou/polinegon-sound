@@ -4,6 +4,7 @@ import { AddButton } from "../../components/buttons/AddButton.tsx";
 import { DeleteButton } from "../../components/buttons/DeleteButton.tsx";
 import { useDisclosure } from "../../hooks/useDiscloser.tsx";
 import { Layer, Type } from "../../types/layer.tsx";
+import { LoopInfo } from "../../types/loop.tsx";
 import { AddLayerDialog } from "./AddLayerDialog/index.tsx";
 import { LayerCard } from "./LayerCard/index.tsx";
 
@@ -15,9 +16,10 @@ type Props = {
   setCurrentLayer: React.Dispatch<React.SetStateAction<number>>;
   totalLayer: number;
   setTotalLayer: React.Dispatch<React.SetStateAction<number>>;
+  setLoops: React.Dispatch<React.SetStateAction<LoopInfo[]>>;
 }
 
-export const LayerTab = ({canvasColor, layers, setLayers, currentLayer, setCurrentLayer, totalLayer, setTotalLayer}: Props) => {
+export const LayerTab = ({canvasColor, layers, setLayers, currentLayer, setCurrentLayer, totalLayer, setTotalLayer, setLoops}: Props) => {
 
   const {
     isOpen: isCOpenAddLayerDialog,
@@ -46,7 +48,7 @@ export const LayerTab = ({canvasColor, layers, setLayers, currentLayer, setCurre
     });
   };
 
-  const deleteLayer = (layerId: number) => {
+  const deleteLayer = (layerId: number, setLoops: React.Dispatch<React.SetStateAction<LoopInfo[]>>) => {
     if (layers.length < 2){
       return;
     }
@@ -57,6 +59,9 @@ export const LayerTab = ({canvasColor, layers, setLayers, currentLayer, setCurre
     
     const newCurrentIndex = currentIndex - 1 > 0 ? newLayers[currentIndex - 1].id : newLayers[0].id
     setCurrentLayer(newCurrentIndex);
+
+    //ループ情報の更新
+    setLoops(prevLoops => prevLoops.filter(loop => loop.layer_id !== layerId));
   };
 
   const OnClickVisibleButton = (layerId: number) => {
@@ -100,7 +105,7 @@ export const LayerTab = ({canvasColor, layers, setLayers, currentLayer, setCurre
       }}
       >
         <AddButton onClick={openAddLayerDialog}/>
-        <DeleteButton onClick={() => deleteLayer(currentLayer)}/>
+        <DeleteButton onClick={() => deleteLayer(currentLayer, setLoops)}/>
       </div>
       <div
         style={{

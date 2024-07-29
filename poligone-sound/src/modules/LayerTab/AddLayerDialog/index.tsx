@@ -1,18 +1,20 @@
-import React, { useState }  from 'react';
 import {
-  Button, 
-  Stack,
-  Dialog, 
-  DialogActions, 
-  DialogContent, 
-  DialogContentText, 
-  DialogTitle} from '@mui/material';
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Stack
+} from '@mui/material';
+import React, { useState } from 'react';
 
-import { PoligoneButton } from '../../../components/buttons/PoligoneButton.tsx';
 import { LineButton } from '../../../components/buttons/LineButton.tsx';
+import { PoligoneButton } from '../../../components/buttons/PoligoneButton.tsx';
+import { DEFAULT_LINE_WIDTH } from '../../../config/constants.tsx';
+import { Type } from '../../../types/layer.tsx';
 import { ColorSelector } from './ColorSelector/index.tsx';
 import { LineWidthSlider } from './LineWidthSelector/index.tsx';
-import { Type } from '../../../types/layer.tsx';
 
 type Props = {
   open: boolean;
@@ -23,7 +25,7 @@ type Props = {
 export const AddLayerDialog = ({open, onClose, addLayer}: Props) =>  {
   const [type, setType] = useState<Type>(Type.Line);
   const [color, setColor] = useState<string>("black");
-  const [lineWidth, setLineWidth] = useState<number>(3);
+  const [lineWidth, setLineWidth] = useState<number>(DEFAULT_LINE_WIDTH);
   
   return (
       <Dialog

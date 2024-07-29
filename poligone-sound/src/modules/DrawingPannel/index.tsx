@@ -6,6 +6,7 @@ import { Figure02Button } from "../../components/buttons/Figure02Button.tsx";
 import { Figure03Button } from "../../components/buttons/Figure03Button.tsx";
 import { RedrawLayer } from "../../functions/Canvas.tsx";
 import { Layer } from "../../types/layer.tsx";
+import { LoopInfo } from "../../types/loop.tsx";
 import { ChangeColorPalette } from "./ChangeColorPalette/index.tsx";
 import { LineWidthSlider } from "./LineWidthSlider/index.tsx";
 
@@ -17,9 +18,10 @@ type Props = {
   setLayers: React.Dispatch<React.SetStateAction<Layer[]>>;
   currentLayer: number;
   canvasColor: string;
+  setLoops: React.Dispatch<React.SetStateAction<LoopInfo[]>>;
 }
 
-export const DrawingPannel = ({ setCurrentFigure, layers, setLayers, currentLayer, canvasColor}: Props) => {  
+export const DrawingPannel = ({ setCurrentFigure, layers, setLayers, currentLayer, canvasColor, setLoops}: Props) => {  
   return(
    <div
           style={{
@@ -47,7 +49,7 @@ export const DrawingPannel = ({ setCurrentFigure, layers, setLayers, currentLaye
                 layers={layers}
                 setLayers={setLayers}
                 currentLayer={currentLayer}
-                redrawLayer={(layer:Layer) => RedrawLayer(layer)}
+                redrawLayer={(layer:Layer) => RedrawLayer(layer, setLoops)}
               />
             </Stack>
           </div>
@@ -66,7 +68,7 @@ export const DrawingPannel = ({ setCurrentFigure, layers, setLayers, currentLaye
                 layers={layers}
                 setLayers={setLayers}
                 currentLayer={currentLayer}
-                redrawLayer={(layer:Layer) => RedrawLayer(layer)}
+                redrawLayer={(layer:Layer) => RedrawLayer(layer, setLoops)}
               />
             </Stack>
           </div>
