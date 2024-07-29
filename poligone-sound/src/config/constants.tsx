@@ -4,8 +4,8 @@ export const MAX_LINE_WIDTH = 12;
 
 //dBでの音量
 export const DEFAULT_VOLUME = 0;
-export const MIN_VOLUME = -12;
-export const MAX_VOLUME = 12;
+export const MIN_VOLUME = -6;
+export const MAX_VOLUME = 6;
 
 export const SIZE = 150; //図形のサイズ
 

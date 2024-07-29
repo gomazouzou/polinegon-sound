@@ -6,10 +6,14 @@ import { MinusButton } from "../../components/buttons/MinusButton.tsx";
 import { PlusButton } from "../../components/buttons/PlusButton.tsx";
 import { StartButton } from "../../components/buttons/StartButton.tsx";
 import { StopButton } from "../../components/buttons/StopButton.tsx";
-import { RHYTHM_PATTERN_1 } from "../../config/constants.tsx";
+import { ChangeInstrumentIdToPlayer, ChangePlayerToLoop } from "../../hooks/useInstrumentIdToPlayer.tsx";
+import { LoopInfo, Type } from "../../types/loop.tsx";
 import { BeatDisplay } from "./BeatDisplay/index.tsx";
 
-export const Player = () => {
+type Props = {
+  loops: LoopInfo[];
+}
+export const Player = ({loops}: Props) => {
   const [bpm, setBpm] = useState(120);
   const [beat, setBeat] = useState(3);
 
@@ -21,16 +25,11 @@ export const Player = () => {
   }
 
   const [metronomeAudioBuffer, setMetronomeAudioBuffer] = useState <AudioBuffer>();
-  const [figure1AudioBuffer, setFigure1AudioBuffer] = useState <AudioBuffer>();
-  const [figure2AudioBuffer, setFigure2AudioBuffer] = useState <AudioBuffer>();
-  const [figure3AudioBuffer, setFigure3AudioBuffer] = useState <AudioBuffer>();
-  const [figure4AudioBuffer, setFigure4AudioBuffer] = useState <AudioBuffer>();
-  const [figure5AudioBuffer, setFigure5AudioBuffer] = useState <AudioBuffer>();
-  const [figure6AudioBuffer, setFigure6AudioBuffer] = useState <AudioBuffer>();
-  const [figure7AudioBuffer, setFigure7AudioBuffer] = useState <AudioBuffer>();
-  const [figure8AudioBuffer, setFigure8AudioBuffer] = useState <AudioBuffer>();
+  const [figureAudioBuffers, setFigureAudioBuffers] = useState <AudioBuffer[]>([]);
 
-  const [figureLoops, setFigureLoops] = useState <Tone.Part[]>([]);
+  const [figureLoops, setFigureLoops] = useState <Tone.Part[] | null>(null);
+  const [metronome, setMetronome] = useState<Tone.Part | null>(null);
+  
 
   useEffect(() => {
     const loadAudio = async () => {
@@ -39,53 +38,20 @@ export const Player = () => {
       const buffer = await Tone.context.decodeAudioData(arrayBuffer);
       setMetronomeAudioBuffer(buffer);
 
-      const response1 = await fetch('/audio/figure_1.wav');
-      const arrayBuffer1 = await response1.arrayBuffer();
-      const buffer1 = await Tone.context.decodeAudioData(arrayBuffer1);
-      setFigure1AudioBuffer(buffer1);
-
-      const response2 = await fetch('/audio/figure_2.wav');
-      const arrayBuffer2 = await response2.arrayBuffer();
-      const buffer2 = await Tone.context.decodeAudioData(arrayBuffer2);
-      setFigure2AudioBuffer(buffer2);
-
-      const response3 = await fetch('/audio/figure_3.wav');
-      const arrayBuffer3 = await response3.arrayBuffer();
-      const buffer3 = await Tone.context.decodeAudioData(arrayBuffer3);
-      setFigure3AudioBuffer(buffer3);
-
-      const response4 = await fetch('/audio/figure_4.wav');
-      const arrayBuffer4 = await response4.arrayBuffer();
-      const buffer4 = await Tone.context.decodeAudioData(arrayBuffer4);
-      setFigure4AudioBuffer(buffer4);
-
-      const response5 = await fetch('/audio/figure_5.wav');
-      const arrayBuffer5 = await response5.arrayBuffer();
-      const buffer5 = await Tone.context.decodeAudioData(arrayBuffer5);
-      setFigure5AudioBuffer(buffer5);
-
-      const response6 = await fetch('/audio/figure_6.wav');
-      const arrayBuffer6 = await response6.arrayBuffer();
-      const buffer6 = await Tone.context.decodeAudioData(arrayBuffer6);
-      setFigure6AudioBuffer(buffer6);
-
-      const response7 = await fetch('/audio/figure_7.wav');
-      const arrayBuffer7 = await response7.arrayBuffer();
-      const buffer7 = await Tone.context.decodeAudioData(arrayBuffer7);
-      setFigure7AudioBuffer(buffer7);
-
-      const response8 = await fetch('/audio/figure_8.wav');
-      const arrayBuffer8 = await response8.arrayBuffer();
-      const buffer8 = await Tone.context.decodeAudioData(arrayBuffer8);
-      setFigure8AudioBuffer(buffer8);
+      const figureBuffers: AudioBuffer[] = [];
+    for (let i = 1; i <= 8; i++) {
+      const response = await fetch(`/audio/figure_${i}.wav`);
+      const arrayBuffer = await response.arrayBuffer();
+      const buffer = await Tone.context.decodeAudioData(arrayBuffer);
+      figureBuffers.push(buffer);
+    }
+    setFigureAudioBuffers(figureBuffers);
     };
 
     loadAudio();
   }, []);
 
-  const createLoops = () => {
-    const newLoops: Tone.Part[] = [];
-
+  const createMetronome = () => {
     if (metronomeAudioBuffer) {
       const player = new Tone.Player(metronomeAudioBuffer).toDestination();
       const newPart = new Tone.Part((time, value) => {
@@ -99,38 +65,59 @@ export const Player = () => {
       ]);
       newPart.loop = true;
       newPart.loopEnd = "1m";
-      newLoops.push(newPart);
+      return newPart;
     }
+    return null;
+  };
 
-    if (figure1AudioBuffer) {
-      const player = new Tone.Player(figure1AudioBuffer).toDestination();
-      const newPart = new Tone.Part((time, value) => {
-        player.start(time);
-      }, RHYTHM_PATTERN_1);
-      newPart.loop = true;
-      newPart.loopEnd = "1m";
-      newLoops.push(newPart);
-    }
-
-    return newLoops;
+  const initializeLoops = (loops: LoopInfo[]) => {
+    const newFigureLoops: Tone.Part[] = [];
+    loops.forEach(loop => {
+      if (loop.type === Type.Poligone) {
+        const player = ChangeInstrumentIdToPlayer(loop.instrument, loop.type, figureAudioBuffers, loop.volume);
+        if (!player) return;
+        const newPart = ChangePlayerToLoop(player, loop.figure_id);
+        newFigureLoops.push(newPart);
+      }
+    });
+    return newFigureLoops;
   };
 
   useEffect(() => {
     Tone.Transport.bpm.value = bpm;
   }, [bpm, figureLoops]);
 
+  useEffect(() => {
+    if (figureLoops) {
+      figureLoops.forEach(loop => loop.stop());
+    }
+    const newFigureLoops = initializeLoops(loops);
+    setFigureLoops(newFigureLoops);
+    newFigureLoops.forEach(loop => loop.start(0));
+  }, [loops]);
+
   const startMusic = () => {
-    const newLoops = createLoops();
-    setFigureLoops(newLoops);
+    if (!metronome) {
+      const newMetronome = createMetronome();
+      setMetronome(newMetronome);
+      newMetronome?.start(0);
+    }
+    if (!figureLoops) {
+      const newFigureLoops = initializeLoops(loops);
+      setFigureLoops(newFigureLoops);
+      newFigureLoops?.forEach(loop => loop.start(0));
+    }
+    
     Tone.Transport.start();
-    figureLoops.forEach(loop => loop.start(0));
   };
 
   const stopMusic = () => {
-    figureLoops.forEach(loop => loop.stop());
+    figureLoops?.forEach(loop => loop.stop());
+    metronome?.stop();
     Tone.Transport.stop();
     setBeat(3);
-    setFigureLoops([]);
+    setMetronome(null);
+    setFigureLoops(null);
   };
   
   return (

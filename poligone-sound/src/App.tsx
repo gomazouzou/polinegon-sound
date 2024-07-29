@@ -164,7 +164,7 @@ function App() {
   return (
     <>
       <div style={{ position: 'absolute', top: '15px', left: '50%', transform: 'translateX(-50%)', width:'60%'}}>
-        <Player/>
+        <Player loops={loops}/>
       </div>
 
       <div style={{ position: 'absolute', top: '105px', left: '30px' }}>
