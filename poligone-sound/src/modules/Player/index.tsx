@@ -26,8 +26,8 @@ export const Player = ({loops}: Props) => {
 
   const [metronomeAudioBuffer, setMetronomeAudioBuffer] = useState <AudioBuffer>();
   const [figureAudioBuffers, setFigureAudioBuffers] = useState <AudioBuffer[]>([]);
-  const [lineAudioBuffers, setLineAudioBuffers] = useState <AudioBuffer[]>([]);
 
+  const [lineAudioSamplers, setLineAudioSamplers] = useState <Tone.Sampler[] | null>(null);
   const [figureLoops, setFigureLoops] = useState <Tone.Part[] | null>(null);
   const [metronome, setMetronome] = useState<Tone.Part | null>(null);
   
@@ -48,30 +48,34 @@ export const Player = ({loops}: Props) => {
       }
       setFigureAudioBuffers(figureBuffers);
 
-      /*const lineBuffers: AudioBuffer[] = [];
+      const lineBuffers: Tone.Sampler[] = [];
       for (let i = 1; i <= 8; i++) {
-        const response = await fetch(`/audio/line_${i}.wav`);
-        const arrayBuffer = await response.arrayBuffer();
-        const buffer = await Tone.context.decodeAudioData(arrayBuffer);
-        lineBuffers.push(buffer);
+        const lineAudioSampler = new Tone.Sampler({
+          urls: {
+            C4: `line_${i}.wav`,
+          },
+          baseUrl: "/audio/"
+        }).toDestination();
+        await lineAudioSampler.loaded;
+        lineBuffers.push(lineAudioSampler);
       }
-      setLineAudioBuffers(lineBuffers);*/
+      setLineAudioSamplers(lineBuffers);
     };
 
     loadAudio();
   }, []);
 
   const createMetronome = () => {
-    if (metronomeAudioBuffer) {
+    if (lineAudioSamplers) {
       const player = new Tone.Player(metronomeAudioBuffer).toDestination();
       const newPart = new Tone.Part((time, value) => {
         player.start(time);
         setBeat((prevBeat) => (prevBeat + 1) % 4);
       }, [
-        { time: "0:0:0", note: "C4", pitch: 0 },  // 原音
-        { time: "0:1:0", note: "C5", pitch: 12 },  // 2半音上げる
-        { time: "0:2:0", note: "C3", pitch: -12 }, // 2半音下げる
-        { time: "0:3:0", note: "C4", pitch: 0 },    // 無音
+        { time: "0:0:0" },  
+        { time: "0:1:0" },  
+        { time: "0:2:0" }, 
+        { time: "0:3:0" },    
       ]);
       newPart.loop = true;
       newPart.loopEnd = "1m";
