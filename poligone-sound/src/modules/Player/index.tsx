@@ -26,6 +26,7 @@ export const Player = ({loops}: Props) => {
 
   const [metronomeAudioBuffer, setMetronomeAudioBuffer] = useState <AudioBuffer>();
   const [figureAudioBuffers, setFigureAudioBuffers] = useState <AudioBuffer[]>([]);
+  const [lineAudioBuffers, setLineAudioBuffers] = useState <AudioBuffer[]>([]);
 
   const [figureLoops, setFigureLoops] = useState <Tone.Part[] | null>(null);
   const [metronome, setMetronome] = useState<Tone.Part | null>(null);
@@ -39,13 +40,22 @@ export const Player = ({loops}: Props) => {
       setMetronomeAudioBuffer(buffer);
 
       const figureBuffers: AudioBuffer[] = [];
-    for (let i = 1; i <= 8; i++) {
-      const response = await fetch(`/audio/figure_${i}.wav`);
-      const arrayBuffer = await response.arrayBuffer();
-      const buffer = await Tone.context.decodeAudioData(arrayBuffer);
-      figureBuffers.push(buffer);
-    }
-    setFigureAudioBuffers(figureBuffers);
+      for (let i = 1; i <= 8; i++) {
+        const response = await fetch(`/audio/figure_${i}.wav`);
+        const arrayBuffer = await response.arrayBuffer();
+        const buffer = await Tone.context.decodeAudioData(arrayBuffer);
+        figureBuffers.push(buffer);
+      }
+      setFigureAudioBuffers(figureBuffers);
+
+      /*const lineBuffers: AudioBuffer[] = [];
+      for (let i = 1; i <= 8; i++) {
+        const response = await fetch(`/audio/line_${i}.wav`);
+        const arrayBuffer = await response.arrayBuffer();
+        const buffer = await Tone.context.decodeAudioData(arrayBuffer);
+        lineBuffers.push(buffer);
+      }
+      setLineAudioBuffers(lineBuffers);*/
     };
 
     loadAudio();
@@ -58,10 +68,10 @@ export const Player = ({loops}: Props) => {
         player.start(time);
         setBeat((prevBeat) => (prevBeat + 1) % 4);
       }, [
-        { time: "0:0:0" },
-        { time: "0:1:0" },
-        { time: "0:2:0" },
-        { time: "0:3:0" }
+        { time: "0:0:0", note: "C4", pitch: 0 },  // 原音
+        { time: "0:1:0", note: "C5", pitch: 12 },  // 2半音上げる
+        { time: "0:2:0", note: "C3", pitch: -12 }, // 2半音下げる
+        { time: "0:3:0", note: "C4", pitch: 0 },    // 無音
       ]);
       newPart.loop = true;
       newPart.loopEnd = "1m";
