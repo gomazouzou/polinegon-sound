@@ -39,7 +39,6 @@ export const LayerTab = ({canvasColor, layers, setLayers, currentLayer, setCurre
           drawings: [],
           figures: [],
           type: type,
-          isVisible: true,
         }
       ]
       setTotalLayer(totalLayer + 1);
@@ -63,21 +62,6 @@ export const LayerTab = ({canvasColor, layers, setLayers, currentLayer, setCurre
     //ループ情報の更新
     setLoops(prevLoops => prevLoops.filter(loop => loop.layer_id !== layerId));
   };
-
-  const OnClickVisibleButton = (layerId: number) => {
-    setLayers(prevLayers => prevLayers.map(layer => {
-      if (layer.id === layerId) {
-        const newLayer = {
-          ...layer,
-          isVisible: !layer.isVisible 
-        };
-        return newLayer;
-      }
-      else{
-        return layer;
-      }
-    }));
-  }
   
   const currentIndex = layers.findIndex(layer => layer.id === currentLayer);
 
@@ -125,7 +109,6 @@ export const LayerTab = ({canvasColor, layers, setLayers, currentLayer, setCurre
               id={index}
               setCurrentLayer={setCurrentLayer}
               isHilighted={currentIndex === index} 
-              onClickVisibleButton={() => OnClickVisibleButton(layer.id)}
             />
           ))}
         </Stack>

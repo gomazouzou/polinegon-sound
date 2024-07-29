@@ -12,7 +12,7 @@ function App() {
   const [isDrawing, setIsDrawing] = useState(false);
   const canvasColor = 'white';
   //キャンバスに反映されるすべてのレイヤー
-  const [layers, setLayers] = useState<Layer[]>([{id: 0, ref: React.createRef(), color:"black", lineWidth: DEFAULT_LINE_WIDTH, drawings: [], figures: [], type: Type.Line, isVisible:true}]); 
+  const [layers, setLayers] = useState<Layer[]>([{id: 0, ref: React.createRef(), color:"black", lineWidth: DEFAULT_LINE_WIDTH, drawings: [], figures: [], type: Type.Line}]); 
   //削除したものも含めたレイヤーの通し番号
   const [totalLayer, setTotalLayer] = useState(0); 
   //現在描画を行うレイヤーの番号
@@ -170,7 +170,6 @@ function App() {
       <div style={{ position: 'absolute', top: '105px', left: '30px' }}>
         {
           layers.map((layer, index) => (
-            layer.isVisible && (
               <canvas
                 key={layer.id}
                 ref={layer.ref}
@@ -185,7 +184,6 @@ function App() {
                   zIndex: index,
                 }}
               />
-            )
           ))
         }
       </div>

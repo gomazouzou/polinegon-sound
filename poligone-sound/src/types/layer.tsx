@@ -26,5 +26,4 @@ export type Layer = {
   lineWidth: number;
   drawings: Drawing[];
   figures: Figure[];
-  isVisible: boolean;
 };

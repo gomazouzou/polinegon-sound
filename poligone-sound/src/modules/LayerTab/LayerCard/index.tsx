@@ -1,9 +1,8 @@
-import React from "react";
-import { Card, Typography, Stack } from "@mui/material";
-import MultilineChartIcon from '@mui/icons-material/MultilineChart';
 import ChangeHistoryIcon from '@mui/icons-material/ChangeHistory';
+import MultilineChartIcon from '@mui/icons-material/MultilineChart';
+import { Card, Stack, Typography } from "@mui/material";
+import React from "react";
 
-import { VisibleButton } from "../../../components/buttons/VisibleButton.tsx";
 import { Layer, Type } from "../../../types/layer.tsx";
 
 
@@ -12,10 +11,9 @@ type Props = {
   id: number;
   setCurrentLayer: React.Dispatch<React.SetStateAction<number>>;
   isHilighted: boolean;
-  onClickVisibleButton: () => void;
 }
 
-export const LayerCard = ({layer, id, setCurrentLayer, isHilighted, onClickVisibleButton}: Props) => {
+export const LayerCard = ({layer, id, setCurrentLayer, isHilighted}: Props) => {
   return (
     <Card 
       onClick = {() => {
@@ -34,7 +32,6 @@ export const LayerCard = ({layer, id, setCurrentLayer, isHilighted, onClickVisib
               <ChangeHistoryIcon style={{ fontSize: '24px', color: layer.color}}/>
             )
           }
-          <VisibleButton color={layer.color} isVisible={layer.isVisible} onClick={onClickVisibleButton}/>
         </Stack>
       </Stack>
     </Card>
