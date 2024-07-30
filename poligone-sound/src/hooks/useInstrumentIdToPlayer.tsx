@@ -69,7 +69,6 @@ const convertArrayToTonePart = (noteArray: number[]) => {
       result.push({ time, note });
     }
   });
-  console.log(result);
   return result;
 };
 

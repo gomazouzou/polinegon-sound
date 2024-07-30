@@ -38,6 +38,8 @@ function App() {
   //クオンタイズの設定
   const quantizeRef = useRef<number>(16);
 
+  const currentColorRef = useRef<string>("black");
+
 
   const [metronomeAudioBuffer, setMetronomeAudioBuffer] = useState <AudioBuffer>();
   const [figureAudioBuffers, setFigureAudioBuffers] = useState <AudioBuffer[]>([]);
@@ -77,6 +79,11 @@ function App() {
     loadAudio();
   }, []);
 
+  useEffect(() => {
+    const layer = layers.find(layer => layer.id === currentLayer);
+    currentColorRef.current = layer?.color || "black";
+  }, [layers, currentLayer]);
+
   const UpdateBeatCount = () => {
     const layer = layers.find(layer => layer.id === currentLayer);
     if (isDrawing.current && beatCountRef.current % (16 / quantizeRef.current) === 0 && layer && lineAudioSamplers) {
@@ -84,7 +91,8 @@ function App() {
       const index = beatCountRef.current / (16 / quantizeRef.current);
       const noteId = ChangeMousePosToNoteId(mousePositionRef.current.y); 
       const note = noteMapping[noteId];
-      const sampler = lineAudioSamplers[ChangeColorToInstrumentId(layer.color)]
+
+      const sampler = lineAudioSamplers[ChangeColorToInstrumentId(currentColorRef.current)];
 
       if (note){
         sampler.triggerAttackRelease(note, `${quantizeRef.current}n`);
@@ -129,7 +137,8 @@ function App() {
           // ペンのスタイルを設定
           context.lineWidth = layer.lineWidth; 
           context.lineCap = 'round'; 
-
+          
+          console.log(layer.color);
           context.strokeStyle = layer.color; 
           const currentX: number = event.offsetX;
           const currentY: number = event.offsetY;
