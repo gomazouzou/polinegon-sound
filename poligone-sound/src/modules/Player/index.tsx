@@ -6,6 +6,7 @@ import { MinusButton } from "../../components/buttons/MinusButton.tsx";
 import { PlusButton } from "../../components/buttons/PlusButton.tsx";
 import { StartButton } from "../../components/buttons/StartButton.tsx";
 import { StopButton } from "../../components/buttons/StopButton.tsx";
+import { PROCESSS_SPAN } from "../../config/constants.tsx";
 import { ChangeInstrumentIdToPlayer, ChangePlayerToLoop, ChangeSamplerToLoop } from "../../hooks/useInstrumentIdToPlayer.tsx";
 import { LoopInfo, Type } from "../../types/loop.tsx";
 import { BeatDisplay } from "./BeatDisplay/index.tsx";
@@ -20,9 +21,10 @@ type Props = {
   setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
   setStartFigureDrawing: React.Dispatch<React.SetStateAction<boolean>>;
   setWaitFigureDrawing: React.Dispatch<React.SetStateAction<boolean>>;
+  waitFigureDrawing: boolean;
 }
 
-export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuffer, figureAudioBuffers, lineAudioSamplers,setIsPlaying, setStartFigureDrawing, setWaitFigureDrawing}: Props) => {
+export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuffer, figureAudioBuffers, lineAudioSamplers,setIsPlaying, setStartFigureDrawing, setWaitFigureDrawing, waitFigureDrawing}: Props) => {
   const [bpm, setBpm] = useState(120);
   const [beat, setBeat] = useState(7);
 
@@ -99,7 +101,7 @@ export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuff
       setFigureLoops(newFigureLoops);
       newFigureLoops?.forEach(loop => loop.start(0));
     }
-    Tone.Transport.scheduleRepeat(UpdateBeatCount, "16n");
+    Tone.Transport.scheduleRepeat(UpdateBeatCount, `${PROCESSS_SPAN}n`);
     Tone.Transport.start();
     setIsPlaying(true);
     setStartFigureDrawing(false);
@@ -126,11 +128,11 @@ export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuff
 
         <StopButton onClick={stopMusic}/>
 
-        <MinusButton onLongPress={onLongPressMinusButton}/>
+        <MinusButton onLongPress={onLongPressMinusButton} disabled={waitFigureDrawing}/>
 
         <Typography>BPM : {bpm}</Typography>
 
-        <PlusButton onLongPress={onLongPressPlusButton}/>
+        <PlusButton onLongPress={onLongPressPlusButton} disabled={waitFigureDrawing}/>
       </Stack>
       <Stack>
         <BeatDisplay beat={beat}/>

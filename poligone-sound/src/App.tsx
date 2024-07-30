@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as Tone from 'tone';
-import { CANVAS_HEIGHT, CANVAS_WIDTH, DEFAULT_LINE_WIDTH, DEFAULT_VOLUME, MAX_LINE_WIDTH, MAX_VOLUME } from './config/constants.tsx';
+import { CANVAS_HEIGHT, CANVAS_WIDTH, DEFAULT_LINE_WIDTH, DEFAULT_VOLUME, MAX_LINE_WIDTH, MAX_VOLUME, PROCESSS_SPAN } from './config/constants.tsx';
 import { ChangeColorToInstrumentId } from './hooks/useColorToInstrumentId.tsx';
 import { drawFigure00, drawFigure01, drawFigure02, drawFigure03 } from './hooks/useDrawFigure.tsx';
 import { noteMapping } from './hooks/useInstrumentIdToPlayer.tsx';
@@ -97,9 +97,9 @@ function App() {
   const UpdateBeatCount = () => {
     const layer = layers.find(layer => layer.id === currentLayerId);
     const canvas = layer?.ref.current;
-    if (isDrawing.current && beatCountRef.current % (16 / quantizeRef.current) === 0 && layer && canvas && lineAudioSamplers) {
+    if (isDrawing.current && beatCountRef.current % (PROCESSS_SPAN / quantizeRef.current) === 0 && layer && canvas && lineAudioSamplers) {
       
-      const index = beatCountRef.current / (16 / quantizeRef.current);
+      const index = beatCountRef.current / (PROCESSS_SPAN / quantizeRef.current);
       const noteId = ChangeMousePosToNoteId(mousePositionRef.current.y); 
       const note = noteMapping[noteId];
 
@@ -124,6 +124,7 @@ function App() {
           break;
       }
     }
+    beatCountRef.current = (beatCountRef.current + 1) % (PROCESSS_SPAN * 2);
   }
 
   useEffect(() => {
@@ -314,6 +315,7 @@ function App() {
           setIsPlaying={setIsPlaying}
           setStartFigureDrawing={setStartFigureDrawing}
           setWaitFigureDrawing={setWaitFigureDrawing}
+          waitFigureDrawing={waitFigureDrawing}
         />
       </div>
 

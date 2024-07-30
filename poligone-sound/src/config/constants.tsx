@@ -13,6 +13,9 @@ export const CANVAS_HEIGHT = 480; //キャンバスの高さ
 export const CANVAS_WIDTH = 960; //キャンバスの幅
 export const MARGIN = 20; //図形の描画範囲のマージン
 
+//何音符音符間隔で処理するか
+export const PROCESSS_SPAN = 64;
+
 export const RHYTHM_PATTERN_1 = [
   { time: "0:0:0" },
   { time: "0:0:2" },

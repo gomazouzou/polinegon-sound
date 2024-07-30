@@ -4,9 +4,10 @@ import React, { useRef } from "react";
 
 type Props = {
   onLongPress: () => void;
+  disabled: boolean;
 }
 
-export const MinusButton = ({onLongPress}: Props) => {
+export const MinusButton = ({onLongPress, disabled}: Props) => {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const handleMouseDown = () => {
@@ -26,6 +27,7 @@ export const MinusButton = ({onLongPress}: Props) => {
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      disabled={disabled}
     >
       <ArrowBackIosNewIcon />
     </IconButton>
