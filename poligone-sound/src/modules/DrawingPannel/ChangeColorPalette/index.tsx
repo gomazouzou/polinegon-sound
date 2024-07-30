@@ -1,5 +1,5 @@
-import React from "react";
 import { Stack } from "@mui/material";
+import React from "react";
 
 import { ColorButton } from "../../../components/buttons/ColorButton.tsx";
 import { Layer } from "../../../types/layer.tsx";
@@ -22,19 +22,29 @@ export const ChangeColorPalette = ({layers, setLayers, currentLayer, redrawLayer
     });
   };
 
+  const buttonStyle = (color: string) => ({
+    borderRadius: "50%",
+    backgroundColor: isSelected(color) ?  "#E0E0E0" : "transparent",
+    width: "40px",
+    height: "40px",
+    margin: "5px"
+  });
+  const targetLayer = layers.find(layer => layer.id === currentLayer);
+  const isSelected = (color: string) => targetLayer?.color === color;
+
   return (
     <Stack alignItems="center" justifyContent="center" style={{ height: '100%' }}>
       <Stack direction="row">
-        <ColorButton color="black" setPenColor={changeLayerColor}/>
-        <ColorButton color="red" setPenColor={changeLayerColor}/>
-        <ColorButton color="blue" setPenColor={changeLayerColor}/>
-        <ColorButton color="yellow" setPenColor={changeLayerColor}/>
+        <ColorButton color="black" setPenColor={changeLayerColor} style={buttonStyle("black")}/>
+        <ColorButton color="red" setPenColor={changeLayerColor} style={buttonStyle("red")}/>
+        <ColorButton color="blue" setPenColor={changeLayerColor} style={buttonStyle("blue")}/>
+        <ColorButton color="yellow" setPenColor={changeLayerColor} style={buttonStyle("yellow")}/>
       </Stack>
       <Stack direction="row">
-        <ColorButton color="green" setPenColor={changeLayerColor}/>
-        <ColorButton color="orange" setPenColor={changeLayerColor}/>
-        <ColorButton color="pink" setPenColor={changeLayerColor}/>
-        <ColorButton color="purple" setPenColor={changeLayerColor}/>
+        <ColorButton color="green" setPenColor={changeLayerColor} style={buttonStyle("green")}/>
+        <ColorButton color="orange" setPenColor={changeLayerColor} style={buttonStyle("orange")}/>
+        <ColorButton color="pink" setPenColor={changeLayerColor} style={buttonStyle("pink")}/>
+        <ColorButton color="purple" setPenColor={changeLayerColor} style={buttonStyle("purple")}/>
       </Stack>
     </Stack>
   );
