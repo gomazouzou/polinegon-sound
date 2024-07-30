@@ -26,6 +26,14 @@ export const AddLayerDialog = ({open, onClose, addLayer}: Props) =>  {
   const [type, setType] = useState<Type>(Type.Line);
   const [color, setColor] = useState<string>("black");
   const [lineWidth, setLineWidth] = useState<number>(DEFAULT_LINE_WIDTH);
+
+  const buttonStyle = (type: Type) => ({
+    backgroundColor: isSelected(type) ?  "#E0E0E0" : "transparent",
+    width: "100px",
+    height: "100px",
+  });
+
+  const isSelected = (color_i: Type) => type === color_i;
   
   return (
       <Dialog
@@ -47,8 +55,8 @@ export const AddLayerDialog = ({open, onClose, addLayer}: Props) =>  {
               </DialogContentText>
 
               <Stack direction="row" alignItems={"center"} justifyContent="space-between" marginLeft={10} marginRight={10}>
-                <LineButton onClick={() => setType(Type.Line)}/>
-                <PoligoneButton onClick={() => setType(Type.Poligone)}/>
+                <LineButton onClick={() => setType(Type.Line)} style={buttonStyle(Type.Line)}/>
+                <PoligoneButton onClick={() => setType(Type.Poligone)} style={buttonStyle(Type.Poligone)}/>
               </Stack>
             </Stack>
 
@@ -56,7 +64,7 @@ export const AddLayerDialog = ({open, onClose, addLayer}: Props) =>  {
               <DialogContentText>
                 色を選択
               </DialogContentText>
-              <ColorSelector setPenColor={setColor} />
+              <ColorSelector color={color}setPenColor={setColor} />
             </Stack>
 
             <Stack>
