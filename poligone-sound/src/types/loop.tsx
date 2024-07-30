@@ -9,5 +9,5 @@ export type LoopInfo = {
   instrument: number;
   figure_id: number;
   volume: number;
-  midi?: number[][];
+  midi: number[];
 };

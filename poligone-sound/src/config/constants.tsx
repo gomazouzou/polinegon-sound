@@ -9,6 +9,8 @@ export const MAX_VOLUME = 6;
 
 export const SIZE = 150; //図形のサイズ
 
+export const CANVAS_HEIGHT = 480; //キャンバスの高さ
+
 export const RHYTHM_PATTERN_1 = [
   { time: "0:0:0" },
   { time: "0:0:2" },

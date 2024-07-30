@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { DEFAULT_LINE_WIDTH, DEFAULT_VOLUME, MAX_LINE_WIDTH, MAX_VOLUME } from './config/constants.tsx';
+import { CANVAS_HEIGHT, DEFAULT_LINE_WIDTH, DEFAULT_VOLUME, MAX_LINE_WIDTH, MAX_VOLUME } from './config/constants.tsx';
 import { ChangeColorToInstrumentId } from './hooks/useColorToInstrumentId.tsx';
 import { drawFigure00, drawFigure01, drawFigure02, drawFigure03 } from './hooks/useDrawFigure.tsx';
+import { ChangeMousePosToNoteId } from './hooks/useMousePosToNoteId.tsx';
 import { DrawingPannel } from './modules/DrawingPannel/index.tsx';
 import { LayerTab } from './modules/LayerTab/index.tsx';
 import { Player } from './modules/Player/index.tsx';
@@ -9,8 +10,9 @@ import { Layer, Type } from "./types/layer.tsx";
 import { LoopInfo } from './types/loop.tsx';
 
 function App() {
-  const [isDrawing, setIsDrawing] = useState(false);
   const canvasColor = 'white';
+  const isDrawing= useRef(false);
+
   //キャンバスに反映されるすべてのレイヤー
   const [layers, setLayers] = useState<Layer[]>([{id: 0, ref: React.createRef(), color:"black", lineWidth: DEFAULT_LINE_WIDTH, drawings: [], figures: [], type: Type.Line}]); 
   //削除したものも含めたレイヤーの通し番号
@@ -26,12 +28,35 @@ function App() {
   const beatCountRef = useRef<number>(0);
   //マウスのX,Y座座標
   const mousePositionRef = useRef({ x: 0, y: 0 });
+  //音階の配列
+  const noteArrayRef2 = useRef<number[]>([0,0,0,0]);
+  const noteArrayRef4 = useRef<number[]>([0,0,0,0,0,0,0,0]);
+  const noteArrayRef8 = useRef<number[]>([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+  const noteArrayRef16 = useRef<number[]>([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+  //クオンタイズの設定
+  const quantizeRef = useRef<number>(16);
 
   const UpdateBeatCount = () => {
-    console.log(beatCountRef.current);
-    console.log(mousePositionRef.current);
 
-    beatCountRef.current = (beatCountRef.current + 1) % 16;
+    if (isDrawing.current && beatCountRef.current % (16 / quantizeRef.current) === 0) {
+      const index = beatCountRef.current / (16 / quantizeRef.current);
+      switch (quantizeRef.current) {
+        case 2:
+          noteArrayRef2.current[index] = ChangeMousePosToNoteId(mousePositionRef.current.y);
+          break;
+        case 4:
+          noteArrayRef4.current[index] = ChangeMousePosToNoteId(mousePositionRef.current.y);
+          break;
+        case 8:
+          noteArrayRef8.current[index] = ChangeMousePosToNoteId(mousePositionRef.current.y);
+          break;
+        case 16:
+          noteArrayRef16.current[index] = ChangeMousePosToNoteId(mousePositionRef.current.y);
+          break;
+      }
+    }
+
+    beatCountRef.current = (beatCountRef.current + 1) % 32;
   }
 
   useEffect(() => {
@@ -49,7 +74,7 @@ function App() {
         let prevY: number | null = null;
 
         const draw = (event: MouseEvent) => {
-          if (!isDrawing || !context || !layer) return;
+          if (!isDrawing.current || !context || !layer) return;
 
           // ペンのスタイルを設定
           context.lineWidth = layer.lineWidth; 
@@ -85,7 +110,7 @@ function App() {
         }
 
         const startDrawing = (event : MouseEvent) => {
-          setIsDrawing(true);
+          isDrawing.current = true;
           prevX = event.offsetX;
           prevY = event.offsetY;
           draw(event);
@@ -93,11 +118,46 @@ function App() {
 
         const  stopDrawing = () => {
           if (!context) return;
-          setIsDrawing(false);
+          isDrawing.current = false;
           context.beginPath();
           prevX = null;
           prevY = null;
           setDrawCount(drawCount + 1); 
+
+          let currentNoteArray: number[] = [];
+          
+          switch (quantizeRef.current) {
+            case 2:
+              currentNoteArray = [...noteArrayRef2.current];
+              break;
+            case 4:
+              currentNoteArray = [...noteArrayRef4.current];
+              break;
+            case 8:
+              currentNoteArray = [...noteArrayRef8.current];
+              break;
+            case 16:
+              currentNoteArray = [...noteArrayRef16.current];
+              break;
+          }
+
+          setLoops(prevLoop => {
+            const newLoop = [...prevLoop, 
+              { type: Type.Line, 
+                layer_id: currentLayer, 
+                instrument: ChangeColorToInstrumentId(layer.color), 
+                figure_id: 0, 
+                volume:  DEFAULT_VOLUME + MAX_VOLUME / (MAX_LINE_WIDTH - DEFAULT_LINE_WIDTH)* (layer.lineWidth - DEFAULT_LINE_WIDTH),
+                midi: currentNoteArray
+              }
+            ];
+            return newLoop;
+          });
+
+          noteArrayRef2.current = [0,0,0,0];
+          noteArrayRef4.current = [0,0,0,0,0,0,0,0];
+          noteArrayRef8.current = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+          noteArrayRef16.current = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
         }
 
         canvas.addEventListener('mousedown', startDrawing);
@@ -158,6 +218,7 @@ function App() {
                 instrument: ChangeColorToInstrumentId(layer.color), 
                 figure_id: currentFigure, 
                 volume:  DEFAULT_VOLUME + MAX_VOLUME / (MAX_LINE_WIDTH - DEFAULT_LINE_WIDTH)* (layer.lineWidth - DEFAULT_LINE_WIDTH),
+                midi: []
               }
             ];
             return newLoop;
@@ -190,7 +251,7 @@ function App() {
                 key={layer.id}
                 ref={layer.ref}
                 width={960}
-                height={480}
+                height={CANVAS_HEIGHT}
                 style={{
                   border: '1px solid black',
                   backgroundColor: "transparent",
@@ -225,6 +286,7 @@ function App() {
           currentLayer={currentLayer}
           canvasColor={canvasColor}
           setLoops={setLoops}
+          quantizeRef={quantizeRef}
         />
       </div>
     </>

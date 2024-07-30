@@ -9,6 +9,7 @@ import { Layer } from "../../types/layer.tsx";
 import { LoopInfo } from "../../types/loop.tsx";
 import { ChangeColorPalette } from "./ChangeColorPalette/index.tsx";
 import { LineWidthSlider } from "./LineWidthSlider/index.tsx";
+import { QuantizeSelector } from "./QuantizeSelector/index.tsx";
 
 import { Stack, } from "@mui/material";
 
@@ -19,9 +20,10 @@ type Props = {
   currentLayer: number;
   canvasColor: string;
   setLoops: React.Dispatch<React.SetStateAction<LoopInfo[]>>;
+  quantizeRef: React.MutableRefObject<number>
 }
 
-export const DrawingPannel = ({ setCurrentFigure, layers, setLayers, currentLayer, canvasColor, setLoops}: Props) => {  
+export const DrawingPannel = ({ setCurrentFigure, layers, setLayers, currentLayer, canvasColor, setLoops, quantizeRef}: Props) => {  
   return(
    <div
           style={{
@@ -44,7 +46,9 @@ export const DrawingPannel = ({ setCurrentFigure, layers, setLayers, currentLaye
             left: 90
           }}
           >
-            <Stack alignItems="center"  justifyContent="center" style={{ height: '100%' }}>
+            <Stack direction="row" alignItems="center"  justifyContent="center" style={{ height: '100%' }} spacing={5}>
+              <QuantizeSelector quantizeRef={quantizeRef}/>
+
               <LineWidthSlider 
                 layers={layers}
                 setLayers={setLayers}

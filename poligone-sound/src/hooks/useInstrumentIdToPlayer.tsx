@@ -38,3 +38,49 @@ export const ChangePlayerToLoop = (player: Tone.Player, figure_id: number) => {
   newPart.loopEnd = "1m";
   return newPart;
 }
+
+const noteMapping = {
+  0: null,
+  1: 'G3',
+  2: 'A3',
+  3: 'C4',
+  4: 'D4',
+  5: 'E4',
+  6: 'G4',
+  7: 'A4',
+  8: 'C5'
+};
+interface TonePart {
+  time: string;
+  note: string;
+}
+
+const convertArrayToTonePart = (noteArray: number[]) => {
+  const result: TonePart[] = [];
+  //一小説分の長さ
+  const quantizeNumber = noteArray.length / 2;
+  
+  noteArray.forEach((value, index) => {
+    const note = noteMapping[value];
+    if (note) {
+      const syousetsu = Math.floor(index / quantizeNumber);
+      const beat = (index - syousetsu * quantizeNumber) * 4 / quantizeNumber;
+      const time = `${syousetsu}:${beat}:0`;
+      result.push({ time, note });
+    }
+  });
+  console.log(result);
+  return result;
+};
+
+export const ChangeSamplerToLoop = (sampler: Tone.Sampler, noteArray: number[], volume: number) => {
+  const tonePart = convertArrayToTonePart(noteArray);
+  sampler.volume.value = volume;
+  const newPart = new Tone.Part((time, value) => {
+    sampler.triggerAttackRelease(value.note, `${noteArray.length/2}n`, time);
+  }, tonePart);
+
+  newPart.loop = true;
+  newPart.loopEnd = "2m";
+  return newPart;
+}

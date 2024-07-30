@@ -1,4 +1,4 @@
-import { DEFAULT_VOLUME, MAX_VOLUME, MAX_LINE_WIDTH, DEFAULT_LINE_WIDTH } from "../config/constants.tsx";
+import { DEFAULT_LINE_WIDTH, DEFAULT_VOLUME, MAX_LINE_WIDTH, MAX_VOLUME } from "../config/constants.tsx";
 import { ChangeColorToInstrumentId } from "../hooks/useColorToInstrumentId.tsx";
 import { RedrawFigure } from "../hooks/useDrawFigure.tsx";
 import { Layer, Type } from "../types/layer.tsx";
@@ -43,6 +43,18 @@ export const RedrawLayer = (layer: Layer, setLoops: React.Dispatch<React.SetStat
       drawCountBefore = drawing.count
     });
     context.beginPath();
+
+     // ループ情報の再設定
+     setLoops(prevLoops => prevLoops.map(loop => {
+      if (loop.layer_id === layer.id) {
+        return {
+          ...loop,
+          instrument: ChangeColorToInstrumentId(layer.color),
+          volume:  DEFAULT_VOLUME + MAX_VOLUME / (MAX_LINE_WIDTH - DEFAULT_LINE_WIDTH)* (layer.lineWidth - DEFAULT_LINE_WIDTH),
+        };
+      }
+      return loop
+    }));
   }
 
   //図形の場合の再描画
