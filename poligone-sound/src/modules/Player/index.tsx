@@ -26,11 +26,11 @@ export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuff
   const [figureLoops, setFigureLoops] = useState <Tone.Part[] | null>(null);
   const [metronome, setMetronome] = useState<Tone.Part | null>(null);
 
-  const onClickPlusButton = () => {
-    setBpm(bpm + 10);
+  const onLongPressPlusButton = () => {
+    setBpm(prevBpm => prevBpm + 2);
   }
-  const onClickMinusButton = () => {
-    setBpm(bpm - 10);
+  const onLongPressMinusButton = () => {
+    setBpm(prevBpm => prevBpm - 2);
   }
 
   const createMetronome = () => {
@@ -117,11 +117,11 @@ export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuff
 
         <StopButton onClick={stopMusic}/>
 
-        <MinusButton onClick={onClickMinusButton}/>
+        <MinusButton onLongPress={onLongPressMinusButton}/>
 
         <Typography>BPM : {bpm}</Typography>
 
-        <PlusButton onClick={onClickPlusButton}/>
+        <PlusButton onLongPress={onLongPressPlusButton}/>
       </Stack>
       <Stack>
         <BeatDisplay beat={beat}/>
