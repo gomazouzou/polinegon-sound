@@ -7,15 +7,15 @@ import { Layer } from "../../../types/layer.tsx";
 type Props = {
   layers: Layer[];
   setLayers: React.Dispatch<React.SetStateAction<Layer[]>>;
-  currentLayer: number;
+  currentLayerId: number;
   redrawLayer: (layer: Layer) => void;
 };
 
-export const ChangeColorPalette = ({layers, setLayers, currentLayer, redrawLayer}: Props) => {
+export const ChangeColorPalette = ({layers, setLayers, currentLayerId, redrawLayer}: Props) => {
   const changeLayerColor = (color: string) => {
     setLayers(prevLayers => {
       const newLayers = [...prevLayers];
-      const targetLayerIndex =  newLayers.findIndex(layer => layer.id === currentLayer);
+      const targetLayerIndex =  newLayers.findIndex(layer => layer.id === currentLayerId);
       newLayers[targetLayerIndex] = { ...newLayers[targetLayerIndex], color:color };
       redrawLayer(newLayers[targetLayerIndex]);
       return newLayers;
@@ -29,7 +29,7 @@ export const ChangeColorPalette = ({layers, setLayers, currentLayer, redrawLayer
     height: "40px",
     margin: "5px"
   });
-  const targetLayer = layers.find(layer => layer.id === currentLayer);
+  const targetLayer = layers.find(layer => layer.id === currentLayerId);
   const isSelected = (color: string) => targetLayer?.color === color;
 
   return (

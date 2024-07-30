@@ -4,18 +4,17 @@ import React from "react";
 
 type Props = {
   onClick: () => void;
-  disabled: boolean;
-  isFreeFigureDrawing: boolean;
+  style: React.CSSProperties;
 }
 
-export const FreeDrawingButton = ({onClick, disabled, isFreeFigureDrawing}: Props) => {
+export const FreeDrawingButton = ({onClick, style}: Props) => {
   return (
     <IconButton
       aria-label="free-drawing"
       onClick={onClick}
-      disabled={disabled}
+      style={{ ...style, borderRadius: "0" }}
     >
-      <PolylineIcon style={{ fontSize: '30px', color: isFreeFigureDrawing ? 'black' : 'lightgray' }}/>
+      <PolylineIcon style={{ fontSize: '90px' }}/>
     </IconButton>
   );
 };

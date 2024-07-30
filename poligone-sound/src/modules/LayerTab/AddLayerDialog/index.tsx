@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import React, { useState } from 'react';
 
+import { FreeDrawingButton } from '../../../components/buttons/FreeDrawingButton.tsx';
 import { LineButton } from '../../../components/buttons/LineButton.tsx';
 import { PoligoneButton } from '../../../components/buttons/PoligoneButton.tsx';
 import { DEFAULT_LINE_WIDTH } from '../../../config/constants.tsx';
@@ -51,12 +52,13 @@ export const AddLayerDialog = ({open, onClose, addLayer}: Props) =>  {
           <Stack spacing={2}>
             <Stack>
               <DialogContentText>
-                線か図形を選択
+                タイプを選択
               </DialogContentText>
 
               <Stack direction="row" alignItems={"center"} justifyContent="space-between" marginLeft={10} marginRight={10}>
                 <LineButton onClick={() => setType(Type.Line)} style={buttonStyle(Type.Line)}/>
                 <PoligoneButton onClick={() => setType(Type.Poligone)} style={buttonStyle(Type.Poligone)}/>
+                <FreeDrawingButton onClick={() => setType(Type.Free)} style={buttonStyle(Type.Free)}/>
               </Stack>
             </Stack>
 

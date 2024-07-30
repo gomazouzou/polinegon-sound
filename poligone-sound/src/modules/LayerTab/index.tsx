@@ -12,14 +12,14 @@ type Props = {
   canvasColor: string;
   layers: Layer[];
   setLayers: React.Dispatch<React.SetStateAction<Layer[]>>
-  currentLayer: number;
-  setCurrentLayer: React.Dispatch<React.SetStateAction<number>>;
+  currentLayerId: number;
+  setCurrentLayerId: React.Dispatch<React.SetStateAction<number>>;
   totalLayer: number;
   setTotalLayer: React.Dispatch<React.SetStateAction<number>>;
   setLoops: React.Dispatch<React.SetStateAction<LoopInfo[]>>;
 }
 
-export const LayerTab = ({canvasColor, layers, setLayers, currentLayer, setCurrentLayer, totalLayer, setTotalLayer, setLoops}: Props) => {
+export const LayerTab = ({canvasColor, layers, setLayers, currentLayerId, setCurrentLayerId, totalLayer, setTotalLayer, setLoops}: Props) => {
 
   const {
     isOpen: isCOpenAddLayerDialog,
@@ -42,7 +42,7 @@ export const LayerTab = ({canvasColor, layers, setLayers, currentLayer, setCurre
         }
       ]
       setTotalLayer(totalLayer + 1);
-      setCurrentLayer(totalLayer + 1);
+      setCurrentLayerId(totalLayer + 1);
       return newLayers;
     });
   };
@@ -52,18 +52,18 @@ export const LayerTab = ({canvasColor, layers, setLayers, currentLayer, setCurre
       return;
     }
     
-    const currentIndex = layers.findIndex(layer => layer.id === currentLayer);
+    const currentIndex = layers.findIndex(layer => layer.id === currentLayerId);
     const newLayers = layers.filter(layer => layer.id !== layerId);
     setLayers(newLayers);
     
     const newCurrentIndex = currentIndex - 1 > 0 ? newLayers[currentIndex - 1].id : newLayers[0].id
-    setCurrentLayer(newCurrentIndex);
+    setCurrentLayerId(newCurrentIndex);
 
     //ループ情報の更新
     setLoops(prevLoops => prevLoops.filter(loop => loop.layer_id !== layerId));
   };
   
-  const currentIndex = layers.findIndex(layer => layer.id === currentLayer);
+  const currentIndex = layers.findIndex(layer => layer.id === currentLayerId);
 
   return(
     <div
@@ -89,7 +89,7 @@ export const LayerTab = ({canvasColor, layers, setLayers, currentLayer, setCurre
       }}
       >
         <AddButton onClick={openAddLayerDialog}/>
-        <DeleteButton onClick={() => deleteLayer(currentLayer, setLoops)}/>
+        <DeleteButton onClick={() => deleteLayer(currentLayerId, setLoops)}/>
       </div>
       <div
         style={{
@@ -107,7 +107,7 @@ export const LayerTab = ({canvasColor, layers, setLayers, currentLayer, setCurre
             <LayerCard
               layer={layer}
               id={index}
-              setCurrentLayer={setCurrentLayer}
+              setCurrentLayerId={setCurrentLayerId}
               isHilighted={currentIndex === index} 
             />
           ))}

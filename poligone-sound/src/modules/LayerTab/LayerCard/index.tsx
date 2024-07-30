@@ -1,5 +1,6 @@
 import ChangeHistoryIcon from '@mui/icons-material/ChangeHistory';
 import MultilineChartIcon from '@mui/icons-material/MultilineChart';
+import PolylineIcon from '@mui/icons-material/Polyline';
 import { Card, Stack, Typography } from "@mui/material";
 import React from "react";
 
@@ -9,15 +10,15 @@ import { Layer, Type } from "../../../types/layer.tsx";
 type Props = {
   layer: Layer;
   id: number;
-  setCurrentLayer: React.Dispatch<React.SetStateAction<number>>;
+  setCurrentLayerId: React.Dispatch<React.SetStateAction<number>>;
   isHilighted: boolean;
 }
 
-export const LayerCard = ({layer, id, setCurrentLayer, isHilighted}: Props) => {
+export const LayerCard = ({layer, id, setCurrentLayerId, isHilighted}: Props) => {
   return (
     <Card 
       onClick = {() => {
-        setCurrentLayer(layer.id); 
+        setCurrentLayerId(layer.id); 
       }}
       sx={{  border: isHilighted ? '3px solid ' + layer.color : '1.5px solid ' + layer.color }} 
     >
@@ -28,9 +29,11 @@ export const LayerCard = ({layer, id, setCurrentLayer, isHilighted}: Props) => {
           {
             layer.type === Type.Line ? (
               <MultilineChartIcon  style={{ fontSize: '24px', color: layer.color}}/>
-            ): (
+            ): layer.type === Type.Poligone ? (
               <ChangeHistoryIcon style={{ fontSize: '24px', color: layer.color}}/>
-            )
+            ): layer.type === Type.Free ? (
+              <PolylineIcon style={{ fontSize: '24px', color: layer.color}}/>
+            ): null
           }
         </Stack>
       </Stack>

@@ -17,9 +17,12 @@ type Props = {
   metronomeAudioBuffer: AudioBuffer | undefined;
   figureAudioBuffers: AudioBuffer[];
   lineAudioSamplers: Tone.Sampler[] | null;
+  setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
+  setStartFigureDrawing: React.Dispatch<React.SetStateAction<boolean>>;
+  setWaitFigureDrawing: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuffer, figureAudioBuffers, lineAudioSamplers}: Props) => {
+export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuffer, figureAudioBuffers, lineAudioSamplers,setIsPlaying, setStartFigureDrawing, setWaitFigureDrawing}: Props) => {
   const [bpm, setBpm] = useState(120);
   const [beat, setBeat] = useState(7);
 
@@ -98,6 +101,9 @@ export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuff
     }
     Tone.Transport.scheduleRepeat(UpdateBeatCount, "16n");
     Tone.Transport.start();
+    setIsPlaying(true);
+    setStartFigureDrawing(false);
+    setWaitFigureDrawing(false);
   };
 
   const stopMusic = () => {
@@ -108,6 +114,9 @@ export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuff
     setMetronome(null);
     setFigureLoops(null);
     beatCountRef.current = 0;
+    setIsPlaying(false);
+    setStartFigureDrawing(false);
+    setWaitFigureDrawing(false);
   };
   
   return (

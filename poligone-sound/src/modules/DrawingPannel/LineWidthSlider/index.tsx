@@ -10,7 +10,7 @@ import { Layer } from "../../../types/layer.tsx";
 type Props = {
   layers: Layer[];
   setLayers: React.Dispatch<React.SetStateAction<Layer[]>>;
-  currentLayer: number;
+  currentLayerId: number;
   redrawLayer: (layer: Layer) => void;
 }
 
@@ -18,11 +18,11 @@ const Input = styled(MuiInput)`
   width: 42px;
 `;
 
-export const LineWidthSlider = ({layers, setLayers, currentLayer, redrawLayer}:Props) => {
+export const LineWidthSlider = ({layers, setLayers, currentLayerId, redrawLayer}:Props) => {
   
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
     const updatedLayers = [...layers];
-    const targetLayerIndex =  updatedLayers.findIndex(layer => layer.id === currentLayer);
+    const targetLayerIndex =  updatedLayers.findIndex(layer => layer.id === currentLayerId);
     updatedLayers[targetLayerIndex].lineWidth = newValue as number;
     setLayers(updatedLayers);
     redrawLayer(layers[targetLayerIndex]);
@@ -31,7 +31,7 @@ export const LineWidthSlider = ({layers, setLayers, currentLayer, redrawLayer}:P
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value === '' ? MIN_LINE_WIDTH : Number(event.target.value);
     const updatedLayers = [...layers];
-    const targetLayerIndex =  updatedLayers.findIndex(layer => layer.id === currentLayer);
+    const targetLayerIndex =  updatedLayers.findIndex(layer => layer.id === currentLayerId);
     updatedLayers[targetLayerIndex].lineWidth = newValue;
     setLayers(updatedLayers);
     redrawLayer(layers[targetLayerIndex]);
@@ -39,16 +39,16 @@ export const LineWidthSlider = ({layers, setLayers, currentLayer, redrawLayer}:P
 
   const handleBlur = () => {
     const updatedLayers = [...layers];
-    const targetLayerIndex =  updatedLayers.findIndex(layer => layer.id === currentLayer);
+    const targetLayerIndex =  updatedLayers.findIndex(layer => layer.id === currentLayerId);
     if (updatedLayers[targetLayerIndex].lineWidth < MIN_LINE_WIDTH) {
       updatedLayers[targetLayerIndex].lineWidth = MIN_LINE_WIDTH;
     } else if (updatedLayers[targetLayerIndex].lineWidth > MAX_LINE_WIDTH) {
-      updatedLayers[currentLayer].lineWidth = MAX_LINE_WIDTH;
+      updatedLayers[currentLayerId].lineWidth = MAX_LINE_WIDTH;
     }
     setLayers(updatedLayers);
     redrawLayer(layers[targetLayerIndex]);
   };
-  const targetLayer =  layers.find(layer => layer.id === currentLayer);
+  const targetLayer =  layers.find(layer => layer.id === currentLayerId);
 
   return (
     <Box sx={{ width: 250 }}>

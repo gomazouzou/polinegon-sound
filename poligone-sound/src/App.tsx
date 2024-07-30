@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as Tone from 'tone';
-import { CANVAS_HEIGHT, DEFAULT_LINE_WIDTH, DEFAULT_VOLUME, MAX_LINE_WIDTH, MAX_VOLUME } from './config/constants.tsx';
+import { CANVAS_HEIGHT, CANVAS_WIDTH, DEFAULT_LINE_WIDTH, DEFAULT_VOLUME, MAX_LINE_WIDTH, MAX_VOLUME } from './config/constants.tsx';
 import { ChangeColorToInstrumentId } from './hooks/useColorToInstrumentId.tsx';
 import { drawFigure00, drawFigure01, drawFigure02, drawFigure03 } from './hooks/useDrawFigure.tsx';
 import { noteMapping } from './hooks/useInstrumentIdToPlayer.tsx';
@@ -20,7 +20,7 @@ function App() {
   //削除したものも含めたレイヤーの通し番号
   const [totalLayer, setTotalLayer] = useState(0); 
   //現在描画を行うレイヤーの番号
-  const [currentLayer, setCurrentLayer] = useState(0); 
+  const [currentLayerId, setCurrentLayerId] = useState(0); 
   //現在描画してるレイヤーの分かれたブロックの数
   const [drawCount, setDrawCount] = useState(0);
   //現在描画する図形の番号 
@@ -38,7 +38,9 @@ function App() {
   //クオンタイズの設定
   const quantizeRef = useRef<number>(16);
   //自由図形描画を使うかどうか
-  const [isFreeFigureDrawing, setIsFreeFigureDrawing] = useState(false);
+  const [startFigureDrawing, setStartFigureDrawing] = useState(false);
+  const [waitFigureDrawing, setWaitFigureDrawing] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const currentColorRef = useRef<string>("black");
 
@@ -82,13 +84,20 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const layer = layers.find(layer => layer.id === currentLayer);
+    if (isPlaying && startFigureDrawing) {
+      setWaitFigureDrawing(true);
+    }
+}, [startFigureDrawing, isPlaying]);
+
+  useEffect(() => {
+    const layer = layers.find(layer => layer.id === currentLayerId);
     currentColorRef.current = layer?.color || "black";
-  }, [layers, currentLayer]);
+  }, [layers, currentLayerId]);
 
   const UpdateBeatCount = () => {
-    const layer = layers.find(layer => layer.id === currentLayer);
-    if (isDrawing.current && beatCountRef.current % (16 / quantizeRef.current) === 0 && layer && lineAudioSamplers) {
+    const layer = layers.find(layer => layer.id === currentLayerId);
+    const canvas = layer?.ref.current;
+    if (isDrawing.current && beatCountRef.current % (16 / quantizeRef.current) === 0 && layer && canvas && lineAudioSamplers) {
       
       const index = beatCountRef.current / (16 / quantizeRef.current);
       const noteId = ChangeMousePosToNoteId(mousePositionRef.current.y); 
@@ -115,14 +124,12 @@ function App() {
           break;
       }
     }
-
-    beatCountRef.current = (beatCountRef.current + 1) % 32;
   }
 
   useEffect(() => {
     if (layers.length === 0) return;
-    const layer = layers.find(layer => layer.id === currentLayer);
-    if(layer){
+    const layer = layers.find(layer => layer.id === currentLayerId);
+    if(layer && isPlaying){
 
       //線レイヤーの場合の描画処理
       if(layer.type === Type.Line){
@@ -154,7 +161,7 @@ function App() {
 
           // 描画内容を保存
           setLayers(prevLayers => prevLayers.map(layer => {
-            if (layer.id === currentLayer && prevX && prevY) {
+            if (layer.id === currentLayerId && prevX && prevY) {
               return {
                 ...layer,
                 drawings: [...layer.drawings, { startX: prevX, startY: prevY, endX: currentX, endY: currentY, count: drawCount }]
@@ -204,7 +211,7 @@ function App() {
           setLoops(prevLoop => {
             const newLoop = [...prevLoop, 
               { type: Type.Line, 
-                layer_id: currentLayer, 
+                layer_id: currentLayerId, 
                 instrument: ChangeColorToInstrumentId(layer.color), 
                 figure_id: 0, 
                 volume:  DEFAULT_VOLUME + MAX_VOLUME / (MAX_LINE_WIDTH - DEFAULT_LINE_WIDTH)* (layer.lineWidth - DEFAULT_LINE_WIDTH),
@@ -234,7 +241,7 @@ function App() {
       };
 
       //図形レイヤーの場合の描画処理
-      if(layer.type === Type.Poligone && !isFreeFigureDrawing){
+      if(layer.type === Type.Poligone && !startFigureDrawing){
         const canvas = layer.ref.current;
         if (!canvas) return;
         const context = canvas.getContext('2d');
@@ -259,7 +266,7 @@ function App() {
           
           // 描画内容を保存
           setLayers(prevLayers => prevLayers.map(layer => {
-            if (layer.id === currentLayer) {
+            if (layer.id === currentLayerId) {
               return {
                 ...layer,
                 figures: [...layer.figures, { id: currentFigure, x_pos: event.offsetX, y_pos: event.offsetY }]
@@ -274,7 +281,7 @@ function App() {
           setLoops(prevLoop => {
             const newLoop = [...prevLoop, 
               { type: Type.Poligone, 
-                layer_id: currentLayer, 
+                layer_id: currentLayerId, 
                 instrument: ChangeColorToInstrumentId(layer.color), 
                 figure_id: currentFigure, 
                 volume:  DEFAULT_VOLUME + MAX_VOLUME / (MAX_LINE_WIDTH - DEFAULT_LINE_WIDTH)* (layer.lineWidth - DEFAULT_LINE_WIDTH),
@@ -292,7 +299,7 @@ function App() {
         };
       };
     };  
-  }, [isDrawing, canvasColor, currentLayer, layers, drawCount, currentFigure, isFreeFigureDrawing]);
+  }, [isDrawing, canvasColor, currentLayerId, layers, drawCount, currentFigure, startFigureDrawing, isPlaying]);
 
   return (
     <>
@@ -304,6 +311,9 @@ function App() {
           metronomeAudioBuffer={metronomeAudioBuffer}
           figureAudioBuffers={figureAudioBuffers}
           lineAudioSamplers={lineAudioSamplers}
+          setIsPlaying={setIsPlaying}
+          setStartFigureDrawing={setStartFigureDrawing}
+          setWaitFigureDrawing={setWaitFigureDrawing}
         />
       </div>
 
@@ -313,7 +323,7 @@ function App() {
               <canvas
                 key={layer.id}
                 ref={layer.ref}
-                width={960}
+                width={CANVAS_WIDTH}
                 height={CANVAS_HEIGHT}
                 style={{
                   border: '1px solid black',
@@ -333,8 +343,8 @@ function App() {
           canvasColor={canvasColor}
           layers={layers}
           setLayers={setLayers}
-          currentLayer={currentLayer}
-          setCurrentLayer={setCurrentLayer}
+          currentLayerId={currentLayerId}
+          setCurrentLayerId={setCurrentLayerId}
           totalLayer={totalLayer}
           setTotalLayer={setTotalLayer}
           setLoops={setLoops}
@@ -347,12 +357,14 @@ function App() {
           currentFigure={currentFigure}
           layers={layers}
           setLayers={setLayers}
-          currentLayer={currentLayer}
+          currentLayerId={currentLayerId}
           canvasColor={canvasColor}
           setLoops={setLoops}
           quantizeRef={quantizeRef}
-          isFreeFigureDrawing={isFreeFigureDrawing}
-          setIsFreeFigureDrawing={setIsFreeFigureDrawing}
+          startFigureDrawing={startFigureDrawing}
+          setStartFigureDrawing={setStartFigureDrawing}
+          isPlaying={isPlaying}
+          waitFigureDrawing={waitFigureDrawing}
         />
       </div>
     </>

@@ -7,9 +7,11 @@ export const DEFAULT_VOLUME = 0;
 export const MIN_VOLUME = -6;
 export const MAX_VOLUME = 6;
 
-export const SIZE = 150; //図形のサイズ
+export const SIZE = 120; //図形のサイズ
 
 export const CANVAS_HEIGHT = 480; //キャンバスの高さ
+export const CANVAS_WIDTH = 960; //キャンバスの幅
+export const MARGIN = 20; //図形の描画範囲のマージン
 
 export const RHYTHM_PATTERN_1 = [
   { time: "0:0:0" },

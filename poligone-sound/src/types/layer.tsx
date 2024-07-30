@@ -16,6 +16,7 @@ type Figure = {
 export enum Type {
   Poligone =  "poligone",
   Line = "line",
+  Free = "free",
 }
 
 export type Layer = {

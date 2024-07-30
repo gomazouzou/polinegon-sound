@@ -11,7 +11,7 @@ export const startDrawing = (
   prevX: number | null,
   prevY: number | null,
   drawCount: number,
-  currentLayer: number,
+  currentLayerId: number,
   layer: Layer,
   context: CanvasRenderingContext2D | null,
   setLayers: React.Dispatch<React.SetStateAction<Layer[]>>,
@@ -20,7 +20,7 @@ export const startDrawing = (
   isDrawing.current = true;
   prevX = event.offsetX;
   prevY = event.offsetY;
-  draw(event, isDrawing, prevX, prevY, drawCount, currentLayer, layer, context, setLayers, mousePositionRef);
+  draw(event, isDrawing, prevX, prevY, drawCount, currentLayerId, layer, context, setLayers, mousePositionRef);
 }
 
 //線の描画をする関数
@@ -30,7 +30,7 @@ export const draw = (
   prevX: number | null,
   prevY: number | null,
   drawCount: number,
-  currentLayer: number,
+  currentLayerId: number,
   layer: Layer,
   context: CanvasRenderingContext2D | null,
   setLayers: React.Dispatch<React.SetStateAction<Layer[]>>,
@@ -56,7 +56,7 @@ export const draw = (
 
   // 描画内容を保存
   setLayers(prevLayers => prevLayers.map(layer => {
-    if (layer.id === currentLayer && prevX && prevY) {
+    if (layer.id === currentLayerId && prevX && prevY) {
       return {
         ...layer,
         drawings: [...layer.drawings, { startX: prevX, startY: prevY, endX: currentX, endY: currentY, count: drawCount }]
@@ -79,7 +79,7 @@ export const  stopDrawing = (
   prevY: number | null,
   setDrawCount: React.Dispatch<React.SetStateAction<number>>,
   drawCount: number,
-  currentLayer: number,
+  currentLayerId: number,
   layer: Layer,
   setLoops: React.Dispatch<React.SetStateAction<LoopInfo[]>>,
   quantizeRef: React.MutableRefObject<number>,
@@ -115,7 +115,7 @@ export const  stopDrawing = (
   setLoops(prevLoop => {
     const newLoop = [...prevLoop, 
       { type: Type.Line, 
-        layer_id: currentLayer, 
+        layer_id: currentLayerId, 
         instrument: ChangeColorToInstrumentId(layer.color), 
         figure_id: 0, 
         volume:  DEFAULT_VOLUME + MAX_VOLUME / (MAX_LINE_WIDTH - DEFAULT_LINE_WIDTH)* (layer.lineWidth - DEFAULT_LINE_WIDTH),
@@ -137,7 +137,7 @@ export const drawFigureV2 = (
   layer: Layer,
   currentFigure: number,
   setLayers: React.Dispatch<React.SetStateAction<Layer[]>>,
-  currentLayer: number,
+  currentLayerId: number,
   setLoops: React.Dispatch<React.SetStateAction<LoopInfo[]>>,
   context: CanvasRenderingContext2D | null
 ) => {
@@ -165,7 +165,7 @@ export const drawFigureV2 = (
   
   // 描画内容を保存
   setLayers(prevLayers => prevLayers.map(layer => {
-    if (layer.id === currentLayer) {
+    if (layer.id === currentLayerId) {
       return {
         ...layer,
         figures: [...layer.figures, { id: currentFigure, x_pos: event.offsetX, y_pos: event.offsetY }]
@@ -180,7 +180,7 @@ export const drawFigureV2 = (
   setLoops(prevLoop => {
     const newLoop = [...prevLoop, 
       { type: Type.Poligone, 
-        layer_id: currentLayer, 
+        layer_id: currentLayerId, 
         instrument: ChangeColorToInstrumentId(layer.color), 
         figure_id: currentFigure, 
         volume:  DEFAULT_VOLUME + MAX_VOLUME / (MAX_LINE_WIDTH - DEFAULT_LINE_WIDTH)* (layer.lineWidth - DEFAULT_LINE_WIDTH),
@@ -195,7 +195,7 @@ export const addEventToLayer = (
   layer: Layer,
   currentFigure: number,
   setLayers: React.Dispatch<React.SetStateAction<Layer[]>>,
-  currentLayer: number,
+  currentLayerId: number,
   setLoops: React.Dispatch<React.SetStateAction<LoopInfo[]>>,
 ) => {
   const canvas = layer.ref.current;
@@ -205,7 +205,7 @@ export const addEventToLayer = (
   const context = canvas.getContext('2d');
   if (layer.type === Type.Poligone) {
     canvas.addEventListener('click', (event) => {
-      drawFigureV2(event, layer, currentFigure, setLayers, currentLayer, setLoops, context)
+      drawFigureV2(event, layer, currentFigure, setLayers, currentLayerId, setLoops, context)
     });
   }
 }
@@ -214,7 +214,7 @@ export const removeEventToLayer = (
   layer: Layer,
   currentFigure: number,
   setLayers: React.Dispatch<React.SetStateAction<Layer[]>>,
-  currentLayer: number,
+  currentLayerId: number,
   setLoops: React.Dispatch<React.SetStateAction<LoopInfo[]>>,
 ) => {
   const canvas = layer.ref.current;
@@ -222,7 +222,7 @@ export const removeEventToLayer = (
   const context = canvas.getContext('2d');
   if (layer.type === Type.Poligone) {
     canvas.removeEventListener('click', (event) => {
-      drawFigureV2(event, layer, currentFigure, setLayers, currentLayer, setLoops, context)
+      drawFigureV2(event, layer, currentFigure, setLayers, currentLayerId, setLoops, context)
     });
   }
 }
