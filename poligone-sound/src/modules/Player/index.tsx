@@ -20,11 +20,10 @@ type Props = {
   lineAudioSamplers: Tone.Sampler[] | null;
   setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
   setStartFigureDrawing: React.Dispatch<React.SetStateAction<boolean>>;
-  setWaitFigureDrawing: React.Dispatch<React.SetStateAction<boolean>>;
-  waitFigureDrawing: boolean;
+  startFigureDrawing: boolean;
 }
 
-export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuffer, figureAudioBuffers, lineAudioSamplers,setIsPlaying, setStartFigureDrawing, setWaitFigureDrawing, waitFigureDrawing}: Props) => {
+export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuffer, figureAudioBuffers, lineAudioSamplers,setIsPlaying, setStartFigureDrawing, startFigureDrawing}: Props) => {
   const [bpm, setBpm] = useState(120);
   const [beat, setBeat] = useState(7);
 
@@ -105,7 +104,6 @@ export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuff
     Tone.Transport.start();
     setIsPlaying(true);
     setStartFigureDrawing(false);
-    setWaitFigureDrawing(false);
   };
 
   const stopMusic = () => {
@@ -118,21 +116,20 @@ export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuff
     beatCountRef.current = 0;
     setIsPlaying(false);
     setStartFigureDrawing(false);
-    setWaitFigureDrawing(false);
   };
   
   return (
     <Stack  spacing={1}>
       <Stack direction="row" alignItems="center" justifyContent="center">
-        <StartButton onClick={startMusic}/>
+        <StartButton onClick={startMusic} disabled={startFigureDrawing}/>
 
-        <StopButton onClick={stopMusic}/>
+        <StopButton onClick={stopMusic} disabled={startFigureDrawing}/>
 
-        <MinusButton onLongPress={onLongPressMinusButton} disabled={waitFigureDrawing}/>
+        <MinusButton onLongPress={onLongPressMinusButton} disabled={startFigureDrawing}/>
 
         <Typography>BPM : {bpm}</Typography>
 
-        <PlusButton onLongPress={onLongPressPlusButton} disabled={waitFigureDrawing}/>
+        <PlusButton onLongPress={onLongPressPlusButton} disabled={startFigureDrawing}/>
       </Stack>
       <Stack>
         <BeatDisplay beat={beat}/>

@@ -5,14 +5,16 @@ import Figure00 from '../../images/figure_templete_00.png';
 type Props = {
   onClick: () => void;
   style: React.CSSProperties;
+  disabled: boolean;
 }
 
-export const Figure00Button = ({onClick, style}: Props) => {
+export const Figure00Button = ({onClick, style, disabled}: Props) => {
   return (
     <Button
       startIcon={<img src={Figure00} alt="myImage" style={{ width: 80, height: 80 }} />} 
       onClick={onClick}
       style={style}
+      disabled={disabled}
     />
   );
 };

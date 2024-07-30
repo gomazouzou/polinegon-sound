@@ -4,13 +4,15 @@ import React from "react";
 
 type Props = {
   onClick: () => void;
+  disabled: boolean;
 }
 
-export const StartButton = ({onClick}: Props) => {
+export const StartButton = ({onClick, disabled}: Props) => {
   return (
     <IconButton
       aria-label="start"
       onClick={onClick}
+      disabled={disabled}
     >
       <PlayCircleFilledWhiteIcon />
     </IconButton>

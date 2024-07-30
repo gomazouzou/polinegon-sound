@@ -27,10 +27,9 @@ type Props = {
   startFigureDrawing: boolean;
   setStartFigureDrawing: React.Dispatch<React.SetStateAction<boolean>>;
   isPlaying: boolean;
-  waitFigureDrawing: boolean;
 }
 
-export const DrawingPannel = ({ setCurrentFigure, currentFigure, layers, setLayers, currentLayerId, canvasColor, setLoops, quantizeRef, startFigureDrawing, setStartFigureDrawing, isPlaying, waitFigureDrawing}: Props) => { 
+export const DrawingPannel = ({ setCurrentFigure, currentFigure, layers, setLayers, currentLayerId, canvasColor, setLoops, quantizeRef, startFigureDrawing, setStartFigureDrawing, isPlaying}: Props) => { 
   const buttonStyle = (num: number) => ({
     borderRadius: 0,
     backgroundColor: isSelected(num) ?  'rgba(173, 216, 230, 0.2)' : "transparent",
@@ -72,7 +71,7 @@ export const DrawingPannel = ({ setCurrentFigure, currentFigure, layers, setLaye
                   setStartFigureDrawing(!startFigureDrawing);
                   drawFrame(currentLayer);
                 }} 
-                disabled={currentLayer?.type !== Type.Free || !isPlaying || waitFigureDrawing} 
+                disabled={currentLayer?.type !== Type.Free || !isPlaying || startFigureDrawing} 
                 startFigureDrawing= {startFigureDrawing}
               />
               <QuantizeSelector quantizeRef={quantizeRef}/>
@@ -124,7 +123,7 @@ export const DrawingPannel = ({ setCurrentFigure, currentFigure, layers, setLaye
                 left: -220,
               }}
             >
-              <Figure00Button onClick={() => setCurrentFigure(0)} style={buttonStyle(0)}/>
+              <Figure00Button onClick={() => setCurrentFigure(0)} style={buttonStyle(0)} disabled={currentLayer?.type !== Type.Poligone}/>
             </div>
             <div
               style={{
@@ -136,7 +135,7 @@ export const DrawingPannel = ({ setCurrentFigure, currentFigure, layers, setLaye
                 left: -80,
               }}
             >
-              <Figure01Button onClick={() => setCurrentFigure(1)} style={buttonStyle(1)}/>
+              <Figure01Button onClick={() => setCurrentFigure(1)} style={buttonStyle(1)} disabled={currentLayer?.type !== Type.Poligone}/>
             </div>
             <div
               style={{
@@ -148,7 +147,7 @@ export const DrawingPannel = ({ setCurrentFigure, currentFigure, layers, setLaye
                 left: 80,
               }}
             >
-              <Figure02Button onClick={() => setCurrentFigure(2)} style={buttonStyle(2)}/>
+              <Figure02Button onClick={() => setCurrentFigure(2)} style={buttonStyle(2)} disabled={currentLayer?.type !== Type.Poligone}/>
             </div>
             <div
               style={{
@@ -160,7 +159,7 @@ export const DrawingPannel = ({ setCurrentFigure, currentFigure, layers, setLaye
                 left: 240,
               }}
             >
-              <Figure03Button onClick={() => setCurrentFigure(3)} style={buttonStyle(3)}/>
+              <Figure03Button onClick={() => setCurrentFigure(3)} style={buttonStyle(3)} disabled={currentLayer?.type !== Type.Poligone}/>
             </div>
           </div>
         </div>

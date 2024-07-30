@@ -4,13 +4,15 @@ import React from "react";
 
 type Props = {
   onClick: () => void;
+  disabled: boolean;
 }
 
-export const StopButton = ({onClick}: Props) => {
+export const StopButton = ({onClick, disabled}: Props) => {
   return (
     <IconButton
       aria-label="start"
       onClick={onClick}
+      disabled={disabled}
     >
       <StopIcon />
     </IconButton>

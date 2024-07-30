@@ -12,12 +12,14 @@ type Props = {
   id: number;
   setCurrentLayerId: React.Dispatch<React.SetStateAction<number>>;
   isHilighted: boolean;
+  disabled: boolean;
 }
 
-export const LayerCard = ({layer, id, setCurrentLayerId, isHilighted}: Props) => {
+export const LayerCard = ({layer, id, setCurrentLayerId, isHilighted, disabled}: Props) => {
   return (
     <Card 
       onClick = {() => {
+        if (disabled) return;
         setCurrentLayerId(layer.id); 
       }}
       sx={{  border: isHilighted ? '3px solid ' + layer.color : '1.5px solid ' + layer.color }} 
