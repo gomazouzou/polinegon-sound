@@ -138,7 +138,6 @@ function App() {
           context.lineWidth = layer.lineWidth; 
           context.lineCap = 'round'; 
           
-          console.log(layer.color);
           context.strokeStyle = layer.color; 
           const currentX: number = event.offsetX;
           const currentY: number = event.offsetY;
