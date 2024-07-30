@@ -15,6 +15,7 @@ import { Stack, } from "@mui/material";
 
 type Props = {
   setCurrentFigure: React.Dispatch<React.SetStateAction<number>>;
+  currentFigure: number;
   layers: Layer[];
   setLayers: React.Dispatch<React.SetStateAction<Layer[]>>;
   currentLayer: number;
@@ -23,7 +24,17 @@ type Props = {
   quantizeRef: React.MutableRefObject<number>
 }
 
-export const DrawingPannel = ({ setCurrentFigure, layers, setLayers, currentLayer, canvasColor, setLoops, quantizeRef}: Props) => {  
+export const DrawingPannel = ({ setCurrentFigure, currentFigure, layers, setLayers, currentLayer, canvasColor, setLoops, quantizeRef}: Props) => { 
+  const buttonStyle = (num: number) => ({
+    borderRadius: 0,
+    backgroundColor: isSelected(num) ?  'rgba(173, 216, 230, 0.2)' : "transparent",
+    width: "100px",
+    height: "100px",
+    margin: "5px"
+  });
+
+  const isSelected = (num: number) => currentFigure === num;
+
   return(
    <div
           style={{
@@ -92,11 +103,11 @@ export const DrawingPannel = ({ setCurrentFigure, layers, setLayers, currentLaye
                 height: '80px',
                 backgroundColor: canvasColor,
                 position: 'absolute',
-                top: 20,
+                top: 4,
                 left: -220,
               }}
             >
-              <Figure00Button onClick={() => setCurrentFigure(0)}/>
+              <Figure00Button onClick={() => setCurrentFigure(0)} style={buttonStyle(0)}/>
             </div>
             <div
               style={{
@@ -104,11 +115,11 @@ export const DrawingPannel = ({ setCurrentFigure, layers, setLayers, currentLaye
                 height: '80px',
                 backgroundColor: canvasColor,
                 position: 'absolute',
-                top: 20,
+                top: 4,
                 left: -80,
               }}
             >
-              <Figure01Button onClick={() => setCurrentFigure(1)}/>
+              <Figure01Button onClick={() => setCurrentFigure(1)} style={buttonStyle(1)}/>
             </div>
             <div
               style={{
@@ -116,11 +127,11 @@ export const DrawingPannel = ({ setCurrentFigure, layers, setLayers, currentLaye
                 height: '80px',
                 backgroundColor: canvasColor,
                 position: 'absolute',
-                top: 20,
+                top: 4,
                 left: 80,
               }}
             >
-              <Figure02Button onClick={() => setCurrentFigure(2)}/>
+              <Figure02Button onClick={() => setCurrentFigure(2)} style={buttonStyle(2)}/>
             </div>
             <div
               style={{
@@ -128,11 +139,11 @@ export const DrawingPannel = ({ setCurrentFigure, layers, setLayers, currentLaye
                 height: '80px',
                 backgroundColor: canvasColor,
                 position: 'absolute',
-                top: 20,
+                top: 4,
                 left: 240,
               }}
             >
-              <Figure03Button onClick={() => setCurrentFigure(3)}/>
+              <Figure03Button onClick={() => setCurrentFigure(3)} style={buttonStyle(3)}/>
             </div>
           </div>
         </div>

@@ -1,15 +1,18 @@
-import { styled } from '@mui/material/styles';
-import { Button} from "@mui/material";
-import Figure02 from '../../images/figure_templete_02.png'
+import { Button } from "@mui/material";
+import React from "react";
+import Figure02 from '../../images/figure_templete_02.png';
 
+type Props = {
+  onClick: () => void;
+  style: React.CSSProperties;
+}
 
-export const Figure02Button = styled(Button)({
-  backgroundImage: `url(${Figure02})`,
-  backgroundSize: 'cover',
-  width: '80px', 
-  height: '80px', 
-  color: 'transparent', 
-  '&:hover': {
-    backgroundColor: 'rgba(255, 255, 255, 0.3)', 
-  },
-});
+export const Figure02Button = ({onClick, style}: Props) => {
+  return (
+    <Button
+      startIcon={<img src={Figure02} alt="myImage" style={{ width: 80, height: 80 }} />}
+      onClick={onClick}
+      style={style}
+    />
+  );
+};

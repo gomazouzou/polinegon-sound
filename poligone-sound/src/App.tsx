@@ -85,7 +85,7 @@ function App() {
       const noteId = ChangeMousePosToNoteId(mousePositionRef.current.y); 
       const note = noteMapping[noteId];
       const sampler = lineAudioSamplers[ChangeColorToInstrumentId(layer.color)]
-      
+
       if (note){
         sampler.triggerAttackRelease(note, `${quantizeRef.current}n`);
       }
@@ -334,6 +334,7 @@ function App() {
       <div style={{ position: 'absolute', top: '615px', left: '30px'}}>
         <DrawingPannel
           setCurrentFigure={setCurrentFigure}
+          currentFigure={currentFigure}
           layers={layers}
           setLayers={setLayers}
           currentLayer={currentLayer}
