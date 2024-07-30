@@ -1,6 +1,6 @@
-export const DEFAULT_LINE_WIDTH = 8;
-export const MIN_LINE_WIDTH = 4;
-export const MAX_LINE_WIDTH = 12;
+export const DEFAULT_LINE_WIDTH = 5;
+export const MIN_LINE_WIDTH = 2;
+export const MAX_LINE_WIDTH = 8;
 
 //dBでの音量
 export const DEFAULT_VOLUME = 0;
@@ -14,7 +14,8 @@ export const CANVAS_WIDTH = 960; //キャンバスの幅
 export const MARGIN = 20; //図形の描画範囲のマージン
 
 //何音符音符間隔で処理するか
-export const PROCESSS_SPAN = 64;
+export const PROCESS_SPAN = 64;
+export const SPEED = SIZE / (PROCESS_SPAN / 4);
 
 export const RHYTHM_PATTERN_1 = [
   { time: "0:0:0" },

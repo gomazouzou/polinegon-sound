@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as Tone from 'tone';
-import { CANVAS_HEIGHT, CANVAS_WIDTH, DEFAULT_LINE_WIDTH, DEFAULT_VOLUME, MAX_LINE_WIDTH, MAX_VOLUME, PROCESSS_SPAN } from './config/constants.tsx';
+import { CANVAS_HEIGHT, CANVAS_WIDTH, DEFAULT_LINE_WIDTH, DEFAULT_VOLUME, MAX_LINE_WIDTH, MAX_VOLUME, PROCESS_SPAN } from './config/constants.tsx';
 import { ChangeColorToInstrumentId } from './hooks/useColorToInstrumentId.tsx';
-import { drawFigure00, drawFigure01, drawFigure02, drawFigure03 } from './hooks/useDrawFigure.tsx';
+import { ChangeFigureToAnimation, DrawAnimation, drawFigure00, drawFigure01, drawFigure02, drawFigure03 } from './hooks/useDrawFigure.tsx';
 import { noteMapping } from './hooks/useInstrumentIdToPlayer.tsx';
 import { ChangeMousePosToNoteId } from './hooks/useMousePosToNoteId.tsx';
 import { DrawingPannel } from './modules/DrawingPannel/index.tsx';
@@ -18,7 +18,7 @@ function App() {
   //キャンバスに反映されるすべてのレイヤー
   const [layers, setLayers] = useState<Layer[]>([{id: 0, ref: React.createRef(), color:"black", lineWidth: DEFAULT_LINE_WIDTH, drawings: [], figures: [], type: Type.Line}]); 
   //削除したものも含めたレイヤーの通し番号
-  const [totalLayer, setTotalLayer] = useState(0); 
+  const [totalLayer, setTotalLayer] = useState(1); 
   //現在描画を行うレイヤーの番号
   const [currentLayerId, setCurrentLayerId] = useState(0); 
   //現在描画してるレイヤーの分かれたブロックの数
@@ -28,6 +28,7 @@ function App() {
   //現在鳴るループ再生の情報
   const [loops, setLoops] = useState<LoopInfo[]>([]);
   const beatCountRef = useRef<number>(0);
+  const [totalLoop, setTotalLoop] = useState(0);
   //マウスのX,Y座座標
   const mousePositionRef = useRef({ x: 0, y: 0 });
   //音階の配列
@@ -94,21 +95,25 @@ function App() {
     currentColorRef.current = layer?.color || "black";
   }, [layers, currentLayerId]);
 
+
   const UpdateBeatCount = () => {
     const layer = layers.find(layer => layer.id === currentLayerId);
     const canvas = layer?.ref.current;
-    if (isDrawing.current && beatCountRef.current % (PROCESSS_SPAN / quantizeRef.current) === 0 && layer && canvas && lineAudioSamplers) {
+
+    //線の時の処理
+    if (isDrawing.current && beatCountRef.current % (PROCESS_SPAN / quantizeRef.current) === 0 && layer && canvas && lineAudioSamplers) {
       
-      const index = beatCountRef.current / (PROCESSS_SPAN / quantizeRef.current);
+      const index = beatCountRef.current / (PROCESS_SPAN / quantizeRef.current);
       const noteId = ChangeMousePosToNoteId(mousePositionRef.current.y); 
       const note = noteMapping[noteId];
 
+      //描画中の音符を鳴らす
       const sampler = lineAudioSamplers[ChangeColorToInstrumentId(currentColorRef.current)];
-
       if (note){
         sampler.triggerAttackRelease(note, `${quantizeRef.current}n`);
       }
-      
+
+      //ループ音階の設定
       switch (quantizeRef.current) {
         case 2:
           noteArrayRef2.current[index] = noteId;
@@ -124,7 +129,17 @@ function App() {
           break;
       }
     }
-    beatCountRef.current = (beatCountRef.current + 1) % (PROCESSS_SPAN * 2);
+
+    //アニメーションの描画
+    loops.forEach(loop => {
+      const canvas = loop.ref.current;
+      if (!canvas) return;
+      const context = canvas.getContext('2d');
+      const position = loop.animation[beatCountRef.current];
+      DrawAnimation(context, position, loop.color, loop.lineWidth);
+    });
+    
+    beatCountRef.current = (beatCountRef.current + 1) % (PROCESS_SPAN * 2);
   }
 
   useEffect(() => {
@@ -147,8 +162,8 @@ function App() {
           // ペンのスタイルを設定
           context.lineWidth = layer.lineWidth; 
           context.lineCap = 'round'; 
-          
-          context.strokeStyle = layer.color; 
+          context.strokeStyle = layer.color;
+
           const currentX: number = event.offsetX;
           const currentY: number = event.offsetY;
 
@@ -211,16 +226,23 @@ function App() {
 
           setLoops(prevLoop => {
             const newLoop = [...prevLoop, 
-              { type: Type.Line, 
+              { 
+                id: totalLoop,
+                type: Type.Line, 
                 layer_id: currentLayerId, 
+                color: layer.color,
+                lineWidth: layer.lineWidth,
                 instrument: ChangeColorToInstrumentId(layer.color), 
                 figure_id: 0, 
                 volume:  DEFAULT_VOLUME + MAX_VOLUME / (MAX_LINE_WIDTH - DEFAULT_LINE_WIDTH)* (layer.lineWidth - DEFAULT_LINE_WIDTH),
-                midi: currentNoteArray
+                midi: currentNoteArray,
+                ref: React.createRef<HTMLCanvasElement>(),
+                animation: [] //後で追記
               }
             ];
             return newLoop;
           });
+          setTotalLoop(totalLoop + 1);
 
           noteArrayRef2.current = [0,0,0,0];
           noteArrayRef4.current = [0,0,0,0,0,0,0,0];
@@ -248,18 +270,21 @@ function App() {
         const context = canvas.getContext('2d');
 
         const drawFigure = (event: MouseEvent) => {
+          const centerX = event.offsetX;
+          const centerY = event.offsetY;
+
           switch (currentFigure) {
             case 0:
-              drawFigure00(context, layer, event.offsetX, event.offsetY);
+              drawFigure00(context, layer, centerX, centerY);
               break;
             case 1:
-              drawFigure01(context, layer, event.offsetX, event.offsetY);
+              drawFigure01(context, layer, centerX, centerY);
               break;
             case 2:
-              drawFigure02(context, layer, event.offsetX, event.offsetY);
+              drawFigure02(context, layer, centerX, centerY);
               break;
             case 3:
-              drawFigure03(context, layer, event.offsetX, event.offsetY);
+              drawFigure03(context, layer, centerX, centerY);
               break;
             default:
               break;
@@ -270,7 +295,7 @@ function App() {
             if (layer.id === currentLayerId) {
               return {
                 ...layer,
-                figures: [...layer.figures, { id: currentFigure, x_pos: event.offsetX, y_pos: event.offsetY }]
+                figures: [...layer.figures, { id: currentFigure, x_pos: centerX, y_pos: centerY }]
               };
             }
             else{
@@ -281,14 +306,21 @@ function App() {
           //ループ情報の設定
           setLoops(prevLoop => {
             const newLoop = [...prevLoop, 
-              { type: Type.Poligone, 
+              { 
+                id: totalLoop,
+                type: Type.Poligone, 
                 layer_id: currentLayerId, 
+                color: layer.color,
+                lineWidth: layer.lineWidth,
                 instrument: ChangeColorToInstrumentId(layer.color), 
                 figure_id: currentFigure, 
                 volume:  DEFAULT_VOLUME + MAX_VOLUME / (MAX_LINE_WIDTH - DEFAULT_LINE_WIDTH)* (layer.lineWidth - DEFAULT_LINE_WIDTH),
-                midi: []
+                midi: [],
+                ref: React.createRef<HTMLCanvasElement>(),
+                animation: ChangeFigureToAnimation(currentFigure, centerX, centerY),
               }
             ];
+            setTotalLoop(totalLoop + 1);
             return newLoop;
           });
         }
@@ -300,7 +332,7 @@ function App() {
         };
       };
     };  
-  }, [isDrawing, canvasColor, currentLayerId, layers, drawCount, currentFigure, startFigureDrawing, isPlaying]);
+  }, [isDrawing, canvasColor, currentLayerId, layers, drawCount, currentFigure, startFigureDrawing, isPlaying, totalLoop]);
 
   return (
     <>
@@ -333,10 +365,9 @@ function App() {
                   position: 'absolute',
                   top: 0,
                   left: 0,
-                  zIndex: index,
                 }}
               />
-          ))
+          )) 
         }
       </div>
 

@@ -6,7 +6,7 @@ import { MinusButton } from "../../components/buttons/MinusButton.tsx";
 import { PlusButton } from "../../components/buttons/PlusButton.tsx";
 import { StartButton } from "../../components/buttons/StartButton.tsx";
 import { StopButton } from "../../components/buttons/StopButton.tsx";
-import { PROCESSS_SPAN } from "../../config/constants.tsx";
+import { PROCESS_SPAN } from "../../config/constants.tsx";
 import { ChangeInstrumentIdToPlayer, ChangePlayerToLoop, ChangeSamplerToLoop } from "../../hooks/useInstrumentIdToPlayer.tsx";
 import { LoopInfo, Type } from "../../types/loop.tsx";
 import { BeatDisplay } from "./BeatDisplay/index.tsx";
@@ -28,8 +28,8 @@ export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuff
   const [bpm, setBpm] = useState(120);
   const [beat, setBeat] = useState(7);
 
-  const [figureLoops, setFigureLoops] = useState <Tone.Part[] | null>(null);
-  const [metronome, setMetronome] = useState<Tone.Part | null>(null);
+  const [playPart, setPlayPart] = useState <Tone.Part[] | null>(null);
+  const [metronome, setMetronome] = useState<Tone.Part | null>(null); 
 
   const onLongPressPlusButton = () => {
     setBpm(prevBpm => prevBpm + 2);
@@ -60,34 +60,34 @@ export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuff
   };
 
   const initializeLoops = (loops: LoopInfo[]) => {
-    const newFigureLoops: Tone.Part[] = [];
+    const newPlayParts: Tone.Part[] = [];
     loops.forEach(loop => {
       if (loop.type === Type.Poligone) {
         const player = ChangeInstrumentIdToPlayer(loop.instrument, loop.type, figureAudioBuffers, loop.volume);
         if (!player) return;
         const newPart = ChangePlayerToLoop(player, loop.figure_id);
-        newFigureLoops.push(newPart);
+        newPlayParts.push(newPart);
       }
       if (loop.type === Type.Line) {
         if (!lineAudioSamplers) return;
         const newPart = ChangeSamplerToLoop(lineAudioSamplers[loop.instrument], loop.midi, loop.volume);
-        newFigureLoops.push(newPart);
+        newPlayParts.push(newPart);
       }
     });
-    return newFigureLoops;
+    return newPlayParts;
   };
 
   useEffect(() => {
     Tone.Transport.bpm.value = bpm;
-  }, [bpm, figureLoops]);
+  }, [bpm, playPart]);
 
   useEffect(() => {
-    if (figureLoops) {
-      figureLoops.forEach(loop => loop.stop());
+    if (playPart) {
+      playPart.forEach(loop => loop.stop());
     }
-    const newFigureLoops = initializeLoops(loops);
-    setFigureLoops(newFigureLoops);
-    newFigureLoops.forEach(loop => loop.start(0));
+    const newPlayParts = initializeLoops(loops);
+    setPlayPart(newPlayParts);
+    newPlayParts.forEach(loop => loop.start(0));
   }, [loops]);
 
   const startMusic = () => {
@@ -96,12 +96,12 @@ export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuff
       setMetronome(newMetronome);
       newMetronome?.start(0);
     }
-    if (!figureLoops) {
-      const newFigureLoops = initializeLoops(loops);
-      setFigureLoops(newFigureLoops);
-      newFigureLoops?.forEach(loop => loop.start(0));
+    if (!playPart) {
+      const newPlayParts = initializeLoops(loops);
+      setPlayPart(newPlayParts);
+      newPlayParts?.forEach(loop => loop.start(0));
     }
-    Tone.Transport.scheduleRepeat(UpdateBeatCount, `${PROCESSS_SPAN}n`);
+    Tone.Transport.scheduleRepeat(UpdateBeatCount, `${PROCESS_SPAN}n`);
     Tone.Transport.start();
     setIsPlaying(true);
     setStartFigureDrawing(false);
@@ -109,12 +109,12 @@ export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuff
   };
 
   const stopMusic = () => {
-    figureLoops?.forEach(loop => loop.stop());
+    playPart?.forEach(loop => loop.stop());
     metronome?.stop();
     Tone.Transport.stop();
     setBeat(3);
     setMetronome(null);
-    setFigureLoops(null);
+    setPlayPart(null);
     beatCountRef.current = 0;
     setIsPlaying(false);
     setStartFigureDrawing(false);
