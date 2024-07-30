@@ -14,11 +14,17 @@ type Props = {
   loops: LoopInfo[];
   UpdateBeatCount: () => void;
   beatCountRef: React.MutableRefObject<number>;
+  metronomeAudioBuffer: AudioBuffer | undefined;
+  figureAudioBuffers: AudioBuffer[];
+  lineAudioSamplers: Tone.Sampler[] | null;
 }
 
-export const Player = ({loops, UpdateBeatCount, beatCountRef}: Props) => {
+export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuffer, figureAudioBuffers, lineAudioSamplers}: Props) => {
   const [bpm, setBpm] = useState(120);
   const [beat, setBeat] = useState(7);
+
+  const [figureLoops, setFigureLoops] = useState <Tone.Part[] | null>(null);
+  const [metronome, setMetronome] = useState<Tone.Part | null>(null);
 
   const onClickPlusButton = () => {
     setBpm(bpm + 10);
@@ -27,48 +33,8 @@ export const Player = ({loops, UpdateBeatCount, beatCountRef}: Props) => {
     setBpm(bpm - 10);
   }
 
-  const [metronomeAudioBuffer, setMetronomeAudioBuffer] = useState <AudioBuffer>();
-  const [figureAudioBuffers, setFigureAudioBuffers] = useState <AudioBuffer[]>([]);
-
-  const [lineAudioSamplers, setLineAudioSamplers] = useState <Tone.Sampler[] | null>(null);
-  const [figureLoops, setFigureLoops] = useState <Tone.Part[] | null>(null);
-  const [metronome, setMetronome] = useState<Tone.Part | null>(null);
-
-  useEffect(() => {
-    const loadAudio = async () => {
-      const response = await fetch('/audio/metronome.wav');
-      const arrayBuffer = await response.arrayBuffer();
-      const buffer = await Tone.context.decodeAudioData(arrayBuffer);
-      setMetronomeAudioBuffer(buffer);
-
-      const figureBuffers: AudioBuffer[] = [];
-      for (let i = 1; i <= 8; i++) {
-        const response = await fetch(`/audio/figure_${i}.wav`);
-        const arrayBuffer = await response.arrayBuffer();
-        const buffer = await Tone.context.decodeAudioData(arrayBuffer);
-        figureBuffers.push(buffer);
-      }
-      setFigureAudioBuffers(figureBuffers);
-
-      const lineBuffers: Tone.Sampler[] = [];
-      for (let i = 1; i <= 8; i++) {
-        const lineAudioSampler = new Tone.Sampler({
-          urls: {
-            C4: `line_${i}.wav`,
-          },
-          baseUrl: "/audio/"
-        }).toDestination();
-        await lineAudioSampler.loaded;
-        lineBuffers.push(lineAudioSampler);
-      }
-      setLineAudioSamplers(lineBuffers);
-    };
-
-    loadAudio();
-  }, []);
-
   const createMetronome = () => {
-    if (lineAudioSamplers) {
+    if (metronomeAudioBuffer) { 
       const player = new Tone.Player(metronomeAudioBuffer).toDestination();
       const newPart = new Tone.Part((time, value) => {
         player.start(time);
@@ -83,7 +49,9 @@ export const Player = ({loops, UpdateBeatCount, beatCountRef}: Props) => {
       newPart.loopEnd = "1m";
       return newPart;
     }
-    return null;
+    else{
+      return null;
+    }
   };
 
   const initializeLoops = (loops: LoopInfo[]) => {

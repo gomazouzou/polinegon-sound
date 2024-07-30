@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
+import * as Tone from 'tone';
 import { CANVAS_HEIGHT, DEFAULT_LINE_WIDTH, DEFAULT_VOLUME, MAX_LINE_WIDTH, MAX_VOLUME } from './config/constants.tsx';
 import { ChangeColorToInstrumentId } from './hooks/useColorToInstrumentId.tsx';
 import { drawFigure00, drawFigure01, drawFigure02, drawFigure03 } from './hooks/useDrawFigure.tsx';
+import { noteMapping } from './hooks/useInstrumentIdToPlayer.tsx';
 import { ChangeMousePosToNoteId } from './hooks/useMousePosToNoteId.tsx';
 import { DrawingPannel } from './modules/DrawingPannel/index.tsx';
 import { LayerTab } from './modules/LayerTab/index.tsx';
@@ -36,22 +38,70 @@ function App() {
   //クオンタイズの設定
   const quantizeRef = useRef<number>(16);
 
-  const UpdateBeatCount = () => {
 
-    if (isDrawing.current && beatCountRef.current % (16 / quantizeRef.current) === 0) {
+  const [metronomeAudioBuffer, setMetronomeAudioBuffer] = useState <AudioBuffer>();
+  const [figureAudioBuffers, setFigureAudioBuffers] = useState <AudioBuffer[]>([]);
+
+  const [lineAudioSamplers, setLineAudioSamplers] = useState <Tone.Sampler[] | null>(null);
+
+  useEffect(() => {
+    const loadAudio = async () => {
+      const response = await fetch('/audio/metronome.wav');
+      const arrayBuffer = await response.arrayBuffer();
+      const buffer = await Tone.context.decodeAudioData(arrayBuffer);
+      setMetronomeAudioBuffer(buffer);
+
+      const figureBuffers: AudioBuffer[] = [];
+      for (let i = 1; i <= 8; i++) {
+        const response = await fetch(`/audio/figure_${i}.wav`);
+        const arrayBuffer = await response.arrayBuffer();
+        const buffer = await Tone.context.decodeAudioData(arrayBuffer);
+        figureBuffers.push(buffer);
+      }
+      setFigureAudioBuffers(figureBuffers);
+
+      const lineBuffers: Tone.Sampler[] = [];
+      for (let i = 1; i <= 8; i++) {
+        const lineAudioSampler = new Tone.Sampler({
+          urls: {
+            C4: `line_${i}.wav`,
+          },
+          baseUrl: "/audio/"
+        }).toDestination();
+        await lineAudioSampler.loaded;
+        lineBuffers.push(lineAudioSampler);
+      }
+      setLineAudioSamplers(lineBuffers);
+    };
+
+    loadAudio();
+  }, []);
+
+  const UpdateBeatCount = () => {
+    const layer = layers.find(layer => layer.id === currentLayer);
+    if (isDrawing.current && beatCountRef.current % (16 / quantizeRef.current) === 0 && layer && lineAudioSamplers) {
+      
       const index = beatCountRef.current / (16 / quantizeRef.current);
+      const noteId = ChangeMousePosToNoteId(mousePositionRef.current.y); 
+      const note = noteMapping[noteId];
+      const sampler = lineAudioSamplers[ChangeColorToInstrumentId(layer.color)]
+      
+      if (note){
+        sampler.triggerAttackRelease(note, `${quantizeRef.current}n`);
+      }
+      
       switch (quantizeRef.current) {
         case 2:
-          noteArrayRef2.current[index] = ChangeMousePosToNoteId(mousePositionRef.current.y);
+          noteArrayRef2.current[index] = noteId;
           break;
         case 4:
-          noteArrayRef4.current[index] = ChangeMousePosToNoteId(mousePositionRef.current.y);
+          noteArrayRef4.current[index] = noteId;
           break;
         case 8:
-          noteArrayRef8.current[index] = ChangeMousePosToNoteId(mousePositionRef.current.y);
+          noteArrayRef8.current[index] = noteId;
           break;
         case 16:
-          noteArrayRef16.current[index] = ChangeMousePosToNoteId(mousePositionRef.current.y);
+          noteArrayRef16.current[index] = noteId;
           break;
       }
     }
@@ -241,6 +291,9 @@ function App() {
           loops={loops}
           UpdateBeatCount={UpdateBeatCount}
           beatCountRef={beatCountRef}
+          metronomeAudioBuffer={metronomeAudioBuffer}
+          figureAudioBuffers={figureAudioBuffers}
+          lineAudioSamplers={lineAudioSamplers}
         />
       </div>
 

@@ -39,7 +39,7 @@ export const ChangePlayerToLoop = (player: Tone.Player, figure_id: number) => {
   return newPart;
 }
 
-const noteMapping = {
+export const noteMapping = {
   0: null,
   1: 'G3',
   2: 'A3',
