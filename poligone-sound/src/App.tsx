@@ -37,6 +37,8 @@ function App() {
   const noteArrayRef16 = useRef<number[]>([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
   //クオンタイズの設定
   const quantizeRef = useRef<number>(16);
+  //自由図形描画を使うかどうか
+  const [isFreeFigureDrawing, setIsFreeFigureDrawing] = useState(false);
 
   const currentColorRef = useRef<string>("black");
 
@@ -232,7 +234,7 @@ function App() {
       };
 
       //図形レイヤーの場合の描画処理
-      if(layer.type === Type.Poligone){
+      if(layer.type === Type.Poligone && !isFreeFigureDrawing){
         const canvas = layer.ref.current;
         if (!canvas) return;
         const context = canvas.getContext('2d');
@@ -290,7 +292,7 @@ function App() {
         };
       };
     };  
-  }, [isDrawing, canvasColor, currentLayer, layers, drawCount, currentFigure]);
+  }, [isDrawing, canvasColor, currentLayer, layers, drawCount, currentFigure, isFreeFigureDrawing]);
 
   return (
     <>
@@ -349,6 +351,8 @@ function App() {
           canvasColor={canvasColor}
           setLoops={setLoops}
           quantizeRef={quantizeRef}
+          isFreeFigureDrawing={isFreeFigureDrawing}
+          setIsFreeFigureDrawing={setIsFreeFigureDrawing}
         />
       </div>
     </>

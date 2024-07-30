@@ -4,9 +4,10 @@ import { Figure00Button } from "../../components/buttons/Figure00Button.tsx";
 import { Figure01Button } from "../../components/buttons/Figure01Button.tsx";
 import { Figure02Button } from "../../components/buttons/Figure02Button.tsx";
 import { Figure03Button } from "../../components/buttons/Figure03Button.tsx";
+import { FreeDrawingButton } from "../../components/buttons/FreeDrawingButton.tsx";
 import { RedrawLayer } from "../../functions/Canvas.tsx";
 import { Layer } from "../../types/layer.tsx";
-import { LoopInfo } from "../../types/loop.tsx";
+import { LoopInfo, Type } from "../../types/loop.tsx";
 import { ChangeColorPalette } from "./ChangeColorPalette/index.tsx";
 import { LineWidthSlider } from "./LineWidthSlider/index.tsx";
 import { QuantizeSelector } from "./QuantizeSelector/index.tsx";
@@ -22,9 +23,11 @@ type Props = {
   canvasColor: string;
   setLoops: React.Dispatch<React.SetStateAction<LoopInfo[]>>;
   quantizeRef: React.MutableRefObject<number>
+  isFreeFigureDrawing: boolean;
+  setIsFreeFigureDrawing: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const DrawingPannel = ({ setCurrentFigure, currentFigure, layers, setLayers, currentLayer, canvasColor, setLoops, quantizeRef}: Props) => { 
+export const DrawingPannel = ({ setCurrentFigure, currentFigure, layers, setLayers, currentLayer, canvasColor, setLoops, quantizeRef, isFreeFigureDrawing, setIsFreeFigureDrawing}: Props) => { 
   const buttonStyle = (num: number) => ({
     borderRadius: 0,
     backgroundColor: isSelected(num) ?  'rgba(173, 216, 230, 0.2)' : "transparent",
@@ -34,6 +37,8 @@ export const DrawingPannel = ({ setCurrentFigure, currentFigure, layers, setLaye
   });
 
   const isSelected = (num: number) => currentFigure === num;
+
+  const current = layers.find(layer => layer.id === currentLayer);
 
   return(
    <div
@@ -49,15 +54,17 @@ export const DrawingPannel = ({ setCurrentFigure, currentFigure, layers, setLaye
         >
           <div
           style={{
-            width: '360px',
+            width: '450px',
             height: '120px',
             backgroundColor: 'white',
             position: 'absolute',
             top: 0,
-            left: 90
+            left: 15
           }}
           >
-            <Stack direction="row" alignItems="center"  justifyContent="center" style={{ height: '100%' }} spacing={5}>
+            <Stack direction="row" alignItems="center"  justifyContent="center" style={{ height: '100%' }} spacing={3}>
+
+              <FreeDrawingButton onClick={() => setIsFreeFigureDrawing(!isFreeFigureDrawing)} disabled={current?.type === Type.Line} isFreeFigureDrawing= {isFreeFigureDrawing}/>
               <QuantizeSelector quantizeRef={quantizeRef}/>
 
               <LineWidthSlider 
