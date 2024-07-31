@@ -1,7 +1,7 @@
 {
   "name": "poligone-sound",
   "version": "0.1.0",
-  "homepage": "https:/gomazouzou/.github.io/poligone-sound",
+  "homepage": "https:/gomazouzou.github.io/poligone-sound",
   "private": true,
   "scripts": { 
   "start": "react-scripts start", 
