@@ -1,13 +1,10 @@
 import * as Tone from 'tone';
 import { RHYTHM_PATTERN_1, RHYTHM_PATTERN_2, RHYTHM_PATTERN_3, RHYTHM_PATTERN_4 } from '../config/constants.tsx';
-import { Type } from '../types/loop.tsx';
 
-export const ChangeInstrumentIdToPlayer = (instrumentId: number, type: Type, figureAudioBuffers: AudioBuffer[], volume: number) => {
-  if (type === Type.Poligone) {
-    const player = new Tone.Player(figureAudioBuffers[instrumentId]).toDestination();
-    player.volume.value = volume;
-    return player;
-  }
+export const ChangeInstrumentIdToPlayer = (instrumentId: number, figureAudioBuffers: AudioBuffer[], volume: number) => {
+  const player = new Tone.Player(figureAudioBuffers[instrumentId]).toDestination();
+  player.volume.value = volume;
+  return player;
 }
 
 export const ChangePlayerToLoop = (player: Tone.Player, figure_id: number) => {
@@ -72,6 +69,30 @@ const convertArrayToTonePart = (noteArray: number[]) => {
   return result;
 };
 
+const convertFreeArrayToTonePart = (noteArray: number[]) => {
+  const result: TonePart[] = [];
+  //一小説分の長さ
+  const quantizeNumber = noteArray.length / 2;
+  
+  noteArray.forEach((value, index) => {
+    const note = noteMapping[value];
+    if (index === 0){
+      result.push({ time: '0:0:0', note: 'C4' });
+    }
+    else if(index === quantizeNumber - 1){
+      result.push({ time: '2:0:0', note: 'C4' });
+    }else if (note) {
+      const syousetsu = Math.floor(index / quantizeNumber);
+      const beat = (index - syousetsu * quantizeNumber) * 4 / quantizeNumber;
+      const time = `${syousetsu}:${beat}:0`;
+      result.push({ time, note });
+    }
+  });
+  return result;
+};
+
+
+
 export const ChangeSamplerToLoop = (sampler: Tone.Sampler, noteArray: number[], volume: number) => {
   const tonePart = convertArrayToTonePart(noteArray);
   sampler.volume.value = volume;
@@ -81,5 +102,17 @@ export const ChangeSamplerToLoop = (sampler: Tone.Sampler, noteArray: number[], 
 
   newPart.loop = true;
   newPart.loopEnd = "2m";
+  return newPart;
+}
+
+export const ChangeFreePlayerToLoop = (player: Tone.Player, rhythm_array: number[]) => {
+  const rhythmPattern = convertFreeArrayToTonePart(rhythm_array);
+
+  const newPart = new Tone.Part((time, value) => {
+    player.start(time);
+  }, rhythmPattern);
+
+  newPart.loop = true;
+  newPart.loopEnd = "1m";
   return newPart;
 }

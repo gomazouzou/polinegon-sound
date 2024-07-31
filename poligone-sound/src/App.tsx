@@ -44,7 +44,7 @@ function App() {
   const waitFigureDrawing = useRef<boolean>(false)
   const startFigureDrawing = useRef<boolean>(false);
 
-  const isEdgeRef = useRef<boolean[]>(Array(32).fill(false));
+  const isEdgeRef = useRef<number[]>(Array(32).fill(0));
   const positionRef = useRef<Position>({ x: 0, y: 0 });
 
   //再生中かどうか
@@ -116,6 +116,7 @@ function App() {
 
   useEffect(() => {
     waitFigureDrawing.current = clickFigureDrawing;
+    isEdgeRef.current = Array(32).fill(0);
   },[clickFigureDrawing]);
 
 
@@ -155,13 +156,13 @@ function App() {
     
     //自由描画の時の処理
     if(startFigureDrawing.current && beatCountRef.current % (PROCESS_SPAN / 16) === 0){
-      console.log(isClicking.current);
       if(isClicking.current && figureAudioSamplers){
         const sampler = figureAudioSamplers[ChangeColorToInstrumentId(currentColorRef.current)];
           sampler.triggerAttackRelease("C4", `${quantizeRef.current}n`);
 
         const index = beatCountRef.current / (PROCESS_SPAN / quantizeRef.current);
-        isEdgeRef.current[index] = true;
+        isEdgeRef.current[index] = 3;
+        console.log(isEdgeRef.current);
       }
       isClicking.current = false;
     }
@@ -195,8 +196,7 @@ function App() {
               instrument: ChangeColorToInstrumentId(currentLayerRef.current.color), 
               figure_id: currentFigure, 
               volume:  DEFAULT_VOLUME + MAX_VOLUME / (MAX_LINE_WIDTH - DEFAULT_LINE_WIDTH)* (currentLayerRef.current.lineWidth - DEFAULT_LINE_WIDTH),
-              midi: [],
-              rhythmPattern: isEdgeRef.current,
+              midi: isEdgeRef.current,
               ref: React.createRef<HTMLCanvasElement>(),
               animation: [],
             }
@@ -208,7 +208,6 @@ function App() {
         waitFigureDrawing.current = false;
         startFigureDrawing.current = false;
         setClickFigureDrawing(false);
-        isEdgeRef.current = Array(32).fill(false);
       } 
     }
 
@@ -319,7 +318,6 @@ function App() {
                 figure_id: 0, 
                 volume:  DEFAULT_VOLUME + MAX_VOLUME / (MAX_LINE_WIDTH - DEFAULT_LINE_WIDTH)* (layer.lineWidth - DEFAULT_LINE_WIDTH),
                 midi: currentNoteArray,
-                rhythmPattern:[],
                 ref: React.createRef<HTMLCanvasElement>(),
                 animation: [] //後で追記
               }
@@ -400,7 +398,6 @@ function App() {
                 figure_id: currentFigure, 
                 volume:  DEFAULT_VOLUME + MAX_VOLUME / (MAX_LINE_WIDTH - DEFAULT_LINE_WIDTH)* (layer.lineWidth - DEFAULT_LINE_WIDTH),
                 midi: [],
-                rhythmPattern: [],
                 ref: React.createRef<HTMLCanvasElement>(),
                 animation: ChangeFigureToAnimation(currentFigure, centerX, centerY),
               }
@@ -410,10 +407,10 @@ function App() {
           });
         }
         
-        canvas.addEventListener('click', drawFigure);
+        canvas.addEventListener('mousedown', drawFigure);
 
         return () => {
-          canvas.removeEventListener('click', drawFigure);
+          canvas.removeEventListener('mousedown', drawFigure);
         };
       };
 

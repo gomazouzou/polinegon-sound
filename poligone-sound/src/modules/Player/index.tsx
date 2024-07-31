@@ -7,7 +7,7 @@ import { PlusButton } from "../../components/buttons/PlusButton.tsx";
 import { StartButton } from "../../components/buttons/StartButton.tsx";
 import { StopButton } from "../../components/buttons/StopButton.tsx";
 import { PROCESS_SPAN } from "../../config/constants.tsx";
-import { ChangeInstrumentIdToPlayer, ChangePlayerToLoop, ChangeSamplerToLoop } from "../../hooks/useInstrumentIdToPlayer.tsx";
+import { ChangeFreePlayerToLoop, ChangeInstrumentIdToPlayer, ChangePlayerToLoop, ChangeSamplerToLoop } from "../../hooks/useInstrumentIdToPlayer.tsx";
 import { LoopInfo, Type } from "../../types/loop.tsx";
 import { BeatDisplay } from "./BeatDisplay/index.tsx";
 
@@ -23,7 +23,7 @@ type Props = {
   clickFigureDrawing: boolean;
 }
 
-export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuffer, figureAudioBuffers, lineAudioSamplers,setIsPlaying, setClickFigureDrawing, clickFigureDrawing}: Props) => {
+export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuffer, figureAudioBuffers, lineAudioSamplers, setIsPlaying, setClickFigureDrawing, clickFigureDrawing}: Props) => {
   const [bpm, setBpm] = useState(120);
   const [beat, setBeat] = useState(7);
 
@@ -62,13 +62,20 @@ export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuff
     const newPlayParts: Tone.Part[] = [];
     loops.forEach(loop => {
       if (loop.type === Type.Poligone) {
-        const player = ChangeInstrumentIdToPlayer(loop.instrument, loop.type, figureAudioBuffers, loop.volume);
+        const player = ChangeInstrumentIdToPlayer(loop.instrument, figureAudioBuffers, loop.volume);
         if (!player) return;
         const newPart = ChangePlayerToLoop(player, loop.figure_id);
         newPlayParts.push(newPart);
       }
+      if (loop.type === Type.Free) {
+        const player = ChangeInstrumentIdToPlayer(loop.instrument, figureAudioBuffers, loop.volume);
+        if (!player) return;
+        const newPart = ChangeFreePlayerToLoop(player, loop.midi);
+        newPlayParts.push(newPart);
+      }
       if (loop.type === Type.Line) {
         if (!lineAudioSamplers) return;
+        console.log(loop.midi);
         const newPart = ChangeSamplerToLoop(lineAudioSamplers[loop.instrument], loop.midi, loop.volume);
         newPlayParts.push(newPart);
       }

@@ -19,7 +19,6 @@ export type LoopInfo = {
   figure_id: number;
   volume: number;
   midi: number[];
-  rhythmPattern: boolean[];
   ref: React.RefObject<HTMLCanvasElement>;
   animation: (Position | null)[];
 };
