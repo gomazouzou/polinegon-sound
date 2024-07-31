@@ -1,4 +1,3 @@
-import { Direction } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 import * as Tone from 'tone';
 import { CANVAS_HEIGHT, CANVAS_WIDTH, DEFAULT_LINE_WIDTH, DEFAULT_VOLUME, MAX_LINE_WIDTH, MAX_VOLUME, PROCESS_SPAN } from './config/constants.tsx';
@@ -9,6 +8,7 @@ import { ChangeMousePosToNoteId } from './hooks/useMousePosToNoteId.tsx';
 import { DrawingPannel } from './modules/DrawingPannel/index.tsx';
 import { LayerTab } from './modules/LayerTab/index.tsx';
 import { Player } from './modules/Player/index.tsx';
+import { Direction } from './types/direction.tsx';
 import { Layer, Type } from "./types/layer.tsx";
 import { LoopInfo, Position } from './types/loop.tsx';
 
@@ -45,13 +45,17 @@ function App() {
   const waitFigureDrawing = useRef<boolean>(false)
   const startFigureDrawing = useRef<boolean>(false);
 
-  const isEdgeRef = useRef<number[]>(Array(32).fill(0));
-  const directionRef = useRef<(Direction | null)[]>(Array(32).fill(null));
+  
   const downCountRef = useRef<number>(0);
   const upCountRef = useRef<number>(0);
   const leftCountRef = useRef<number>(0);
   const rightCountRef = useRef<number>(0);
+  const isEdgeRef = useRef<number[]>(Array(32).fill(0));
+
+  const currentDirectionRef = useRef<Direction>(Direction.Down);
+  const directionRef = useRef<(Direction | null)[]>(Array(32).fill(null));
   
+
   const positionRef = useRef<Position>({ x: 0, y: 0 });
 
   //再生中かどうか
@@ -124,6 +128,12 @@ function App() {
   useEffect(() => {
     waitFigureDrawing.current = clickFigureDrawing;
     isEdgeRef.current = Array(32).fill(0);
+    currentDirectionRef.current = Direction.Down;
+    directionRef.current = Array(32).fill(null);
+    leftCountRef.current = 0;
+    rightCountRef.current = 0;
+    downCountRef.current = 0;
+    upCountRef.current = 0;
   },[clickFigureDrawing]);
 
 
@@ -162,15 +172,99 @@ function App() {
     }
     
     //自由描画の時の処理
-    if(startFigureDrawing.current && beatCountRef.current % (PROCESS_SPAN / 16) === 0){
-      if(isClicking.current && figureAudioSamplers){
-        const sampler = figureAudioSamplers[ChangeColorToInstrumentId(currentColorRef.current)];
-          sampler.triggerAttackRelease("C4", `${quantizeRef.current}n`);
-
-        const index = beatCountRef.current / (PROCESS_SPAN / quantizeRef.current);
-        isEdgeRef.current[index] = 3;
-        console.log(isEdgeRef.current);
+    if(startFigureDrawing.current && beatCountRef.current % (PROCESS_SPAN / 16) === 0 && figureAudioSamplers){
+      const index = beatCountRef.current / (PROCESS_SPAN / 16);
+      //二つの角の場合
+      if(beatCountRef.current === 0){
+        currentDirectionRef.current = Direction.Down;
+        directionRef.current[0] = Direction.Down;
+        
       }
+      else if(beatCountRef.current === PROCESS_SPAN / 16 * 4){
+        currentDirectionRef.current = Direction.Up;
+        directionRef.current[PROCESS_SPAN / 16 * 4] = Direction.Up;
+      }
+      //外枠にぶつかった場合
+      else if(beatCountRef.current < PROCESS_SPAN / 16 * 4 && rightCountRef.current === (PROCESS_SPAN / 16 )*2){
+        if(currentDirectionRef.current === Direction.Right){
+          isEdgeRef.current[index] = 3;
+        }
+        directionRef.current[index] = Direction.Down;
+        currentDirectionRef.current = Direction.Down;
+
+      }
+      else if(beatCountRef.current < PROCESS_SPAN / 16 * 4 && downCountRef.current === (PROCESS_SPAN / 16)*2){
+        if(currentDirectionRef.current === Direction.Down){
+          isEdgeRef.current[index] = 3;
+        }
+        directionRef.current[index] = Direction.Right;
+        currentDirectionRef.current = Direction.Right;
+      }
+      else if(beatCountRef.current > PROCESS_SPAN / 16 * 4 && leftCountRef.current === (PROCESS_SPAN / 16)*2){
+        if(currentDirectionRef.current === Direction.Left){
+          isEdgeRef.current[index] = 3;
+        }
+        directionRef.current[index] = Direction.Up;
+        currentDirectionRef.current = Direction.Up;
+      }
+      else if(beatCountRef.current > PROCESS_SPAN / 16 * 4 && upCountRef.current === (PROCESS_SPAN / 16)*2){
+        if(currentDirectionRef.current === Direction.Up){
+          isEdgeRef.current[index] = 3;
+        }
+        directionRef.current[index] = Direction.Left;
+        currentDirectionRef.current = Direction.Left;
+      }
+      else{
+        //方向転換
+        if(isClicking.current){
+          switch (currentDirectionRef.current) {
+            case Direction.Down:
+              directionRef.current[index] = Direction.Right;
+              currentDirectionRef.current = Direction.Right;
+              break;
+            case Direction.Right:
+              directionRef.current[index] = Direction.Down;
+              currentDirectionRef.current = Direction.Down;
+              break;
+            case Direction.Up:
+              directionRef.current[index] = Direction.Left;
+              currentDirectionRef.current = Direction.Left;
+              break;
+            case Direction.Left:
+              directionRef.current[index] = Direction.Up;
+              currentDirectionRef.current = Direction.Up;
+              break;
+          }
+          isEdgeRef.current[index] = 3;
+        }
+        //直進
+        else{
+          directionRef.current[index] = currentDirectionRef.current;
+        }
+      }
+      
+      //音を鳴らす
+      if(isEdgeRef.current[index] === 3){
+        const sampler = figureAudioSamplers[ChangeColorToInstrumentId(currentColorRef.current)];
+        sampler.triggerAttackRelease("C4", `${quantizeRef.current}n`);
+      }
+
+      //方角カウントの更新
+      switch (currentDirectionRef.current) {
+        case Direction.Down:
+          downCountRef.current += 1;
+          break;
+        case Direction.Up:
+          upCountRef.current += 1;
+          break;
+        case Direction.Left:
+          leftCountRef.current += 1;
+          break;
+        case Direction.Right:
+          rightCountRef.current += 1;
+          break;
+      }
+      
       isClicking.current = false;
     }
     if(waitFigureDrawing.current && beatCountRef.current === 0){
