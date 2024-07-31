@@ -93,7 +93,7 @@ export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuff
     const newPlayParts = initializeLoops(loops);
     setPlayPart(newPlayParts);
     newPlayParts.forEach(loop => loop.start(0));
-  }, [loops]);
+  }, [loops, playPart, initializeLoops]);
 
   const startMusic = () => {
     if (!metronome) {
