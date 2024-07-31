@@ -19,11 +19,11 @@ type Props = {
   figureAudioBuffers: AudioBuffer[];
   lineAudioSamplers: Tone.Sampler[] | null;
   setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
-  setStartFigureDrawing: React.Dispatch<React.SetStateAction<boolean>>;
-  startFigureDrawing: boolean;
+  setClickFigureDrawing: React.Dispatch<React.SetStateAction<boolean>>;
+  clickFigureDrawing: boolean;
 }
 
-export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuffer, figureAudioBuffers, lineAudioSamplers,setIsPlaying, setStartFigureDrawing, startFigureDrawing}: Props) => {
+export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuffer, figureAudioBuffers, lineAudioSamplers,setIsPlaying, setClickFigureDrawing, clickFigureDrawing}: Props) => {
   const [bpm, setBpm] = useState(120);
   const [beat, setBeat] = useState(7);
 
@@ -103,7 +103,7 @@ export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuff
     Tone.Transport.scheduleRepeat(UpdateBeatCount, `${PROCESS_SPAN}n`);
     Tone.Transport.start();
     setIsPlaying(true);
-    setStartFigureDrawing(false);
+    setClickFigureDrawing(false);
   };
 
   const stopMusic = () => {
@@ -115,21 +115,21 @@ export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuff
     setPlayPart(null);
     beatCountRef.current = 0;
     setIsPlaying(false);
-    setStartFigureDrawing(false);
+    setClickFigureDrawing(false);
   };
   
   return (
     <Stack  spacing={1}>
       <Stack direction="row" alignItems="center" justifyContent="center">
-        <StartButton onClick={startMusic} disabled={startFigureDrawing}/>
+        <StartButton onClick={startMusic} disabled={clickFigureDrawing}/>
 
-        <StopButton onClick={stopMusic} disabled={startFigureDrawing}/>
+        <StopButton onClick={stopMusic} disabled={clickFigureDrawing}/>
 
-        <MinusButton onLongPress={onLongPressMinusButton} disabled={startFigureDrawing}/>
+        <MinusButton onLongPress={onLongPressMinusButton} disabled={clickFigureDrawing}/>
 
         <Typography>BPM : {bpm}</Typography>
 
-        <PlusButton onLongPress={onLongPressPlusButton} disabled={startFigureDrawing}/>
+        <PlusButton onLongPress={onLongPressPlusButton} disabled={clickFigureDrawing}/>
       </Stack>
       <Stack>
         <BeatDisplay beat={beat}/>

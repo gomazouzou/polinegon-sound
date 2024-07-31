@@ -5,17 +5,17 @@ import React from "react";
 type Props = {
   onClick: () => void;
   disabled: boolean;
-  startFigureDrawing: boolean;
+  clickFigureDrawing: boolean;
 }
 
-export const StartDrawingButton = ({onClick, disabled, startFigureDrawing}: Props) => {
+export const StartDrawingButton = ({onClick, disabled, clickFigureDrawing}: Props) => {
   return (
     <IconButton
       aria-label="start-drawing"
       onClick={onClick}
       disabled={disabled}
     >
-      <PolylineIcon style={{ fontSize: '30px', color: startFigureDrawing ? 'black' : 'lightgray' }}/>
+      <PolylineIcon style={{ fontSize: '30px', color: clickFigureDrawing ? 'black' : 'lightgray' }}/>
     </IconButton>
   );
 };

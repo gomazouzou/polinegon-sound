@@ -24,12 +24,12 @@ type Props = {
   canvasColor: string;
   setLoops: React.Dispatch<React.SetStateAction<LoopInfo[]>>;
   quantizeRef: React.MutableRefObject<number>
-  startFigureDrawing: boolean;
-  setStartFigureDrawing: React.Dispatch<React.SetStateAction<boolean>>;
+  clickFigureDrawing: boolean;
+  setClickFigureDrawing: React.Dispatch<React.SetStateAction<boolean>>;
   isPlaying: boolean;
 }
 
-export const DrawingPannel = ({ setCurrentFigure, currentFigure, layers, setLayers, currentLayerId, canvasColor, setLoops, quantizeRef, startFigureDrawing, setStartFigureDrawing, isPlaying}: Props) => { 
+export const DrawingPannel = ({ setCurrentFigure, currentFigure, layers, setLayers, currentLayerId, canvasColor, setLoops, quantizeRef, clickFigureDrawing, setClickFigureDrawing, isPlaying}: Props) => { 
   const buttonStyle = (num: number) => ({
     borderRadius: 0,
     backgroundColor: isSelected(num) ?  'rgba(173, 216, 230, 0.2)' : "transparent",
@@ -68,11 +68,11 @@ export const DrawingPannel = ({ setCurrentFigure, currentFigure, layers, setLaye
 
               <StartDrawingButton 
                 onClick={() => {
-                  setStartFigureDrawing(!startFigureDrawing);
+                  setClickFigureDrawing(!clickFigureDrawing);
                   drawFrame(currentLayer);
                 }} 
-                disabled={currentLayer?.type !== Type.Free || !isPlaying || startFigureDrawing} 
-                startFigureDrawing= {startFigureDrawing}
+                disabled={currentLayer?.type !== Type.Free || !isPlaying || clickFigureDrawing} 
+                clickFigureDrawing= {clickFigureDrawing}
               />
               <QuantizeSelector quantizeRef={quantizeRef}/>
 

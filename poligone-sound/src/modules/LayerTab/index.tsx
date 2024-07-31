@@ -17,10 +17,10 @@ type Props = {
   totalLayer: number;
   setTotalLayer: React.Dispatch<React.SetStateAction<number>>;
   setLoops: React.Dispatch<React.SetStateAction<LoopInfo[]>>;
-  startFigureDrawing: boolean;
+  clickFigureDrawing: boolean;
 }
 
-export const LayerTab = ({canvasColor, layers, setLayers, currentLayerId, setCurrentLayerId, totalLayer, setTotalLayer, setLoops, startFigureDrawing}: Props) => {
+export const LayerTab = ({canvasColor, layers, setLayers, currentLayerId, setCurrentLayerId, totalLayer, setTotalLayer, setLoops, clickFigureDrawing}: Props) => {
 
   const {
     isOpen: isCOpenAddLayerDialog,
@@ -89,8 +89,8 @@ export const LayerTab = ({canvasColor, layers, setLayers, currentLayerId, setCur
         left: 0
       }}
       >
-        <AddButton onClick={openAddLayerDialog} disabled={startFigureDrawing}/>
-        <DeleteButton onClick={() => deleteLayer(currentLayerId, setLoops)} disabled={startFigureDrawing}/>
+        <AddButton onClick={openAddLayerDialog} disabled={clickFigureDrawing}/>
+        <DeleteButton onClick={() => deleteLayer(currentLayerId, setLoops)} disabled={clickFigureDrawing}/>
       </div>
       <div
         style={{
@@ -110,7 +110,7 @@ export const LayerTab = ({canvasColor, layers, setLayers, currentLayerId, setCur
               id={index}
               setCurrentLayerId={setCurrentLayerId}
               isHilighted={currentIndex === index} 
-              disabled={startFigureDrawing}
+              disabled={clickFigureDrawing}
             />
           ))}
         </Stack>

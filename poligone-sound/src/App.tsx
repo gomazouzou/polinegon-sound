@@ -39,10 +39,13 @@ function App() {
   //クオンタイズの設定
   const quantizeRef = useRef<number>(16);
   //自由図形描画を使うかどうか
-  const [startFigureDrawing, setStartFigureDrawing] = useState(false);
+  const [clickFigureDrawing, setClickFigureDrawing] = useState(false);
+  const waitFigureDrawing = useRef<boolean>(false)
+  const startFigureDrawing = useRef<boolean>(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const currentColorRef = useRef<string>("black");
+
 
   //クリックの状態管理
   const isClicking = useRef(false);
@@ -90,6 +93,10 @@ function App() {
     currentColorRef.current = layer?.color || "black";
   }, [layers, currentLayerId]);
 
+  useEffect(() => {
+    waitFigureDrawing.current = clickFigureDrawing;
+  },[clickFigureDrawing]);
+
 
   const UpdateBeatCount = () => {
     const layer = layers.find(layer => layer.id === currentLayerId);
@@ -126,9 +133,20 @@ function App() {
     }
     
     //自由描画の時の処理
-    if( beatCountRef.current % (PROCESS_SPAN / 16) === 0 && startFigureDrawing){
+    if(waitFigureDrawing.current && beatCountRef.current % (PROCESS_SPAN / 16)){
       console.log(isClicking.current);
+      startFigureDrawing.current = true;
     }
+    if(waitFigureDrawing.current && beatCountRef.current === 0){
+      if(!startFigureDrawing.current){
+        startFigureDrawing.current = true;
+      }
+      else{
+        waitFigureDrawing.current = false;
+        setClickFigureDrawing(false);
+      } 
+    }
+
 
     //アニメーションの描画
     loops.forEach(loop => {
@@ -148,7 +166,7 @@ function App() {
     if(layer && isPlaying){
 
       //線レイヤーの場合の描画処理
-      if(layer.type === Type.Line && !startFigureDrawing){
+      if(layer.type === Type.Line && !clickFigureDrawing){
         const canvas =layer.ref.current;
         if (!canvas) return;
         const context = canvas.getContext('2d');
@@ -264,7 +282,7 @@ function App() {
       };
 
       //図形レイヤーの場合の描画処理
-      if(layer.type === Type.Poligone && !startFigureDrawing){
+      if(layer.type === Type.Poligone && !clickFigureDrawing){
         const canvas = layer.ref.current;
         if (!canvas) return;
         const context = canvas.getContext('2d');
@@ -333,7 +351,7 @@ function App() {
       };
 
       //自由図形レイヤーの場合の描画処理
-      if(layer.type === Type.Free && startFigureDrawing){
+      if(layer.type === Type.Free && clickFigureDrawing){
         const canvas = layer.ref.current;
         if (!canvas) return;
 
@@ -345,7 +363,7 @@ function App() {
 
       }
     };  
-  }, [isDrawing, canvasColor, currentLayerId, layers, drawCount, currentFigure, startFigureDrawing, isPlaying, totalLoop, isClicking]);
+  }, [isDrawing, canvasColor, currentLayerId, layers, drawCount, currentFigure, clickFigureDrawing, isPlaying, totalLoop, isClicking]);
 
   return (
     <>
@@ -358,8 +376,8 @@ function App() {
           figureAudioBuffers={figureAudioBuffers}
           lineAudioSamplers={lineAudioSamplers}
           setIsPlaying={setIsPlaying}
-          setStartFigureDrawing={setStartFigureDrawing}
-          startFigureDrawing={startFigureDrawing}
+          setClickFigureDrawing={setClickFigureDrawing}
+          clickFigureDrawing={clickFigureDrawing}
         />
       </div>
 
@@ -393,7 +411,7 @@ function App() {
           totalLayer={totalLayer}
           setTotalLayer={setTotalLayer}
           setLoops={setLoops}
-          startFigureDrawing={startFigureDrawing}
+          clickFigureDrawing={clickFigureDrawing}
         />
       </div>
 
@@ -407,8 +425,8 @@ function App() {
           canvasColor={canvasColor}
           setLoops={setLoops}
           quantizeRef={quantizeRef}
-          startFigureDrawing={startFigureDrawing}
-          setStartFigureDrawing={setStartFigureDrawing}
+          clickFigureDrawing={clickFigureDrawing}
+          setClickFigureDrawing={setClickFigureDrawing}
           isPlaying={isPlaying}
         />
       </div>
