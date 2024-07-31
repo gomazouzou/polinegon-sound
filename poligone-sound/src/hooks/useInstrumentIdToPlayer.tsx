@@ -69,29 +69,6 @@ const convertArrayToTonePart = (noteArray: number[]) => {
   return result;
 };
 
-const convertFreeArrayToTonePart = (noteArray: number[]) => {
-  const result: TonePart[] = [];
-  //一小説分の長さ
-  const quantizeNumber = noteArray.length / 2;
-  
-  noteArray.forEach((value, index) => {
-    const note = noteMapping[value];
-    if (index === 0){
-      result.push({ time: '0:0:0', note: 'C4' });
-    }
-    else if(index === quantizeNumber - 1){
-      result.push({ time: '2:0:0', note: 'C4' });
-    }else if (note) {
-      const syousetsu = Math.floor(index / quantizeNumber);
-      const beat = (index - syousetsu * quantizeNumber) * 4 / quantizeNumber;
-      const time = `${syousetsu}:${beat}:0`;
-      result.push({ time, note });
-    }
-  });
-  return result;
-};
-
-
 
 export const ChangeSamplerToLoop = (sampler: Tone.Sampler, noteArray: number[], volume: number) => {
   const tonePart = convertArrayToTonePart(noteArray);
@@ -106,7 +83,7 @@ export const ChangeSamplerToLoop = (sampler: Tone.Sampler, noteArray: number[], 
 }
 
 export const ChangeFreePlayerToLoop = (player: Tone.Player, rhythm_array: number[]) => {
-  const rhythmPattern = convertFreeArrayToTonePart(rhythm_array);
+  const rhythmPattern = convertArrayToTonePart(rhythm_array);
 
   const newPart = new Tone.Part((time, value) => {
     player.start(time);

@@ -1,4 +1,5 @@
-import { CANVAS_HEIGHT, CANVAS_WIDTH, MARGIN, PROCESS_SPAN, SIZE, SPEED } from "../config/constants.tsx";
+import { CANVAS_HEIGHT, CANVAS_WIDTH, MARGIN, PROCESS_SPAN, SIZE, SPEED, SPEED_2 } from "../config/constants.tsx";
+import { Direction } from "../types/direction.tsx";
 import { Layer } from "../types/layer.tsx";
 import { Position } from "../types/loop.tsx";
 
@@ -100,7 +101,7 @@ export const drawFigure03 = (context: CanvasRenderingContext2D | null, layer: La
   context.stroke();
 }
 
-export const drawFrame = (layer?: Layer) => {
+export const drawFrame = (layer?: Layer, x?: number, y?: number) => {
   if (!layer) return { x: 0, y: 0 };
   const canvas = layer.ref.current;
   if (!canvas) return { x: 0, y: 0 };
@@ -109,8 +110,8 @@ export const drawFrame = (layer?: Layer) => {
 
   const size = SIZE * 2;
   const halfSize = size / 2;
-  const centerX = Math.floor(Math.random() * ((CANVAS_WIDTH - halfSize - MARGIN) - (halfSize + MARGIN) + 1)) + halfSize + MARGIN;
-  const centerY = Math.floor(Math.random() * ((CANVAS_HEIGHT - halfSize - MARGIN) - (halfSize + MARGIN) + 1)) + halfSize + MARGIN;
+  const centerX = x || Math.floor(Math.random() * ((CANVAS_WIDTH - halfSize - MARGIN) - (halfSize + MARGIN) + 1)) + halfSize + MARGIN;
+  const centerY = y || Math.floor(Math.random() * ((CANVAS_HEIGHT - halfSize - MARGIN) - (halfSize + MARGIN) + 1)) + halfSize + MARGIN;
 
   context.strokeStyle = "#F0F0F0";
   context.lineWidth = layer.lineWidth;
@@ -143,10 +144,54 @@ export const RedrawFigure = (context: CanvasRenderingContext2D | null, layer: La
   }
 }
 
-export const RedrawFreeFigure = (context: CanvasRenderingContext2D | null, rhythmArray: number[], x:number, y:number) => {
+export const RedrawFreeFigure = (context: CanvasRenderingContext2D | null, directionArray: (Direction | null)[], layer: Layer, x:number, y:number) => {
+  console.log(directionArray);
   if (!context) return;
 
+  context.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+  drawFrame(layer, x, y);
+
+  console.log("finish drawFrame"); 
+  console.log(SPEED_2)  
+
+  let currentX = x - SIZE;
+  let currentY = y - SIZE;
+  
+  context.strokeStyle = layer.color;
+  context.lineWidth = layer.lineWidth;
+
+  context.beginPath();
+  context.moveTo(currentX, currentY);
+
+  for (let i = 0; i < directionArray.length; i++) {
+    if(directionArray[i] === Direction.Down){
+      currentY += SPEED_2;
+      context.lineTo(currentX, currentY);
+    }
+    else if(directionArray[i] === Direction.Up){
+      currentY -= SPEED_2;
+      context.lineTo(currentX, currentY);
+    }
+    else if(directionArray[i] === Direction.Right){
+      currentX += SPEED_2;
+      context.lineTo(currentX, currentY);
+    }
+    else if(directionArray[i] === Direction.Left){
+      currentX -= SPEED_2;
+      context.lineTo(currentX, currentY);
+    }
+    if(directionArray[i] == null){
+      break;
+    }
+  }
+  context.stroke();
 }
+
+
+
+
+
 //こっから下はアニメーション関係(未完成)
 
 const ChangeFigure02ToAnimation = (x:number, y:number) => {
@@ -171,6 +216,8 @@ const ChangeFigure02ToAnimation = (x:number, y:number) => {
   }
   return animation;
 }
+
+
 
 //左上から
 export const ChangeFigureToAnimation = (figure_id: number, x:number, y:number) => {

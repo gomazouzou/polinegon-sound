@@ -107,7 +107,7 @@ export const RedrawLayer = (layer: Layer, setLoops: React.Dispatch<React.SetStat
 
     // 再描画
     layer.figures.forEach(figure => {
-      RedrawFreeFigure(context, layer.edge, figure.x_pos, figure.y_pos);
+      RedrawFreeFigure(context, layer.edge, layer, figure.x_pos, figure.y_pos);
     });
 
     // ループ情報の再設定

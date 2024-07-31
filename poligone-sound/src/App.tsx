@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as Tone from 'tone';
 import { CANVAS_HEIGHT, CANVAS_WIDTH, DEFAULT_LINE_WIDTH, DEFAULT_VOLUME, MAX_LINE_WIDTH, MAX_VOLUME, PROCESS_SPAN } from './config/constants.tsx';
 import { ChangeColorToInstrumentId } from './hooks/useColorToInstrumentId.tsx';
-import { ChangeFigureToAnimation, DrawAnimation, drawFigure00, drawFigure01, drawFigure02, drawFigure03 } from './hooks/useDrawFigure.tsx';
+import { ChangeFigureToAnimation, DrawAnimation, drawFigure00, drawFigure01, drawFigure02, drawFigure03, RedrawFreeFigure } from './hooks/useDrawFigure.tsx';
 import { noteMapping } from './hooks/useInstrumentIdToPlayer.tsx';
 import { ChangeMousePosToNoteId } from './hooks/useMousePosToNoteId.tsx';
 import { DrawingPannel } from './modules/DrawingPannel/index.tsx';
@@ -138,11 +138,10 @@ function App() {
 
 
   const UpdateBeatCount = () => {
-    const layer = layers.find(layer => layer.id === currentLayerId);
-    const canvas = layer?.ref.current;
+    const canvas = currentLayerRef.current.ref.current;
 
     //線の時の処理
-    if (isDrawing.current && beatCountRef.current % (PROCESS_SPAN / quantizeRef.current) === 0 && layer && canvas && lineAudioSamplers) {
+    if (isDrawing.current && beatCountRef.current % (PROCESS_SPAN / quantizeRef.current) === 0 && canvas && lineAudioSamplers) {
       
       const index = beatCountRef.current / (PROCESS_SPAN / quantizeRef.current);
       const noteId = ChangeMousePosToNoteId(mousePositionRef.current.y); 
@@ -172,20 +171,73 @@ function App() {
     }
     
     //自由描画の時の処理
+    
+    //自由描画開始・終了の判定
+    if(waitFigureDrawing.current && beatCountRef.current === 0){
+      if(!startFigureDrawing.current){
+        startFigureDrawing.current = true;
+      }
+      else{
+        setLayers(prevLayers => prevLayers.map(layer => {
+          if (layer === currentLayerRef.current) {
+            return {
+              ...layer,
+              figures: [...layer.figures, { id: currentFigure, x_pos: positionRef.current.x, y_pos: positionRef.current.y }],
+              edge: directionRef.current
+            };
+          }
+          else{
+            return layer;
+          }
+        }));
+
+        setLoops(prevLoop => {
+          const newLoop = [...prevLoop, 
+            { 
+              id: totalLoop,
+              type: Type.Free, 
+              layer_id: currentLayerId, 
+              color: currentLayerRef.current.color,
+              lineWidth: currentLayerRef.current.lineWidth,
+              instrument: ChangeColorToInstrumentId(currentLayerRef.current.color), 
+              figure_id: currentFigure, 
+              volume:  DEFAULT_VOLUME + MAX_VOLUME / (MAX_LINE_WIDTH - DEFAULT_LINE_WIDTH)* (currentLayerRef.current.lineWidth - DEFAULT_LINE_WIDTH),
+              midi: isEdgeRef.current,
+              ref: React.createRef<HTMLCanvasElement>(),
+              animation: [],
+            }
+          ];
+          setTotalLoop(totalLoop + 1);
+          return newLoop;
+        });
+
+        waitFigureDrawing.current = false;
+        startFigureDrawing.current = false;
+        setClickFigureDrawing(false);
+      } 
+    }
     if(startFigureDrawing.current && beatCountRef.current % (PROCESS_SPAN / 16) === 0 && figureAudioSamplers){
       const index = beatCountRef.current / (PROCESS_SPAN / 16);
-      //二つの角の場合
-      if(beatCountRef.current === 0){
+      //二つの角の場合（左上、右下）
+      if(index === 0){
         currentDirectionRef.current = Direction.Down;
         directionRef.current[0] = Direction.Down;
+        isEdgeRef.current[index] = 3;
         
       }
-      else if(beatCountRef.current === PROCESS_SPAN / 16 * 4){
-        currentDirectionRef.current = Direction.Up;
-        directionRef.current[PROCESS_SPAN / 16 * 4] = Direction.Up;
+      else if(index === PROCESS_SPAN / 16 * 4){
+        if(currentDirectionRef.current === Direction.Down){
+          currentDirectionRef.current = Direction.Left;
+          directionRef.current[PROCESS_SPAN / 16 * 4] = Direction.Left;
+        }
+        else if(currentDirectionRef.current === Direction.Right){
+          currentDirectionRef.current = Direction.Up;
+          directionRef.current[PROCESS_SPAN / 16 * 4] = Direction.Up;
+        }        
+        isEdgeRef.current[index] = 3;
       }
       //外枠にぶつかった場合
-      else if(beatCountRef.current < PROCESS_SPAN / 16 * 4 && rightCountRef.current === (PROCESS_SPAN / 16 )*2){
+      else if(index < PROCESS_SPAN / 16 * 4 && rightCountRef.current === (PROCESS_SPAN / 16 ) * 2){
         if(currentDirectionRef.current === Direction.Right){
           isEdgeRef.current[index] = 3;
         }
@@ -193,21 +245,21 @@ function App() {
         currentDirectionRef.current = Direction.Down;
 
       }
-      else if(beatCountRef.current < PROCESS_SPAN / 16 * 4 && downCountRef.current === (PROCESS_SPAN / 16)*2){
+      else if(index < PROCESS_SPAN / 16 * 4 && downCountRef.current === (PROCESS_SPAN / 16) * 2){
         if(currentDirectionRef.current === Direction.Down){
           isEdgeRef.current[index] = 3;
         }
         directionRef.current[index] = Direction.Right;
         currentDirectionRef.current = Direction.Right;
       }
-      else if(beatCountRef.current > PROCESS_SPAN / 16 * 4 && leftCountRef.current === (PROCESS_SPAN / 16)*2){
+      else if(index > PROCESS_SPAN / 16 * 4 && leftCountRef.current === (PROCESS_SPAN / 16)*2){
         if(currentDirectionRef.current === Direction.Left){
           isEdgeRef.current[index] = 3;
         }
         directionRef.current[index] = Direction.Up;
         currentDirectionRef.current = Direction.Up;
       }
-      else if(beatCountRef.current > PROCESS_SPAN / 16 * 4 && upCountRef.current === (PROCESS_SPAN / 16)*2){
+      else if(index > PROCESS_SPAN / 16 * 4 && upCountRef.current === (PROCESS_SPAN / 16)*2){
         if(currentDirectionRef.current === Direction.Up){
           isEdgeRef.current[index] = 3;
         }
@@ -242,7 +294,7 @@ function App() {
           directionRef.current[index] = currentDirectionRef.current;
         }
       }
-      
+
       //音を鳴らす
       if(isEdgeRef.current[index] === 3){
         const sampler = figureAudioSamplers[ChangeColorToInstrumentId(currentColorRef.current)];
@@ -264,53 +316,13 @@ function App() {
           rightCountRef.current += 1;
           break;
       }
+      const canvas = currentLayerRef.current.ref.current;
+      if (!canvas) return;
+      const context = canvas.getContext('2d');
+      console.log(directionRef.current);
+      RedrawFreeFigure(context, directionRef.current, currentLayerRef.current, positionRef.current.x, positionRef.current.y);
       
       isClicking.current = false;
-    }
-    if(waitFigureDrawing.current && beatCountRef.current === 0){
-      //自由描画開始
-      if(!startFigureDrawing.current){
-        startFigureDrawing.current = true;
-      }
-      //自由描画終了
-      else{
-        setLayers(prevLayers => prevLayers.map(layer => {
-          if (layer === currentLayerRef.current) {
-            return {
-              ...layer,
-              figures: [...layer.figures, { id: currentFigure, x_pos: positionRef.current.x, y_pos: positionRef.current.y }],
-              edge: isEdgeRef.current
-            };
-          }
-          else{
-            return layer;
-          }
-        }));
-
-        setLoops(prevLoop => {
-          const newLoop = [...prevLoop, 
-            { 
-              id: totalLoop,
-              type: Type.Free, 
-              layer_id: currentLayerId, 
-              color: currentLayerRef.current.color,
-              lineWidth: currentLayerRef.current.lineWidth,
-              instrument: ChangeColorToInstrumentId(currentLayerRef.current.color), 
-              figure_id: currentFigure, 
-              volume:  DEFAULT_VOLUME + MAX_VOLUME / (MAX_LINE_WIDTH - DEFAULT_LINE_WIDTH)* (currentLayerRef.current.lineWidth - DEFAULT_LINE_WIDTH),
-              midi: isEdgeRef.current,
-              ref: React.createRef<HTMLCanvasElement>(),
-              animation: [],
-            }
-          ];
-          setTotalLoop(totalLoop + 1);
-          return newLoop;
-        });
-
-        waitFigureDrawing.current = false;
-        startFigureDrawing.current = false;
-        setClickFigureDrawing(false);
-      } 
     }
 
 

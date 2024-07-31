@@ -1,4 +1,5 @@
 import React from 'react';
+import { Direction } from './direction';
 
 type Drawing = {
   startX: number;
@@ -27,5 +28,5 @@ export type Layer = {
   lineWidth: number;
   drawings: Drawing[];
   figures: Figure[];
-  edge: number[];
+  edge: (Direction | null)[];
 };
