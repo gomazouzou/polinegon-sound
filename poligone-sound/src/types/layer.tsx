@@ -27,5 +27,5 @@ export type Layer = {
   lineWidth: number;
   drawings: Drawing[];
   figures: Figure[];
-  edge: boolean[];
+  edge: number[];
 };

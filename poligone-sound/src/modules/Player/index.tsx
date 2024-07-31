@@ -75,7 +75,6 @@ export const Player = ({loops, UpdateBeatCount, beatCountRef, metronomeAudioBuff
       }
       if (loop.type === Type.Line) {
         if (!lineAudioSamplers) return;
-        console.log(loop.midi);
         const newPart = ChangeSamplerToLoop(lineAudioSamplers[loop.instrument], loop.midi, loop.volume);
         newPlayParts.push(newPart);
       }

@@ -143,6 +143,12 @@ export const RedrawFigure = (context: CanvasRenderingContext2D | null, layer: La
   }
 }
 
+export const RedrawFreeFigure = (context: CanvasRenderingContext2D | null, rhythmArray: number[], x:number, y:number) => {
+  if (!context) return;
+
+}
+//こっから下はアニメーション関係(未完成)
+
 const ChangeFigure02ToAnimation = (x:number, y:number) => {
   const animation: Position[] = new Array(PROCESS_SPAN * 2).fill({ x: 0, y: 0 });
   const changeSpan = PROCESS_SPAN / 4;

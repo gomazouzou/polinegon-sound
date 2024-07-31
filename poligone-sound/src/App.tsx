@@ -1,3 +1,4 @@
+import { Direction } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 import * as Tone from 'tone';
 import { CANVAS_HEIGHT, CANVAS_WIDTH, DEFAULT_LINE_WIDTH, DEFAULT_VOLUME, MAX_LINE_WIDTH, MAX_VOLUME, PROCESS_SPAN } from './config/constants.tsx';
@@ -45,6 +46,12 @@ function App() {
   const startFigureDrawing = useRef<boolean>(false);
 
   const isEdgeRef = useRef<number[]>(Array(32).fill(0));
+  const directionRef = useRef<(Direction | null)[]>(Array(32).fill(null));
+  const downCountRef = useRef<number>(0);
+  const upCountRef = useRef<number>(0);
+  const leftCountRef = useRef<number>(0);
+  const rightCountRef = useRef<number>(0);
+  
   const positionRef = useRef<Position>({ x: 0, y: 0 });
 
   //再生中かどうか
@@ -177,7 +184,8 @@ function App() {
           if (layer === currentLayerRef.current) {
             return {
               ...layer,
-              figures: [...layer.figures, { id: currentFigure, x_pos: positionRef.current.x, y_pos: positionRef.current.y }]
+              figures: [...layer.figures, { id: currentFigure, x_pos: positionRef.current.x, y_pos: positionRef.current.y }],
+              edge: isEdgeRef.current
             };
           }
           else{
