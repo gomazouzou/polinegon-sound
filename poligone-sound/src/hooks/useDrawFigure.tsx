@@ -101,11 +101,11 @@ export const drawFigure03 = (context: CanvasRenderingContext2D | null, layer: La
 }
 
 export const drawFrame = (layer?: Layer) => {
-  if (!layer) return;
+  if (!layer) return { x: 0, y: 0 };
   const canvas = layer.ref.current;
-  if (!canvas) return;
+  if (!canvas) return { x: 0, y: 0 };
   const context = canvas.getContext("2d");
-  if (!context) return;
+  if (!context) return { x: 0, y: 0 };
 
   const size = SIZE * 2;
   const halfSize = size / 2;
@@ -121,6 +121,7 @@ export const drawFrame = (layer?: Layer) => {
   context.lineTo(centerX - halfSize, centerY + halfSize);
   context.lineTo(centerX - halfSize, centerY - halfSize);
   context.stroke();
+  return { x: centerX, y: centerY };
 }
 
 export const RedrawFigure = (context: CanvasRenderingContext2D | null, layer: Layer, figure_id: number, x:number, y:number) => {

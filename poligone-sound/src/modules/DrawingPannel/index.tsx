@@ -6,7 +6,7 @@ import { Figure02Button } from "../../components/buttons/Figure02Button.tsx";
 import { Figure03Button } from "../../components/buttons/Figure03Button.tsx";
 import { RedrawLayer } from "../../functions/Canvas.tsx";
 import { Layer } from "../../types/layer.tsx";
-import { LoopInfo, Type } from "../../types/loop.tsx";
+import { LoopInfo, Position, Type } from "../../types/loop.tsx";
 import { ChangeColorPalette } from "./ChangeColorPalette/index.tsx";
 import { LineWidthSlider } from "./LineWidthSlider/index.tsx";
 import { QuantizeSelector } from "./QuantizeSelector/index.tsx";
@@ -27,9 +27,10 @@ type Props = {
   clickFigureDrawing: boolean;
   setClickFigureDrawing: React.Dispatch<React.SetStateAction<boolean>>;
   isPlaying: boolean;
+  positionRef: React.MutableRefObject<Position>;
 }
 
-export const DrawingPannel = ({ setCurrentFigure, currentFigure, layers, setLayers, currentLayerId, canvasColor, setLoops, quantizeRef, clickFigureDrawing, setClickFigureDrawing, isPlaying}: Props) => { 
+export const DrawingPannel = ({ setCurrentFigure, currentFigure, layers, setLayers, currentLayerId, canvasColor, setLoops, quantizeRef, clickFigureDrawing, setClickFigureDrawing, isPlaying, positionRef}: Props) => { 
   const buttonStyle = (num: number) => ({
     borderRadius: 0,
     backgroundColor: isSelected(num) ?  'rgba(173, 216, 230, 0.2)' : "transparent",
@@ -69,9 +70,10 @@ export const DrawingPannel = ({ setCurrentFigure, currentFigure, layers, setLaye
               <StartDrawingButton 
                 onClick={() => {
                   setClickFigureDrawing(!clickFigureDrawing);
-                  drawFrame(currentLayer);
+                  const position: Position = drawFrame(currentLayer);
+                  positionRef.current = position;
                 }} 
-                disabled={currentLayer?.type !== Type.Free || !isPlaying || clickFigureDrawing} 
+                disabled={currentLayer?.type !== Type.Free || !isPlaying || clickFigureDrawing || currentLayer?.figures.length > 0} 
                 clickFigureDrawing= {clickFigureDrawing}
               />
               <QuantizeSelector quantizeRef={quantizeRef}/>

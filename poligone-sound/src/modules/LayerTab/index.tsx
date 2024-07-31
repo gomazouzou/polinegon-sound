@@ -39,6 +39,7 @@ export const LayerTab = ({canvasColor, layers, setLayers, currentLayerId, setCur
           lineWidth: lineWidth,
           drawings: [],
           figures: [],
+          edge: [],
           type: type,
         }
       ]

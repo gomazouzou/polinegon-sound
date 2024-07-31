@@ -9,18 +9,19 @@ import { DrawingPannel } from './modules/DrawingPannel/index.tsx';
 import { LayerTab } from './modules/LayerTab/index.tsx';
 import { Player } from './modules/Player/index.tsx';
 import { Layer, Type } from "./types/layer.tsx";
-import { LoopInfo } from './types/loop.tsx';
+import { LoopInfo, Position } from './types/loop.tsx';
 
 function App() {
   const canvasColor = 'white';
   const isDrawing= useRef(false);
 
   //キャンバスに反映されるすべてのレイヤー
-  const [layers, setLayers] = useState<Layer[]>([{id: 0, ref: React.createRef(), color:"black", lineWidth: DEFAULT_LINE_WIDTH, drawings: [], figures: [], type: Type.Line}]); 
+  const [layers, setLayers] = useState<Layer[]>([{id: 0, ref: React.createRef(), color:"black", lineWidth: DEFAULT_LINE_WIDTH, drawings: [], figures: [], type: Type.Line, edge:[]}]); 
   //削除したものも含めたレイヤーの通し番号
   const [totalLayer, setTotalLayer] = useState(1); 
   //現在描画を行うレイヤーの番号
   const [currentLayerId, setCurrentLayerId] = useState(0); 
+  const currentLayerRef = useRef<Layer>(layers[0]);
   //現在描画してるレイヤーの分かれたブロックの数
   const [drawCount, setDrawCount] = useState(0);
   //現在描画する図形の番号 
@@ -32,16 +33,21 @@ function App() {
   //マウスのX,Y座座標
   const mousePositionRef = useRef({ x: 0, y: 0 });
   //音階の配列
-  const noteArrayRef2 = useRef<number[]>([0,0,0,0]);
-  const noteArrayRef4 = useRef<number[]>([0,0,0,0,0,0,0,0]);
-  const noteArrayRef8 = useRef<number[]>([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
-  const noteArrayRef16 = useRef<number[]>([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+  const noteArrayRef2 = useRef<number[]>(Array(4).fill(0));
+  const noteArrayRef4 = useRef<number[]>(Array(8).fill(0));
+  const noteArrayRef8 = useRef<number[]>(Array(16).fill(0));
+  const noteArrayRef16 = useRef<number[]>(Array(32).fill(0));
   //クオンタイズの設定
   const quantizeRef = useRef<number>(16);
   //自由図形描画を使うかどうか
   const [clickFigureDrawing, setClickFigureDrawing] = useState(false);
   const waitFigureDrawing = useRef<boolean>(false)
   const startFigureDrawing = useRef<boolean>(false);
+
+  const isEdgeRef = useRef<boolean[]>(Array(32).fill(false));
+  const positionRef = useRef<Position>({ x: 0, y: 0 });
+
+  //再生中かどうか
   const [isPlaying, setIsPlaying] = useState(false);
 
   const currentColorRef = useRef<string>("black");
@@ -52,8 +58,8 @@ function App() {
 
   const [metronomeAudioBuffer, setMetronomeAudioBuffer] = useState <AudioBuffer>();
   const [figureAudioBuffers, setFigureAudioBuffers] = useState <AudioBuffer[]>([]);
-
   const [lineAudioSamplers, setLineAudioSamplers] = useState <Tone.Sampler[] | null>(null);
+  const [figureAudioSamplers, setFigureAudioSamplers] = useState <Tone.Sampler[] | null>(null);
 
   useEffect(() => {
     const loadAudio = async () => {
@@ -83,6 +89,19 @@ function App() {
         lineBuffers.push(lineAudioSampler);
       }
       setLineAudioSamplers(lineBuffers);
+
+      const figureBuffers_2: Tone.Sampler[] = [];
+      for (let i = 1; i <= 8; i++) {
+        const figureAudioSampler = new Tone.Sampler({
+          urls: {
+            C4: `figure_${i}.wav`,
+          },
+          baseUrl: "/audio/"
+        }).toDestination();
+        await figureAudioSampler.loaded;
+        figureBuffers_2.push(figureAudioSampler);
+        setFigureAudioSamplers(figureBuffers_2);
+      }
     };
 
     loadAudio();
@@ -90,6 +109,8 @@ function App() {
 
   useEffect(() => {
     const layer = layers.find(layer => layer.id === currentLayerId);
+    if (!layer) return;
+    currentLayerRef.current = layer;
     currentColorRef.current = layer?.color || "black";
   }, [layers, currentLayerId]);
 
@@ -133,17 +154,61 @@ function App() {
     }
     
     //自由描画の時の処理
-    if(waitFigureDrawing.current && beatCountRef.current % (PROCESS_SPAN / 16)){
+    if(startFigureDrawing.current && beatCountRef.current % (PROCESS_SPAN / 16) === 0){
       console.log(isClicking.current);
-      startFigureDrawing.current = true;
+      if(isClicking.current && figureAudioSamplers){
+        const sampler = figureAudioSamplers[ChangeColorToInstrumentId(currentColorRef.current)];
+          sampler.triggerAttackRelease("C4", `${quantizeRef.current}n`);
+
+        const index = beatCountRef.current / (PROCESS_SPAN / quantizeRef.current);
+        isEdgeRef.current[index] = true;
+      }
+      isClicking.current = false;
     }
     if(waitFigureDrawing.current && beatCountRef.current === 0){
+      //自由描画開始
       if(!startFigureDrawing.current){
         startFigureDrawing.current = true;
       }
+      //自由描画終了
       else{
+        setLayers(prevLayers => prevLayers.map(layer => {
+          if (layer === currentLayerRef.current) {
+            return {
+              ...layer,
+              figures: [...layer.figures, { id: currentFigure, x_pos: positionRef.current.x, y_pos: positionRef.current.y }]
+            };
+          }
+          else{
+            return layer;
+          }
+        }));
+
+        setLoops(prevLoop => {
+          const newLoop = [...prevLoop, 
+            { 
+              id: totalLoop,
+              type: Type.Free, 
+              layer_id: currentLayerId, 
+              color: currentLayerRef.current.color,
+              lineWidth: currentLayerRef.current.lineWidth,
+              instrument: ChangeColorToInstrumentId(currentLayerRef.current.color), 
+              figure_id: currentFigure, 
+              volume:  DEFAULT_VOLUME + MAX_VOLUME / (MAX_LINE_WIDTH - DEFAULT_LINE_WIDTH)* (currentLayerRef.current.lineWidth - DEFAULT_LINE_WIDTH),
+              midi: [],
+              rhythmPattern: isEdgeRef.current,
+              ref: React.createRef<HTMLCanvasElement>(),
+              animation: [],
+            }
+          ];
+          setTotalLoop(totalLoop + 1);
+          return newLoop;
+        });
+
         waitFigureDrawing.current = false;
+        startFigureDrawing.current = false;
         setClickFigureDrawing(false);
+        isEdgeRef.current = Array(32).fill(false);
       } 
     }
 
@@ -254,6 +319,7 @@ function App() {
                 figure_id: 0, 
                 volume:  DEFAULT_VOLUME + MAX_VOLUME / (MAX_LINE_WIDTH - DEFAULT_LINE_WIDTH)* (layer.lineWidth - DEFAULT_LINE_WIDTH),
                 midi: currentNoteArray,
+                rhythmPattern:[],
                 ref: React.createRef<HTMLCanvasElement>(),
                 animation: [] //後で追記
               }
@@ -262,10 +328,10 @@ function App() {
           });
           setTotalLoop(totalLoop + 1);
 
-          noteArrayRef2.current = [0,0,0,0];
-          noteArrayRef4.current = [0,0,0,0,0,0,0,0];
-          noteArrayRef8.current = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-          noteArrayRef16.current = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+          noteArrayRef2.current = Array(4).fill(0);
+          noteArrayRef4.current = Array(8).fill(0);
+          noteArrayRef8.current = Array(16).fill(0);
+          noteArrayRef16.current = Array(32).fill(0);
         }
 
         canvas.addEventListener('mousedown', startDrawing);
@@ -334,6 +400,7 @@ function App() {
                 figure_id: currentFigure, 
                 volume:  DEFAULT_VOLUME + MAX_VOLUME / (MAX_LINE_WIDTH - DEFAULT_LINE_WIDTH)* (layer.lineWidth - DEFAULT_LINE_WIDTH),
                 midi: [],
+                rhythmPattern: [],
                 ref: React.createRef<HTMLCanvasElement>(),
                 animation: ChangeFigureToAnimation(currentFigure, centerX, centerY),
               }
@@ -428,6 +495,7 @@ function App() {
           clickFigureDrawing={clickFigureDrawing}
           setClickFigureDrawing={setClickFigureDrawing}
           isPlaying={isPlaying}
+          positionRef={positionRef}
         />
       </div>
     </>
